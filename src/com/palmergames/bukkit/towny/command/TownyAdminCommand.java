@@ -1064,8 +1064,14 @@ public class TownyAdminCommand extends BaseCommand implements CommandExecutor {
 					throw new TownyException(TownySettings.getLangString("That town does not belong to a nation."));
 				
 				try {
-					nation.removeTown(town);
+					if (nation.getTowns().size() == 0) {
+						townyUniverse.getDataSource().removeNation(nation);
+						townyUniverse.getDataSource().saveNationList();
+						TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), nation.getName()));
+						return;
+					}
 					
+					nation.removeTown(town);
 					townyUniverse.getDataSource().saveNation(nation);
 					townyUniverse.getDataSource().saveNationList();
 
@@ -1073,10 +1079,6 @@ public class TownyAdminCommand extends BaseCommand implements CommandExecutor {
 
 					TownyMessaging.sendPrefixedNationMessage(nation, String.format(TownySettings.getLangString("msg_nation_town_left"), StringMgmt.remUnderscore(town.getName())));
 					TownyMessaging.sendPrefixedTownMessage(town, String.format(TownySettings.getLangString("msg_town_left_nation"), StringMgmt.remUnderscore(nation.getName())));
-				} catch (EmptyNationException en) {
-					townyUniverse.getDataSource().removeNation(en.getNation());
-					townyUniverse.getDataSource().saveNationList();
-					TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), en.getNation().getName()));
 				} finally {
 					townyUniverse.getDataSource().saveTown(town);
 				}

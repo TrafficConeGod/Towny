@@ -15,9 +15,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-public class TownyWorld extends TownyObject {
+public class TownyWorld extends TownyObject implements TownOwner {
 
-	private HashMap<String, Town> towns = new HashMap<>();
+	private final HashMap<String, Town> towns = new HashMap<>();
 	private boolean isClaimable = true;
 	private boolean isUsingPlotManagementDelete = TownySettings.isUsingPlotManagementDelete();
 	private boolean isUsingPlotManagementMayorDelete = TownySettings.isUsingPlotManagementMayorDelete();
@@ -57,9 +57,9 @@ public class TownyWorld extends TownyObject {
 		super(name);
 	}
 
-	public HashMap<String, Town> getTowns() {
-
-		return towns;
+	@Override
+	public Collection<Town> getTowns() {
+		return towns.values();
 	}
 
 	public boolean hasTowns() {
@@ -72,13 +72,13 @@ public class TownyWorld extends TownyObject {
 		return towns.containsKey(name);
 	}
 
+	@Override
 	public boolean hasTown(Town town) {
-
 		return hasTown(town.getName());
 	}
 
+	@Override
 	public void addTown(Town town) throws AlreadyRegisteredException {
-
 		if (hasTown(town))
 			throw new AlreadyRegisteredException();
 		else {
@@ -124,6 +124,7 @@ public class TownyWorld extends TownyObject {
 		return townBlocks;
 	}
 
+	@Override
 	public void removeTown(Town town) throws NotRegisteredException {
 
 		if (!hasTown(town))
@@ -602,7 +603,7 @@ public class TownyWorld extends TownyObject {
 	public int getMinDistanceFromOtherTowns(Coord key, Town homeTown) {
 
 		double min = Integer.MAX_VALUE;
-		for (Town town : getTowns().values()) {
+		for (Town town : getTowns()) {
 			try {
 				Coord townCoord = town.getHomeBlock().getCoord();
 				if (homeTown != null)
@@ -643,7 +644,7 @@ public class TownyWorld extends TownyObject {
 	public int getMinDistanceFromOtherTownsPlots(Coord key, Town homeTown) {
 
 		double min = Integer.MAX_VALUE;
-		for (Town town : getTowns().values()) {
+		for (Town town : getTowns()) {
 			try {
 				if (homeTown != null)
 					// If the townblock either: the town is the same as homeTown OR 
@@ -676,7 +677,7 @@ public class TownyWorld extends TownyObject {
 	public Town getClosestTownFromCoord(Coord key, Town nearestTown) {
 		
 		double min = Integer.MAX_VALUE;
-		for (Town town : getTowns().values()) {
+		for (Town town : getTowns()) {
 			for (TownBlock b : town.getTownBlocks()) {
 				if (!b.getWorld().equals(this)) continue;
 				
@@ -701,7 +702,7 @@ public class TownyWorld extends TownyObject {
 	public Town getClosestTownWithNationFromCoord(Coord key, Town nearestTown) {
 		
 		double min = Integer.MAX_VALUE;
-		for (Town town : getTowns().values()) {
+		for (Town town : getTowns()) {
 			if (!town.hasNation()) continue;
 			for (TownBlock b : town.getTownBlocks()) {
 				if (!b.getWorld().equals(this)) continue;

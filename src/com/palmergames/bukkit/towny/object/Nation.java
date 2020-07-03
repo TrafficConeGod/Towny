@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-public class Nation extends TownyObject implements ResidentList, TownyInviter, Bank {
+public class Nation extends TownyObject implements ResidentList, TownyInviter, Bank, TownOwner {
 
 	private static final String ECONOMY_ACCOUNT_PREFIX = TownySettings.getNationAccountPrefix();
 
@@ -154,8 +154,8 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		return getEnemies().contains(nation);
 	}
 
+	@Override
 	public List<Town> getTowns() {
-
 		return towns;
 	}
 
@@ -187,13 +187,13 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		return false;
 	}
 
+	@Override
 	public boolean hasTown(Town town) {
-
 		return towns.contains(town);
 	}
 
+	@Override
 	public void addTown(Town town) throws AlreadyRegisteredException {
-
 		if (hasTown(town))
 			throw new AlreadyRegisteredException();
 		else if (town.hasNation())
@@ -344,8 +344,8 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		return numResidents;
 	}
 
-	public void removeTown(Town town) throws EmptyNationException, NotRegisteredException {
-
+	@Override
+	public void removeTown(Town town) throws NotRegisteredException {
 		if (!hasTown(town))
 			throw new NotRegisteredException();
 		else {
@@ -355,7 +355,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 			TownyUniverse.getInstance().getDataSource().saveNation(this);
 
 			if (getNumTowns() == 0) {
-				throw new EmptyNationException(this);
+				throw new NotRegisteredException("The nation is empty.");
 			} else if (isCapital) {
 				int numResidents = 0;
 				Town tempCapital = null;

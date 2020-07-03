@@ -1440,6 +1440,13 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(TownySettings.getLangString("msg_war_flag_deny_recently_attacked"));
 			}
 			
+			if (nation.getTowns().size() == 0) {
+				townyUniverse.getDataSource().removeNation(nation);
+				townyUniverse.getDataSource().saveNationList();
+				TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), nation.getName()));
+				return;
+			}
+			
 			nation.removeTown(town);
 			
 			townyUniverse.getDataSource().saveNation(nation);
@@ -1452,10 +1459,6 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		} catch (TownyException x) {
 			TownyMessaging.sendErrorMsg(player, x.getMessage());
 			return;
-		} catch (EmptyNationException en) {
-			townyUniverse.getDataSource().removeNation(en.getNation());
-			townyUniverse.getDataSource().saveNationList();
-			TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), en.getNation().getName()));
 		} finally {
 			townyUniverse.getDataSource().saveTown(town);
 		}
@@ -1753,10 +1756,6 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					townyUniverse.getDataSource().saveTown(town);
 				} catch (NotRegisteredException e) {
 					remove.add(town);
-				} catch (EmptyNationException e) {
-					// You can't kick yourself and only the mayor can kick
-					// assistants
-					// so there will always be at least one resident.
 				}
 
 		for (Town town : remove)

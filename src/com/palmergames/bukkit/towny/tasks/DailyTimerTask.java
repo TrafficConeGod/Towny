@@ -219,8 +219,6 @@ public class DailyTimerTask extends TownyTimerTask {
 						try {
 							localRemovedTowns.add(town.getName());							
 							nation.removeTown(town);							
-						} catch (EmptyNationException e) {
-							// Always has 1 town (capital) so ignore
 						} catch (NotRegisteredException ignored) {
 						}
 						townyUniverse.getDataSource().saveTown(town);

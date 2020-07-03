@@ -1112,21 +1112,37 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 					res.updatePermsForNationRemoval();
 					saveResident(res);
 				}
+				
+				if (succumbingNation.getTowns().size() == 0) {
+					// This is the intended end-result of the merge.
+					prevailingNation.addTown(lastTown);
+					saveTown(lastTown);
+					String name = succumbingNation.getName();
+					universe.getDataSource().removeNation(succumbingNation);
+					saveNation(prevailingNation);
+					universe.getDataSource().saveNationList();
+					TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), name));
+					lock.unlock();
+					return;
+				}
+				
+				if (prevailingNation.getTowns().size() == 0) {
+					// This is the intended end-result of the merge.
+					prevailingNation.addTown(lastTown);
+					saveTown(lastTown);
+					String name = prevailingNation.getName();
+					universe.getDataSource().removeNation(prevailingNation);
+					saveNation(prevailingNation);
+					universe.getDataSource().saveNationList();
+					TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), name));
+					lock.unlock();
+					return;
+				}
+				
 				succumbingNation.removeTown(town);
 				prevailingNation.addTown(town);
 				saveTown(town);
 			}
-		} catch (EconomyException ignored) {
-		} catch (EmptyNationException en) {
-			// This is the intended end-result of the merge.
-			prevailingNation.addTown(lastTown);
-			saveTown(lastTown);
-			String name = en.getNation().getName();
-			universe.getDataSource().removeNation(en.getNation());
-			saveNation(prevailingNation);
-			universe.getDataSource().saveNationList();
-			TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), name));
-			lock.unlock();
-		}
+		} catch (EconomyException ignored) {} 
 	}
 }

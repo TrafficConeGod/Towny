@@ -534,21 +534,13 @@ public class Town extends TownyObject implements ResidentList, TownyInviter, Obj
 				Coord townCoord = this.getHomeBlock().getCoord();
 				if (!nation.getCapital().getHomeBlock().getWorld().getName().equals(this.getHomeBlock().getWorld().getName())) {
 					TownyMessaging.sendNationMessagePrefixed(nation, String.format(TownySettings.getLangString("msg_nation_town_moved_their_homeblock_too_far"), this.getName()));
-					try {
-						nation.removeTown(this);
-					} catch (EmptyNationException e) {
-						e.printStackTrace();
-					}
+					nation.removeTown(this);
 				}
 				double distance;
 				distance = Math.sqrt(Math.pow(capitalCoord.getX() - townCoord.getX(), 2) + Math.pow(capitalCoord.getZ() - townCoord.getZ(), 2));			
 				if (distance > TownySettings.getNationRequiresProximity()) {
 					TownyMessaging.sendNationMessagePrefixed(nation, String.format(TownySettings.getLangString("msg_nation_town_moved_their_homeblock_too_far"), this.getName()));
-					try {
-						nation.removeTown(this);
-					} catch (EmptyNationException e) {
-						e.printStackTrace();
-					}
+					nation.removeTown(this);
 				}	
 			}
 			
