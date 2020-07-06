@@ -48,6 +48,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	public UUID uuid;
 	private long registered;
 	private Location nationSpawn;
+	private List<String[]> casusBellis = new ArrayList<String[]>();
 	private boolean isPublic = TownySettings.getNationDefaultPublic();
 	private boolean isOpen = TownySettings.getNationDefaultOpen();
 	private transient List<Invite> receivedinvites = new ArrayList<>();
@@ -850,5 +851,20 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 
 	public void setMapColorHexCode(String mapColorHexCode) {
 		this.mapColorHexCode = mapColorHexCode;
+	}
+	
+	public List<String[]> getCasusBellis() {
+		return casusBellis;
+	}
+
+	public void setCasusBellis(List<String[]> casusBellis) {
+		this.casusBellis = casusBellis;
+	}
+	
+	public void addCassusBelli(String enemyNationName, String casusBelliName) {
+		String[] casusBelliContainer = new String[2];
+		casusBelliContainer[0] = enemyNationName;
+		casusBelliContainer[1] = casusBelliName;
+		casusBellis.add(casusBelliContainer);
 	}
 }
