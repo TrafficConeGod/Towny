@@ -31,6 +31,8 @@ import com.palmergames.bukkit.towny.invites.InviteHandler;
 import com.palmergames.bukkit.towny.invites.TownyInviteReceiver;
 import com.palmergames.bukkit.towny.invites.TownyInviteSender;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.CasusBellis;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -100,7 +102,10 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"enemylist",
 		"ally",
 		"spawn",
-		"king"
+		"king",
+		"justify",
+		"declare",
+		"peace"
 	);
 
 	private static final List<String> nationSetTabCompletes = Arrays.asList(
@@ -616,8 +621,27 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
 
 				nationLeave(player);
+			} else if (split[0].equalsIgnoreCase("justify")) {
 
-			} else if(split[0].equalsIgnoreCase("spawn")){
+//					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
+//						throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
+					
+					String nationName = split[1];
+					String casusBelliName = split[2];
+
+					if (split.length == 1)
+						TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_specify_nation_name"));
+					else if (split.length == 2) {
+						TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_must_specify_casus_belli"));
+					}
+					else if (split.length == 3) {
+						Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+						if (!resident.isKing())
+							throw new TownyException(TownySettings.getLangString("msg_err_merging_for_kings_only"));
+						nationJustify(player, split[1], split[2]);
+					}
+
+				} else if(split[0].equalsIgnoreCase("spawn")){
 			    /*
 			        Parse standard nation spawn command.
 			     */
@@ -1440,25 +1464,61 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(TownySettings.getLangString("msg_war_flag_deny_recently_attacked"));
 			}
 			
-			nation.removeTown(town);
+			Confirmation confirmation = new Confirmation(() -> {
+				player.sendMessage("lol you cant actually declare independence yet lmao.");
+			});
+			ConfirmationHandler.sendConfirmation(player, confirmation);
 			
-			townyUniverse.getDataSource().saveNation(nation);
-			townyUniverse.getDataSource().saveNationList();
-
-			plugin.resetCache();
-
-			TownyMessaging.sendPrefixedNationMessage(nation, String.format(TownySettings.getLangString("msg_nation_town_left"), StringMgmt.remUnderscore(town.getName())));
-			TownyMessaging.sendPrefixedTownMessage(town, String.format(TownySettings.getLangString("msg_town_left_nation"), StringMgmt.remUnderscore(nation.getName())));
+//			townyUniverse.getDataSource().saveNation(nation);
+//			townyUniverse.getDataSource().saveNationList();
+//
+//			plugin.resetCache();
+//
+//			TownyMessaging.sendPrefixedNationMessage(nation, String.format(TownySettings.getLangString("msg_nation_town_left"), StringMgmt.remUnderscore(town.getName())));
+//			TownyMessaging.sendPrefixedTownMessage(town, String.format(TownySettings.getLangString("msg_town_left_nation"), StringMgmt.remUnderscore(nation.getName())));
 		} catch (TownyException x) {
 			TownyMessaging.sendErrorMsg(player, x.getMessage());
 			return;
-		} catch (EmptyNationException en) {
-			townyUniverse.getDataSource().removeNation(en.getNation());
-			townyUniverse.getDataSource().saveNationList();
-			TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), en.getNation().getName()));
+//		} catch (EmptyNationException en) {
+//			townyUniverse.getDataSource().removeNation(en.getNation());
+//			townyUniverse.getDataSource().saveNationList();
+//			TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), en.getNation().getName()));
 		} finally {
 			townyUniverse.getDataSource().saveTown(town);
 		}
+	}
+	
+	public void nationJustify(Player player, String enemyNationName, String casusBelliName) throws TownyException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+		Nation nation;
+		Nation remainingNation;
+
+		try {
+			nation = universe.getDataSource().getNation(enemyNationName);
+			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
+		} catch (NotRegisteredException e) {
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+		}
+		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+		
+		if (nation != null) {
+			CasusBelli casusBelli = null;
+			for (CasusBelli checkCasusBelli : CasusBellis.casusBellis) {
+				TownyMessaging.sendMessage(player, checkCasusBelli.getClass().getName());
+				if (checkCasusBelli.name.equalsIgnoreCase(casusBelliName)) {
+					casusBelli = checkCasusBelli;
+					break;
+				}
+			}
+			
+			if (casusBelli == null) {
+				throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), casusBelliName));
+			}
+			
+			TownyMessaging.sendMessage(player, "pog using " + casusBelli.name);
+		}
+		
 	}
 
 	public void nationDelete(Player player, String[] split) {
