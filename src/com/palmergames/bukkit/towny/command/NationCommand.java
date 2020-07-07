@@ -354,7 +354,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					}
 				case "justify":
 				case "declare":
-					if (args.length == 2)
+					if (args.length == 3)
 						return NameUtil.filterByStart(nationCasusBelliTabCompletes, args[1]);
 					break;
 				default:
@@ -720,9 +720,12 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					Nation atWarWith = war.getAtWarWith(nation);
 					List<CasusBelli> casusBellis = war.getCasusBellis(nation);
 					String casusBellisString = "";
+					System.out.println(casusBellis.size());
 					for (CasusBelli casusBelli : casusBellis) {
+						System.out.println(casusBelli.name);
 						casusBellisString += (", " + casusBelli.name);
 					}
+					System.out.println(casusBellisString);
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_war_elem"), atWarWith.getName(), casusBellisString));
 				}
 			} else if(split[0].equalsIgnoreCase("spawn")){
@@ -1548,7 +1551,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			}
 			
 			Confirmation confirmation = new Confirmation(() -> {
-				player.sendMessage("lol you cant actually declare independence yet lmao.");
+				player.sendMessage("lol you cant actually  independence yet lmao.");
 			});
 			ConfirmationHandler.sendConfirmation(player, confirmation);
 			
@@ -1601,7 +1604,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), casusBelliName));
 			}
 			
-			TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), casusBelli.name));
+			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), casusBelli.name));
 			
 			playerNation.addCassusBelli(nation, casusBelli);
 		}
@@ -1642,7 +1645,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_casus_belli_do_not_have"), casusBelliName));
 			}
 			
-			TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_declare_on"), nation.getName(), casusBelli.name));
+			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_on"), nation.getName(), casusBelli.name));
 
 			playerNation.declareWar(nation, casusBelli);
 		}
