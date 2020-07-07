@@ -870,7 +870,15 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	}
 	
 	public void removeCasusBelli(Nation nation, CasusBelli casusBelli) {
-		// not implemented yet
+		for (int i = 0; i < casusBellis.size(); i++) {
+			CasusBelli checkCasusBelli = casusBellis.get(i);
+			Nation checkNation = casusBelliNations.get(i);
+			if (nation.getName() == checkNation.getName() && casusBelli.name == checkCasusBelli.name) {
+				casusBellis.remove(i);
+				casusBelliNations.remove(i);
+				break;
+			}
+		}
 	}
 	
 	public void declareWar(Nation enemyNation, CasusBelli casusBelli) {
@@ -886,5 +894,17 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	
 	public boolean isAtWar() {
 		return wars.size() > 0;
+	}
+	
+	public boolean atWarWith(Nation nation) {
+		for (War war : wars) {
+			try {
+				war.getAtWarWith(nation);
+				return true;
+			} catch (TownyException e) {
+				
+			}
+		}
+		return false;
 	}
 }

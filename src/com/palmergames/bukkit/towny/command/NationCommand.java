@@ -1592,6 +1592,9 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
 		
 		if (nation != null) {
+			if (playerNation.atWarWith(nation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_at_war_with"));
+			}
 			CasusBelli casusBelli = null;
 			for (CasusBelli checkCasusBelli : CasusBellis.casusBellis) {
 				if (checkCasusBelli.name.equalsIgnoreCase(casusBelliName)) {
@@ -1629,6 +1632,9 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
 
 		if (nation != null) {
+			if (playerNation.atWarWith(nation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_at_war_with"));
+			}
 			List<CasusBelli> casusBellis = playerNation.getCasusBellis();
 			List<Nation> casusBelliNations = playerNation.getCasusBelliNations();
 			CasusBelli casusBelli = null;
@@ -1645,9 +1651,10 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_casus_belli_do_not_have"), casusBelliName));
 			}
 			
-			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_on"), nation.getName(), casusBelli.name));
-
 			playerNation.declareWar(nation, casusBelli);
+			playerNation.removeCasusBelli(nation, casusBelli);
+			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_on"), nation.getName(), casusBelli.name));
+			
 		}
 
 	}
