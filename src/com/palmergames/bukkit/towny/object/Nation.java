@@ -885,7 +885,27 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		List<CasusBelli> attackerCasusBellis = new ArrayList<CasusBelli>();
 		attackerCasusBellis.add(casusBelli);
 		War war = new War(this, enemyNation, attackerCasusBellis, new ArrayList<CasusBelli>());
+		addWar(war);
+		enemyNation.addWar(war);
+		removeCasusBelli(enemyNation, casusBelli);
+	}
+	
+	public void peaceWar(War war) throws TownyException {
+		Nation loser = war.getAtWarWith(this);
+		List<CasusBelli> casusBellis = war.getCasusBellis(this);
+		for (CasusBelli casusBelli : casusBellis) {
+			casusBelli.onPeaceAccepted(this, loser);
+		}
+		removeWar(war);
+		loser.removeWar(war);
+	}
+	
+	public void addWar(War war) {
 		wars.add(war);
+	}
+
+	public void removeWar(War war) {
+		wars.remove(war);
 	}
 	
 	public List<War> getWars() {
@@ -906,5 +926,17 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 			}
 		}
 		return false;
+	}
+	
+	public War getWar(Nation nation) throws TownyException {
+		for (War war : wars) {
+			try {
+				war.getAtWarWith(nation);
+				return war;
+			} catch (TownyException e) {
+				
+			}
+		}
+		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 	}
 }

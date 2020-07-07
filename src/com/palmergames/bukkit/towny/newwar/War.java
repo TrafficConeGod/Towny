@@ -1,5 +1,6 @@
 package com.palmergames.bukkit.towny.newwar;
 
+import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 
@@ -37,7 +38,7 @@ public class War {
 		} else if (defender.getName() == nation.getName()) {
 			return attacker;
 		}
-		throw new TownyException("msg_err_not_involved_in_war");
+		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 	}
 	
 	public List<CasusBelli> getCasusBellis(Nation nation) throws TownyException {
@@ -46,6 +47,6 @@ public class War {
 		} else if (defender.getName() == nation.getName()) {
 			return attackerCasusBellis;
 		}
-		throw new TownyException("msg_err_not_involved_in_war");
+		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 	}
 }
