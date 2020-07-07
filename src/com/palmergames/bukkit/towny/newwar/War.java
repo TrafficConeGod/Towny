@@ -37,6 +37,15 @@ public class War {
 		} else if (defender.getName() == nation.getName()) {
 			return attacker;
 		}
-		throw new TownyException("Not at war with nation");
+		throw new TownyException("msg_err_not_involved_in_war");
+	}
+	
+	public List<CasusBelli> getCasusBellis(Nation nation) throws TownyException {
+		if (attacker.getName() == nation.getName()) {
+			return defenderCasusBellis;
+		} else if (defender.getName() == nation.getName()) {
+			return attackerCasusBellis;
+		}
+		throw new TownyException("msg_err_not_involved_in_war");
 	}
 }
