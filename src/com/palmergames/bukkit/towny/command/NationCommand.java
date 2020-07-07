@@ -106,7 +106,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"justify",
 		"declare",
 		"peace",
-		"listcause"
+		"listcause",
+		"listwars"
 	);
 
 	private static final List<String> nationSetTabCompletes = Arrays.asList(
@@ -690,7 +691,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						}
  					}
 				}
-				
+			
 			} else if(split[0].equalsIgnoreCase("spawn")){
 			    /*
 			        Parse standard nation spawn command.

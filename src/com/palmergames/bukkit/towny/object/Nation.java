@@ -17,6 +17,7 @@ import com.palmergames.bukkit.towny.invites.Invite;
 import com.palmergames.bukkit.towny.invites.InviteHandler;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
 import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
 import com.palmergames.bukkit.towny.permissions.TownyPerms;
 import com.palmergames.bukkit.towny.war.flagwar.FlagWar;
@@ -873,6 +874,17 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	}
 	
 	public void declareWar(Nation enemyNation, CasusBelli casusBelli) {
-		// not implemented yet
+		List<CasusBelli> attackerCasusBellis = new ArrayList<CasusBelli>();
+		attackerCasusBellis.add(casusBelli);
+		War war = new War(this, enemyNation, attackerCasusBellis, new ArrayList<CasusBelli>());
+		wars.add(war);
+	}
+	
+	public List<War> getWars() {
+		return wars;
+	}
+	
+	public boolean isAtWar() {
+		return wars.size() > 0;
 	}
 }
