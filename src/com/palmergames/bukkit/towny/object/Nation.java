@@ -16,6 +16,7 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.invites.Invite;
 import com.palmergames.bukkit.towny.invites.InviteHandler;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
 import com.palmergames.bukkit.towny.permissions.TownyPerms;
 import com.palmergames.bukkit.towny.war.flagwar.FlagWar;
@@ -48,7 +49,9 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	public UUID uuid;
 	private long registered;
 	private Location nationSpawn;
-	private List<String[]> casusBellis = new ArrayList<String[]>();
+	private List<Nation> casusBelliNations = new ArrayList<Nation>();
+	private List<CasusBelli> casusBellis = new ArrayList<CasusBelli>();
+	private List<War> wars = new ArrayList<War>();
 	private boolean isPublic = TownySettings.getNationDefaultPublic();
 	private boolean isOpen = TownySettings.getNationDefaultOpen();
 	private transient List<Invite> receivedinvites = new ArrayList<>();
@@ -852,19 +855,24 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	public void setMapColorHexCode(String mapColorHexCode) {
 		this.mapColorHexCode = mapColorHexCode;
 	}
-	
-	public List<String[]> getCasusBellis() {
+
+	public List<Nation> getCasusBelliNations() {
+		return casusBelliNations;
+	}
+	public List<CasusBelli> getCasusBellis() {
 		return casusBellis;
 	}
-
-	public void setCasusBellis(List<String[]> casusBellis) {
-		this.casusBellis = casusBellis;
+	
+	public void addCassusBelli(Nation nation, CasusBelli casusBelli) {
+		casusBelliNations.add(nation);
+		casusBellis.add(casusBelli);
 	}
 	
-	public void addCassusBelli(String enemyNationName, String casusBelliName) {
-		String[] casusBelliContainer = new String[2];
-		casusBelliContainer[0] = enemyNationName;
-		casusBelliContainer[1] = casusBelliName;
-		casusBellis.add(casusBelliContainer);
+	public void removeCasusBelli(Nation nation, CasusBelli casusBelli) {
+		// not implemented yet
+	}
+	
+	public void declareWar(Nation enemyNation, CasusBelli casusBelli) {
+		// not implemented yet
 	}
 }
