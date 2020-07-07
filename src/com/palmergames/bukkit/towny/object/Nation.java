@@ -890,7 +890,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		removeCasusBelli(enemyNation, casusBelli);
 	}
 	
-	public void peaceWar(War war) throws TownyException {
+	public void peaceWar(War war) throws TownyException, EmptyNationException {
 		Nation loser = war.getAtWarWith(this);
 		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
 		System.out.println(casusBellis.size());

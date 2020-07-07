@@ -1675,6 +1675,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (casusBelli == null) {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_casus_belli_do_not_have"), casusBelliName));
 			}
+			
+			casusBelli.onPreDeclare(playerNation, nation, params);
 
 			CasusBelli finalCasusBelli = casusBelli;
 			Confirmation confirmation = new Confirmation(() -> {
@@ -1693,7 +1695,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 	}
 
-	public void nationPeace(Player player, String enemyNationName) throws TownyException {
+	public void nationPeace(Player player, String enemyNationName) throws TownyException, EmptyNationException {
 		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
 		Nation enemyNation;
 		Nation remainingNation;
@@ -1714,29 +1716,39 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (!playerNation.atWarWith(enemyNation)) {
 				throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 			}
-
-			Resident king = enemyNation.getKing();
-			if (!BukkitTools.isOnline(king.getName())) {
-				throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), enemyNation.getName(), king.getName()));
-			} else {
-				Confirmation confirmation = new Confirmation(() -> {
-					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_peace"), playerNation.getName()));
-					Confirmation enemyConfirmation = new Confirmation(() -> {
-						try {
-							War war = playerNation.getWar(enemyNation);
-							playerNation.peaceWar(war);
-							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
-							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
-						} catch (TownyException e) {
-							TownyMessaging.sendErrorMsg(player, e.getMessage());
-						}
-					});
-					ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
-				});
-				ConfirmationHandler.sendConfirmation(player, confirmation);
-			}
-
 			
+			// debug code
+			War war = playerNation.getWar(enemyNation);
+			playerNation.peaceWar(war);
+			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
+
+
+			// COMMENTED OUT FOR DEBUG CODE
+			// dumbass me is probably gonna forget to undo this
+			
+			// real code
+//			Resident king = enemyNation.getKing();
+//			if (!BukkitTools.isOnline(king.getName())) {
+//				throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), enemyNation.getName(), king.getName()));
+//			} else {
+//				Confirmation confirmation = new Confirmation(() -> {
+//					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_peace"), playerNation.getName()));
+//					Confirmation enemyConfirmation = new Confirmation(() -> {
+//						try {
+//							War war = playerNation.getWar(enemyNation);
+//							playerNation.peaceWar(war);
+//							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
+//							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
+//						} catch (TownyException e) {
+//							TownyMessaging.sendErrorMsg(player, e.getMessage());
+//						}
+//					});
+//					ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
+//				});
+//				ConfirmationHandler.sendConfirmation(player, confirmation);
+//			}
+
+
 		}
 
 	}
