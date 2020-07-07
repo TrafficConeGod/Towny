@@ -1145,3 +1145,4 @@ msg_err_plot_belongs_to_group_toggle: 'Plot belongs to a group, use /plot group 
 # RealPolitik
 msg_err_for_kings_only: '&bThis operation can only be done by a King.'
 msg_err_must_specify_casus_belli: '&bYou need to specify a casus belli.'
+msg_err_casus_belli_do_not_have: '&bYou do not have that casus belli or it does not exist.'

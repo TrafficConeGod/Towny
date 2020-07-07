@@ -33,6 +33,7 @@ import com.palmergames.bukkit.towny.invites.TownyInviteSender;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
 import com.palmergames.bukkit.towny.newwar.CasusBelli;
 import com.palmergames.bukkit.towny.newwar.CasusBellis;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -151,6 +152,13 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"?",
 		"help",
 		"list"
+	);
+	
+	private static final List<String> nationCasusBelliTabCompletes = Arrays.asList(
+		"demand_town",
+		"conquer",
+		"humiliate",
+		"dismantle"
 	);
 	
 	private static final Comparator<Nation> BY_NUM_RESIDENTS = (n1, n2) -> n2.getNumResidents() - n1.getNumResidents();
@@ -344,6 +352,11 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					} catch (NotRegisteredException e) {
 						return Collections.emptyList();
 					}
+				case "justify":
+				case "declare":
+					if (args.length == 2)
+						return NameUtil.filterByStart(nationCasusBelliTabCompletes, args[1]);
+					break;
 				default:
 					if (args.length == 1) {
 						List<String> nationNames = NameUtil.filterByStart(nationTabCompletes, args[0]);
@@ -689,9 +702,19 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						if (checkNation.getName().equals(enemyNation.getName())) {
 							TownyMessaging.sendMessage(player, casusBelli.name);
 						}
- 					}
+					}
 				}
-			
+			} else if (split[0].equalsIgnoreCase("listwars")) {
+				TownyUniverse universe = TownyUniverse.getInstance();
+				Resident resident = universe.getDataSource().getResident(player.getName());
+				Nation nation = resident.getTown().getNation();
+
+				List<War> wars = nation.getWars();
+				
+				for (War war : wars) {
+					Nation atWarWith = war.getAtWarWith(nation);
+					TownyMessaging.sendMessage(player, atWarWith.getName());
+				}
 			} else if(split[0].equalsIgnoreCase("spawn")){
 			    /*
 			        Parse standard nation spawn command.
@@ -1593,15 +1616,22 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		if (nation != null) {
 			List<CasusBelli> casusBellis = playerNation.getCasusBellis();
 			List<Nation> casusBelliNations = playerNation.getCasusBelliNations();
+			CasusBelli casusBelli = null;
 			for (int i = 0; i < casusBellis.size(); i++) {
-				CasusBelli casusBelli = casusBellis.get(i);
+				CasusBelli checkCasusBelli = casusBellis.get(i);
 				Nation checkNation = casusBelliNations.get(i);
-				if (casusBelli.name.equalsIgnoreCase(casusBelliName) && checkNation.getName().equals(nation.getName())) {
-					TownyMessaging.sendMessage(player, casusBelli.name);
-					playerNation.declareWar(nation, casusBelli);
+				if (checkCasusBelli.name.equalsIgnoreCase(casusBelliName) && checkNation.getName().equals(nation.getName())) {
+					casusBelli = checkCasusBelli;
 					break;
 				}
 			}
+			
+			if (casusBelli == null) {
+				throw new TownyException(String.format(TownySettings.getLangString("msg_err_casus_belli_do_not_have"), casusBelliName));
+			}
+
+			TownyMessaging.sendMessage(player, casusBelli.name);
+			playerNation.declareWar(nation, casusBelli);
 		}
 
 	}
