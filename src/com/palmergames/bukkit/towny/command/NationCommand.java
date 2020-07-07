@@ -1606,10 +1606,13 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (casusBelli == null) {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), casusBelliName));
 			}
-			
-			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), casusBelli.name));
-			
-			playerNation.addCassusBelli(nation, casusBelli);
+
+			CasusBelli finalCasusBelli = casusBelli;
+			Confirmation confirmation = new Confirmation(() -> {
+				playerNation.addCassusBelli(nation, finalCasusBelli);
+				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), finalCasusBelli.name));
+			});
+			ConfirmationHandler.sendConfirmation(player, confirmation);
 		}
 		
 	}
@@ -1650,10 +1653,14 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (casusBelli == null) {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_casus_belli_do_not_have"), casusBelliName));
 			}
-			
-			playerNation.declareWar(nation, casusBelli);
-			playerNation.removeCasusBelli(nation, casusBelli);
-			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_on"), nation.getName(), casusBelli.name));
+
+			CasusBelli finalCasusBelli = casusBelli;
+			Confirmation confirmation = new Confirmation(() -> {
+				playerNation.declareWar(nation, finalCasusBelli);
+				playerNation.removeCasusBelli(nation, finalCasusBelli);
+				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_on"), nation.getName(), finalCasusBelli.name));
+			});
+			ConfirmationHandler.sendConfirmation(player, confirmation);
 			
 		}
 
