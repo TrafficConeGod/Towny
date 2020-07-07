@@ -50,9 +50,8 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	public UUID uuid;
 	private long registered;
 	private Location nationSpawn;
-	private List<Nation> casusBelliNations = new ArrayList<Nation>();
-	private List<CasusBelli> casusBellis = new ArrayList<CasusBelli>();
-	private List<War> wars = new ArrayList<War>();
+	private List<CasusBelli> casusBellis = new ArrayList<>();
+	private List<War> wars = new ArrayList<>();
 	private boolean isPublic = TownySettings.getNationDefaultPublic();
 	private boolean isOpen = TownySettings.getNationDefaultOpen();
 	private transient List<Invite> receivedinvites = new ArrayList<>();
@@ -857,28 +856,16 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		this.mapColorHexCode = mapColorHexCode;
 	}
 
-	public List<Nation> getCasusBelliNations() {
-		return casusBelliNations;
-	}
 	public List<CasusBelli> getCasusBellis() {
 		return casusBellis;
 	}
 	
-	public void addCasusBelli(Nation nation, CasusBelli casusBelli) {
-		casusBelliNations.add(nation);
+	public void addCasusBelli(CasusBelli casusBelli) {
 		casusBellis.add(casusBelli);
 	}
 	
-	public void removeCasusBelli(Nation nation, CasusBelli casusBelli) {
-		for (int i = 0; i < casusBellis.size(); i++) {
-			CasusBelli checkCasusBelli = casusBellis.get(i);
-			Nation checkNation = casusBelliNations.get(i);
-			if (nation.getName() == checkNation.getName() && casusBelli.getName() == checkCasusBelli.getName()) {
-				casusBellis.remove(i);
-				casusBelliNations.remove(i);
-				break;
-			}
-		}
+	public void removeCasusBelli(CasusBelli casusBelli) {
+		casusBellis.remove(casusBelli);
 	}
 	
 	public void declareWar(Nation enemyNation, CasusBelli casusBelli) {
@@ -887,7 +874,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		War war = new War(this, enemyNation, attackerCasusBellis, new ArrayList<>());
 		addWar(war);
 		enemyNation.addWar(war);
-		removeCasusBelli(enemyNation, casusBelli);
+		removeCasusBelli(casusBelli);
 	}
 	
 	public void peaceWar(War war) throws TownyException, EmptyNationException {

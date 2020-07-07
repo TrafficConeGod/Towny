@@ -716,10 +716,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 				if (enemyNation != null) {
 					List<CasusBelli> casusBellis = playerNation.getCasusBellis();
-					List<Nation> casusBelliNations = playerNation.getCasusBelliNations();
-					for (int i = 0; i < casusBellis.size(); i++) {
-						CasusBelli casusBelli = casusBellis.get(i);
-						Nation checkNation = casusBelliNations.get(i);
+					for (CasusBelli casusBelli : casusBellis) {
+						Nation checkNation = casusBelli.getDefender();
 						if (checkNation.getName().equals(enemyNation.getName())) {
 							TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_casus_belli_elem"), enemyNation.getName()));
 						}
@@ -1624,8 +1622,10 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			}
 
 			CasusBelli finalCasusBelli = (CasusBelli) casusBelli.clone();
+			finalCasusBelli.setAttacker(playerNation);
+			finalCasusBelli.setDefender(nation);
 			Confirmation confirmation = new Confirmation(() -> {
-				playerNation.addCasusBelli(nation, finalCasusBelli);
+				playerNation.addCasusBelli(finalCasusBelli);
 				finalCasusBelli.onAdd(playerNation, nation);
 				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), finalCasusBelli.getName()));
 
@@ -1661,11 +1661,9 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(TownySettings.getLangString("msg_err_at_war_with"));
 			}
 			List<CasusBelli> casusBellis = playerNation.getCasusBellis();
-			List<Nation> casusBelliNations = playerNation.getCasusBelliNations();
 			CasusBelli casusBelli = null;
-			for (int i = 0; i < casusBellis.size(); i++) {
-				CasusBelli checkCasusBelli = casusBellis.get(i);
-				Nation checkNation = casusBelliNations.get(i);
+			for (CasusBelli checkCasusBelli : casusBellis) {
+				Nation checkNation = checkCasusBelli.getDefender();
 				if (checkCasusBelli.getName().equalsIgnoreCase(casusBelliName) && checkNation.getName().equals(nation.getName())) {
 					casusBelli = checkCasusBelli;
 					break;
