@@ -721,7 +721,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					List<CasusBelli> casusBellis = war.getCasusBellis(nation);
 					String casusBellisString = "";
 					for (CasusBelli casusBelli : casusBellis) {
-						casusBellisString += (", " + casusBelli.name)
+						casusBellisString += (", " + casusBelli.name);
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_war_elem"), atWarWith.getName(), casusBellisString));
 				}
