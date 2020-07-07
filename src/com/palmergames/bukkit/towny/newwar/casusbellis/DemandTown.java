@@ -7,13 +7,14 @@ import org.bukkit.Bukkit;
 
 public class DemandTown extends CasusBelli {
 	private Town town;
-	public DemandTown() {
-		name = "demand_town";
+	public String getName() {
+		return "humiliate";
+	}
+	public void onAdd(Nation attacker, Nation defender) {
+	}
+	public void onDeclare(Nation attacker, Nation defender, String[] params) {
+		
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) {
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say lol get humiliated lmao");
-	}
-	public void onAdd(Nation attacker, Nation defender, String[] params) {
-		
 	}
 }

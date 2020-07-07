@@ -41,7 +41,7 @@ public class War {
 		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 	}
 	
-	public List<CasusBelli> getCasusBellis(Nation nation) throws TownyException {
+	public List<CasusBelli> getCasusBellisAgainst(Nation nation) throws TownyException {
 		if (attacker.getName() == nation.getName()) {
 			return defenderCasusBellis;
 		} else if (defender.getName() == nation.getName()) {

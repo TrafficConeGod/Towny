@@ -5,10 +5,13 @@ import com.palmergames.bukkit.towny.object.Nation;
 import org.bukkit.Bukkit;
 
 public class Humiliate extends CasusBelli {
-	public Humiliate() {
-		name = "humiliate";
+	public String getName() {
+		return "humiliate";
+	}
+	public void onAdd(Nation attacker, Nation defender) {
+	}
+	public void onDeclare(Nation attacker, Nation defender, String[] params) {
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) {
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say lol get humiliated lmao");
 	}
 }

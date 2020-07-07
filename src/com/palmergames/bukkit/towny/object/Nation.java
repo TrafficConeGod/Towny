@@ -864,7 +864,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		return casusBellis;
 	}
 	
-	public void addCassusBelli(Nation nation, CasusBelli casusBelli) {
+	public void addCasusBelli(Nation nation, CasusBelli casusBelli) {
 		casusBelliNations.add(nation);
 		casusBellis.add(casusBelli);
 	}
@@ -873,7 +873,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		for (int i = 0; i < casusBellis.size(); i++) {
 			CasusBelli checkCasusBelli = casusBellis.get(i);
 			Nation checkNation = casusBelliNations.get(i);
-			if (nation.getName() == checkNation.getName() && casusBelli.name == checkCasusBelli.name) {
+			if (nation.getName() == checkNation.getName() && casusBelli.getName() == checkCasusBelli.getName()) {
 				casusBellis.remove(i);
 				casusBelliNations.remove(i);
 				break;
@@ -882,9 +882,9 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	}
 	
 	public void declareWar(Nation enemyNation, CasusBelli casusBelli) {
-		List<CasusBelli> attackerCasusBellis = new ArrayList<CasusBelli>();
+		List<CasusBelli> attackerCasusBellis = new ArrayList<>();
 		attackerCasusBellis.add(casusBelli);
-		War war = new War(this, enemyNation, attackerCasusBellis, new ArrayList<CasusBelli>());
+		War war = new War(this, enemyNation, attackerCasusBellis, new ArrayList<>());
 		addWar(war);
 		enemyNation.addWar(war);
 		removeCasusBelli(enemyNation, casusBelli);
@@ -892,7 +892,8 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	
 	public void peaceWar(War war) throws TownyException {
 		Nation loser = war.getAtWarWith(this);
-		List<CasusBelli> casusBellis = war.getCasusBellis(this);
+		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
+		System.out.println(casusBellis.size());
 		for (CasusBelli casusBelli : casusBellis) {
 			casusBelli.onPeaceAccepted(this, loser);
 		}
