@@ -1143,7 +1143,7 @@ msg_err_plot_belongs_to_group_toggle: 'Plot belongs to a group, use /plot group 
 
 
 # RealPolitik
-msg_err_for_kings_only: '&bThis operation can only be done by a King.'
+msg_err_for_kings_only: '&cThis operation can only be done by a King.'
 msg_err_must_specify_casus_belli: '&cYou need to specify a casus belli.'
 msg_err_casus_belli_do_not_have: '&cYou do not have that casus belli or it does not exist.'
 msg_err_at_war_with: '&cYou are at war with this nation.'
@@ -1155,3 +1155,8 @@ msg_war_elem: '&b%s with wargoals: %s.'
 msg_err_not_involved_in_war: '&cNot involved in war.'
 msg_justifying_on: '&bJustifying on %s with casus belli %s.'
 msg_declared_on: '&bDeclared war on %s with casus belli %s.'
+msg_peaced_out: '&bPeaced out with %s successfully.'
+msg_offering_peace: '&b%s is offering peace to you if you would accept all of their demands.'
+msg_enemy_justified_on: '&b%s has justified a war against you with casus belli %s.'
+msg_enemy_declared_on: '&b%s has declared a war against you with casus belli %s.'
+msg_err_specify_town_name: '&cYou must specify a town name.'
