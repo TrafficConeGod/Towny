@@ -78,7 +78,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			dataFolderPath + File.separator + "plot-block-data",
 			dataFolderPath + File.separator + "townblocks",
 			dataFolderPath + File.separator + "plotgroups",
-			dataFolderPath + File.separator + "casusbellis",
+			dataFolderPath + File.separator + "casusBellis",
 			dataFolderPath + File.separator + "wars"
 		) || !FileMgmt.checkOrCreateFiles(
 			dataFolderPath + File.separator + "residents.txt",
