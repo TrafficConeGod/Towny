@@ -108,7 +108,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"declare",
 		"peace",
 		"listcause",
-		"listwars"
+		"listwars",
+		"infamy"
 	);
 
 	private static final List<String> nationSetTabCompletes = Arrays.asList(
@@ -719,7 +720,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					for (CasusBelli casusBelli : casusBellis) {
 						Nation checkNation = casusBelli.getDefender();
 						if (checkNation.getName().equals(enemyNation.getName())) {
-							TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_casus_belli_elem"), enemyNation.getName()));
+							TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_casus_belli_elem"), casusBelli.getName()));
 						}
 					}
 				}
@@ -742,6 +743,11 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_war_elem"), atWarWith.getName(), casusBellisString));
 				}
+			} else if (split[0].equalsIgnoreCase("infamy")) {
+				TownyUniverse universe = TownyUniverse.getInstance();
+				Resident resident = universe.getDataSource().getResident(player.getName());
+				Nation nation = resident.getTown().getNation();
+				TownyMessaging.sendMessage(player, String.valueOf(nation.getInfamy()));
 			} else if(split[0].equalsIgnoreCase("spawn")){
 			    /*
 			        Parse standard nation spawn command.
