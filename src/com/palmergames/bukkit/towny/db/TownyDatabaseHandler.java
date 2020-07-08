@@ -652,6 +652,19 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 
 			saveTown(town);
 		}
+		
+		for (War war : nation.getWars()) {
+			try {
+				if (war.isWarLeader(nation)) {
+					Nation atWarWith = war.getAtWarWith(nation);
+					atWarWith.peaceWar(war);
+				}
+			} catch (TownyException e) {
+				e.printStackTrace();
+			} catch (EmptyNationException e) {
+				e.printStackTrace();
+			}
+		}
 
 		plugin.resetCache();
 		saveNationList();

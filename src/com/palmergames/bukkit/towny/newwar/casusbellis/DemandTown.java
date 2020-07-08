@@ -21,9 +21,9 @@ public class DemandTown extends CasusBelli {
 	public float getInfamy() {
 		return 11;
 	}
-	public void onAdd(Nation attacker, Nation defender) {
+	public void onPreAdd() {
 	}
-	public void onPreDeclare(Nation attacker, Nation defender, String[] params) throws TownyException  {
+	public void onPreDeclare(String[] params) throws TownyException  {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
 		if (params.length >= 1) {
 			try {
@@ -39,9 +39,6 @@ public class DemandTown extends CasusBelli {
 		} else {
 			throw new TownyException(TownySettings.getLangString("msg_err_specify_town_name"));
 		}
-	}
-	public void onDeclare(Nation attacker, Nation defender, String[] params) {
-		
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();

@@ -4,6 +4,7 @@ import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,8 +14,8 @@ public class War {
 	private List<CasusBelli> attackerCasusBellis;
 	private List<CasusBelli> defenderCasusBellis;
 	// NOT IMPLEMENTED YET
-	private List<Nation> attackerAllies;
-	private List<Nation> defenderAllies;
+	private List<Nation> attackerAllies = new ArrayList<>();
+	private List<Nation> defenderAllies = new ArrayList<>();
 	private UUID uuid;
 	
 	public War(Nation attacker, Nation defender, List<CasusBelli> attackerCasusBellis, List<CasusBelli> defenderCasusBellis) {
@@ -72,6 +73,16 @@ public class War {
 			if (ally.getName() == nation.getName()) {
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	public boolean isWarLeader(Nation nation) {
+		if (attacker.getName() == nation.getName()) {
+			return true;
+		}
+		if (defender.getName() == nation.getName()) {
+			return true;
 		}
 		return false;
 	}

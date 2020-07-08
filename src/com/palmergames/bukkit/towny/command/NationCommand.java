@@ -1732,9 +1732,14 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (!playerNation.atWarWith(enemyNation)) {
 				throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 			}
-			
-			// debug code
+		
 			War war = playerNation.getWar(enemyNation);
+			if (!war.isWarLeader(playerNation)) {
+				throw new TownyException(TownySettings.getLangString("msg_not_war_leader"));
+			}
+
+
+			// debug code
 			playerNation.peaceWar(war);
 			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
 

@@ -10,8 +10,8 @@ import org.bukkit.Bukkit;
 import java.util.UUID;
 
 public abstract class CasusBelli implements Cloneable {
-	private Nation attacker;
-	private Nation defender;
+	public Nation attacker;
+	public Nation defender;
 	private UUID uuid;
 	public String getName() { return "default"; }
 	public int getIndex() { return -1; }
@@ -21,13 +21,13 @@ public abstract class CasusBelli implements Cloneable {
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onPeaceAccepted");
 	}
-	public void onAdd(Nation attacker, Nation defender) {
+	public void onAdd() {
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onAdd");
 	}
-	public void onPreDeclare(Nation attacker, Nation defender, String[] params) throws TownyException {
+	public void onPreDeclare(String[] params) throws TownyException {
 		
 	}
-	public void onDeclare(Nation attacker, Nation defender, String[] params) {
+	public void onDeclare(String[] params) {
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onAdd");
 	}
 	public Nation getAttacker() {

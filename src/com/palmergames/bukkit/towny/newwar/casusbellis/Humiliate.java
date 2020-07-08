@@ -12,10 +12,4 @@ public class Humiliate extends CasusBelli {
 	public float getInfamy() {
 		return 3;
 	}
-	public void onAdd(Nation attacker, Nation defender) {
-	}
-	public void onDeclare(Nation attacker, Nation defender, String[] params) {
-	}
-	public void onPeaceAccepted(Nation victor, Nation loser) {
-	}
 }
