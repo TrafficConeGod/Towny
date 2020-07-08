@@ -14,6 +14,7 @@ import com.palmergames.bukkit.towny.db.TownyFlatFileSource.elements;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
@@ -201,7 +202,27 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 		}
     }
 
-    /**
+	@Override
+	public boolean loadWarList() {
+		return false;
+	}
+
+	@Override
+	public boolean loadWar(String uuidString) {
+		return false;
+	}
+
+	@Override
+	public boolean loadCasusBelli(String uuidString) {
+		return false;
+	}
+
+	@Override
+	public CasusBelli getCasusBelli(String uuidString) throws TownyException {
+		return null;
+	}
+
+	/**
      * open a connection to the SQL server.
      *
      * @return true if we successfully connected to the db.
@@ -2275,6 +2296,31 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 	}
 
 	@Override
+	public boolean saveWarList() {
+		return false;
+	}
+
+	@Override
+	public boolean saveWar(War war) {
+		return false;
+	}
+
+	@Override
+	public boolean saveCasusBelli(CasusBelli casusBelli) {
+		return false;
+	}
+
+	@Override
+	public void deleteWar(War war) {
+
+	}
+
+	@Override
+	public void deleteCasusBelli(CasusBelli casusBelli) {
+
+	}
+
+	@Override
     public boolean saveNationList() {
 
         return true;
@@ -2346,29 +2392,6 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 	public String getPlotFilename(TownBlock townBlock) {
 
 		return dataFolderPath + File.separator + "plot-block-data" + File.separator + townBlock.getWorld().getName() + File.separator + townBlock.getX() + "_" + townBlock.getZ() + "_" + TownySettings.getTownBlockSize() + ".data";
-	}
-	
-	public boolean saveWarList() {
-    	return true;
-	}
-
-	@Override
-	public boolean saveWar(War war) {
-		return false;
-	}
-
-	@Override
-	public void deleteWar(War war) {
-		
-	}
-
-	public boolean loadWarList() {
-    	return true;
-	}
-
-	@Override
-	public boolean loadWar(String uuidString) {
-		return false;
 	}
 }
 
