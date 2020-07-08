@@ -49,4 +49,18 @@ public class DemandTown extends CasusBelli {
 		townyUniverse.getDataSource().saveNation(loser);
 		townyUniverse.getDataSource().saveNationList();
 	}
+	public void loadSaveData(String[] tokens) throws NotRegisteredException {
+		TownyUniverse townyUniverse = TownyUniverse.getInstance();
+		if (tokens[0].equalsIgnoreCase("town")) {
+			String townName = tokens[1];
+			town = townyUniverse.getDataSource().getTown(townName);
+		}
+	}
+	public String getSaveData() {
+		if (town != null) {
+			return "town=" + town.getName();
+		} else {
+			return "town=";
+		}
+	}
 }

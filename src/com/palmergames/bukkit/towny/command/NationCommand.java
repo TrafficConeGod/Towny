@@ -1628,6 +1628,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			Confirmation confirmation = new Confirmation(() -> {
 				playerNation.addCasusBelli(finalCasusBelli);
 				finalCasusBelli.onAdd(playerNation, nation);
+				universe.getDataSource().saveCasusBelli(finalCasusBelli);
+				universe.getDataSource().saveNation(playerNation);
 				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), finalCasusBelli.getName()));
 
 				Resident king = nation.getKing();

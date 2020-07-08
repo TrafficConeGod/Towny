@@ -446,9 +446,11 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			Nation attacker = null;
 			Nation defender = null;
 
+			List<String> lines = new ArrayList<>();
+			
 			while ((line = fin.readLine()) != null) {
 				if (!line.equals("")) {
-
+					lines.add(line);
 					String[] tokens = line.split("=");
 					if (tokens.length == 2) {
 						String property = tokens[0];
@@ -456,8 +458,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 						if (property.equalsIgnoreCase("index")) {
 							index = Integer.parseInt(value);
-						}
-						else if (property.equalsIgnoreCase("attacker")) {
+						} else if (property.equalsIgnoreCase("attacker")) {
 							attacker = getNation(value);
 						} else if (property.equalsIgnoreCase("defender")) {
 							defender = getNation(value);
@@ -472,14 +473,22 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				casusBelli.setUuid(UUID.fromString(uuidString));
 				casusBelli.setAttacker(attacker);
 				casusBelli.setDefender(defender);
+				for (String checkLine : lines) {
+					System.out.println(checkLine);
+					String[] tokens = checkLine.split("=");
+					if (tokens.length == 2) {
+						casusBelli.loadSaveData(tokens);
+					}
+				}
+				casusBellis.add(casusBelli);
 				return true;
 			} else {
-				TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\casusBellis\\" + uuidString + "_.data. Variables: " + attacker.toString() + " " + defender.toString());
+				TownyMessaging.sendErrorMsg("Error Loading Casus Belli in towny\\data\\casusBellis\\" + uuidString + "_.data. Variables: " + attacker.toString() + " " + defender.toString());
 				return false;
 			}
 
 		} catch (Exception e) {
-			TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\casusBellis\\" + uuidString + "_.data. File does not exist.");
+			TownyMessaging.sendErrorMsg("Error Loading Casus Belli in towny\\data\\casusBellis\\" + uuidString + "_.data. File does not exist.");
 			e.printStackTrace();
 			return false;
 
@@ -1329,6 +1338,16 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				line = keys.get("metadata");
 				if (line != null && !line.isEmpty())
 					nation.setMetadata(line.trim());
+				
+				line = keys.get("casusBellis");
+				if (line != null && !line.isEmpty()) {
+					System.out.println("eeeeeee" + line);
+					String[] split = line.split(",");
+					for (String casusBelliStringUuid : split) {
+						CasusBelli casusBelli = getCasusBelli(casusBelliStringUuid);
+						nation.addCasusBelli(casusBelli);
+					}
+				}
 
 			} catch (Exception e) {
 				TownyMessaging.sendErrorMsg("Loading Error: Exception while reading nation file " + nation.getName() + " at line: " + line + ", in towny\\data\\nations\\" + nation.getName() + ".txt");
@@ -1903,6 +1922,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 		// defender
 		list.add("defender=" + casusBelli.getDefender().getName());
+		
+		list.add(casusBelli.getSaveData());
 
 		/*
 		 *  Make sure we only save in async
@@ -2253,8 +2274,22 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			list.add("uuid=" + UUID.randomUUID());
 		}
         list.add("registered=" + nation.getRegistered());
-        
-        // Spawn
+		
+		String casusBellis = "";
+
+		for (int i = 0; i < nation.getCasusBellis().size(); i++) {
+			CasusBelli casusBelli = nation.getCasusBellis().get(i);
+			if (i == 0) {
+				casusBellis += casusBelli.getUuid().toString();
+			} else {
+				casusBellis += ("," + casusBelli.getUuid().toString());
+			}
+		}
+
+		// attacker casus bellis
+		list.add("casusBellis=" + casusBellis);
+
+		// Spawn
 		if (nation.hasNationSpawn()) {
 			try {
 				list.add("nationSpawn=" + nation.getNationSpawn().getWorld().getName() + "," + nation.getNationSpawn().getX() + "," + nation.getNationSpawn().getY() + "," + nation.getNationSpawn().getZ() + "," + nation.getNationSpawn().getPitch() + "," + nation.getNationSpawn().getYaw());

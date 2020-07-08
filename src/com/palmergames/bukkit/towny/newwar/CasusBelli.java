@@ -45,6 +45,12 @@ public abstract class CasusBelli implements Cloneable {
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
+	public String getSaveData() {
+		return "";
+	}
+	public void loadSaveData(String[] tokens) throws NotRegisteredException {
+		
+	}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
