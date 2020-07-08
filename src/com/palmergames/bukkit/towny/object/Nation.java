@@ -1,9 +1,7 @@
 package com.palmergames.bukkit.towny.object;
 
 import com.palmergames.bukkit.config.ConfigNodes;
-import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.TownyMessaging;
-import com.palmergames.bukkit.towny.TownySettings;
+import com.palmergames.bukkit.towny.*;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.event.NationAddTownEvent;
 import com.palmergames.bukkit.towny.event.NationRemoveTownEvent;
@@ -877,18 +875,27 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		enemyNation.addWar(war);
 		removeCasusBelli(casusBelli);
 		TownyUniverse.getInstance().getDataSource().saveWar(war);
+		TownyUniverse.getInstance().getDataSource().saveCasusBelli(casusBelli);
 	}
 	
 	public void peaceWar(War war) throws TownyException, EmptyNationException {
 		Nation loser = war.getAtWarWith(this);
 		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
+		List<CasusBelli> loserCasusBellis = war.getCasusBellisAgainst(this);
 		System.out.println(casusBellis.size());
 		for (CasusBelli casusBelli : casusBellis) {
 			casusBelli.onPeaceAccepted(this, loser);
 		}
 		removeWar(war);
 		loser.removeWar(war);
-		TownyUniverse.getInstance().getDataSource().deleteWar(war);
+		TownyUniverse universe = TownyUniverse.getInstance();
+		universe.getDataSource().deleteWar(war);
+		for (CasusBelli casusBelli : casusBellis) {
+			universe.getDataSource().deleteCasusBelli(casusBelli);
+		}
+		for (CasusBelli casusBelli : loserCasusBellis) {
+			universe.getDataSource().deleteCasusBelli(casusBelli);
+		}
 	}
 	
 	public void addWar(War war) {

@@ -6,6 +6,8 @@ import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
@@ -83,6 +85,10 @@ public abstract class TownyDataSource {
 
 	abstract public boolean loadWar(String uuidString);
 
+	abstract public boolean loadCasusBelli(String uuidString);
+
+	abstract public CasusBelli getCasusBelli(String uuidString) throws TownyException;
+
 	abstract public boolean loadTownBlockList();
 
 	abstract public boolean loadResidentList();
@@ -121,7 +127,11 @@ public abstract class TownyDataSource {
 
 	abstract public boolean saveWar(War war);
 
+	abstract public boolean saveCasusBelli(CasusBelli casusBelli);
+
 	abstract public void deleteWar(War war);
+	
+	abstract public void deleteCasusBelli(CasusBelli casusBelli);
 
 	abstract public boolean saveNationList();
 

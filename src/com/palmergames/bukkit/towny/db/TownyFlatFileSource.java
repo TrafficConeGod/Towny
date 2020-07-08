@@ -8,6 +8,7 @@ import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.CasusBellis;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
@@ -246,6 +247,10 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		return dataFolderPath + File.separator + "wars" + File.separator + war.getUuid().toString() + "_" + ".data";
 	}
 	
+	public String getCasusBelliFilename(CasusBelli casusBelli) {
+		return dataFolderPath + File.separator + "casusBellis" + File.separator + casusBelli.getUuid().toString() + "_" + ".data";
+	}
+	
 	public String getPlotGroupFilename(PlotGroup group) {
 		return dataFolderPath + File.separator + "plotgroups" + File.separator + group.getID() + ".data";
 	}
@@ -361,8 +366,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 			Nation attacker = null;
 			Nation defender = null;
-			List<CasusBelli> attackerCasusBellis = null;
-			List<CasusBelli> defenderCasusBellis = null;
+			List<CasusBelli> attackerCasusBellis = new ArrayList<>();
+			List<CasusBelli> defenderCasusBellis = new ArrayList<>();
 
 			while ((line = fin.readLine()) != null) {
 				if (!line.equals("")) {
@@ -377,11 +382,19 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 						} else if (property.equalsIgnoreCase("defender")) {
 							defender = getNation(value);
 						} else if (property.equalsIgnoreCase("attackerCasusBellis")) {
-							attackerCasusBellis = new ArrayList<>();
+							String[] split = value.split(",");
+							for (String casusBelliUuidString : split) {
+								CasusBelli casusBelli = getCasusBelli(casusBelliUuidString);
+								attackerCasusBellis.add(casusBelli);
+							}
 						} else if (property.equalsIgnoreCase("defenderCasusBellis")) {
-							defenderCasusBellis = new ArrayList<>();
+							String[] split = value.split(",");
+							for (String casusBelliUuidString : split) {
+								CasusBelli casusBelli = getCasusBelli(casusBelliUuidString);
+								defenderCasusBellis.add(casusBelli);
+							}
 						}
- 					}
+					}
 				}
 			}
 
@@ -398,6 +411,75 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 		} catch (Exception e) {
 			TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\wars\\" + uuidString + "_.data. File does not exist.");
+			e.printStackTrace();
+			return false;
+
+		}
+	}
+
+	private List<CasusBelli> casusBellis = new ArrayList<>();
+	
+	@Override
+	public CasusBelli getCasusBelli(String uuidString) throws TownyException {
+		for (CasusBelli casusBelli : casusBellis) {
+			if (casusBelli.getUuid().toString().equalsIgnoreCase(uuidString)) {
+				return casusBelli;
+			}
+		}
+		loadCasusBelli(uuidString);
+		for (CasusBelli casusBelli : casusBellis) {
+			if (casusBelli.getUuid().toString().equalsIgnoreCase(uuidString)) {
+				return casusBelli;
+			}
+		}
+		throw new TownyException("Casus belli didn't load");
+	}
+
+	@Override
+	public boolean loadCasusBelli(String uuidString) {
+		FileMgmt.checkOrCreateFolder(dataFolderPath + File.separator + "casusBellis");
+		String line = null;
+
+		try (BufferedReader fin = new BufferedReader(new InputStreamReader(new FileInputStream(dataFolderPath + File.separator + "casusBellis" + File.separator + uuidString + "_.data"), StandardCharsets.UTF_8))) {
+
+			int index = -1;
+			Nation attacker = null;
+			Nation defender = null;
+
+			while ((line = fin.readLine()) != null) {
+				if (!line.equals("")) {
+
+					String[] tokens = line.split("=");
+					if (tokens.length == 2) {
+						String property = tokens[0];
+						String value = tokens[1];
+
+						if (property.equalsIgnoreCase("index")) {
+							index = Integer.parseInt(value);
+						}
+						else if (property.equalsIgnoreCase("attacker")) {
+							attacker = getNation(value);
+						} else if (property.equalsIgnoreCase("defender")) {
+							defender = getNation(value);
+						}
+					}
+				}
+			}
+
+			if (index != -1 && attacker != null && defender != null) {
+				CasusBelli casusBelliInstance = CasusBellis.casusBellis[index];
+				CasusBelli casusBelli = (CasusBelli) casusBelliInstance.clone();
+				casusBelli.setUuid(UUID.fromString(uuidString));
+				casusBelli.setAttacker(attacker);
+				casusBelli.setDefender(defender);
+				return true;
+			} else {
+				TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\casusBellis\\" + uuidString + "_.data. Variables: " + attacker.toString() + " " + defender.toString());
+				return false;
+			}
+
+		} catch (Exception e) {
+			TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\casusBellis\\" + uuidString + "_.data. File does not exist.");
 			e.printStackTrace();
 			return false;
 
@@ -1771,7 +1853,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		}
 
 		// attacker casus bellis
-		list.add("attackerCasusBellis=*" + attackerCasusBellis);
+		list.add("attackerCasusBellis=" + attackerCasusBellis);
 
 		String defenderCasusBellis = "";
 
@@ -1785,7 +1867,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		}
 		
 		// defender casus bellis
-		list.add("defenderCasusBellis=*" + defenderCasusBellis);
+		list.add("defenderCasusBellis=" + defenderCasusBellis);
 
 		/*
 		 *  Make sure we only save in async
@@ -1804,6 +1886,38 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		if (file.exists())
 			file.delete();
 		saveWarList();
+	}
+	
+	@Override
+	public boolean saveCasusBelli(CasusBelli casusBelli) {
+
+		FileMgmt.checkOrCreateFolder(dataFolderPath + File.separator + "casusBellis");
+
+		List<String> list = new ArrayList<>();
+		
+		// index
+		list.add("index=" + casusBelli.getIndex());
+
+		// attacker
+		list.add("attacker=" + casusBelli.getAttacker().getName());
+
+		// defender
+		list.add("defender=" + casusBelli.getDefender().getName());
+
+		/*
+		 *  Make sure we only save in async
+		 */
+		this.queryQueue.add(new FlatFile_Task(list, getCasusBelliFilename(casusBelli)));
+
+		return true;
+	}
+
+	@Override
+	public void deleteCasusBelli(CasusBelli casusBelli) {
+
+		File file = new File(getCasusBelliFilename(casusBelli));
+		if (file.exists())
+			file.delete();
 	}
 
 	@Override
