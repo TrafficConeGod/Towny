@@ -17,6 +17,7 @@ public class DemandTown extends CasusBelli {
 	public String getName() {
 		return "demand_town";
 	}
+	public int getIndex() { return 1; }
 	public void onAdd(Nation attacker, Nation defender) {
 	}
 	public void onPreDeclare(Nation attacker, Nation defender, String[] params) throws TownyException  {

@@ -21,6 +21,7 @@ import com.palmergames.bukkit.towny.exceptions.EmptyNationException;
 import com.palmergames.bukkit.towny.exceptions.EmptyTownException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -389,6 +390,17 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 	
 	public List<PlotGroup> getAllPlotGroups() {
 		return new ArrayList<>(universe.getGroups());
+	}
+
+	public List<War> getAllWars() {
+		List<War> warList = new ArrayList<>();
+		for (Nation nation : universe.getDataSource().getNations()) {
+			for (War war : nation.getWars()) {
+				warList.add(war);
+			}
+		}
+			
+		return warList;
 	}
 	
 	public void newPlotGroup(PlotGroup group) {

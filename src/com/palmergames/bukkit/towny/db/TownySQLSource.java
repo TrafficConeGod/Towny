@@ -14,6 +14,7 @@ import com.palmergames.bukkit.towny.db.TownyFlatFileSource.elements;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -63,6 +64,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+// CURRENTLY NOT SUPPORTED
 
 public final class TownySQLSource extends TownyDatabaseHandler {
 
@@ -2343,6 +2346,29 @@ public final class TownySQLSource extends TownyDatabaseHandler {
 	public String getPlotFilename(TownBlock townBlock) {
 
 		return dataFolderPath + File.separator + "plot-block-data" + File.separator + townBlock.getWorld().getName() + File.separator + townBlock.getX() + "_" + townBlock.getZ() + "_" + TownySettings.getTownBlockSize() + ".data";
+	}
+	
+	public boolean saveWarList() {
+    	return true;
+	}
+
+	@Override
+	public boolean saveWar(War war) {
+		return false;
+	}
+
+	@Override
+	public void deleteWar(War war) {
+		
+	}
+
+	public boolean loadWarList() {
+    	return true;
+	}
+
+	@Override
+	public boolean loadWar(String uuidString) {
+		return false;
 	}
 }
 

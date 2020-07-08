@@ -6,6 +6,7 @@ import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -58,12 +59,12 @@ public abstract class TownyDataSource {
 
 	public boolean loadAll() {
 
-		return loadWorldList() && loadNationList() && loadTownList() && loadPlotGroupList() && loadResidentList() && loadTownBlockList() && loadWorlds() && loadNations() && loadTowns() && loadResidents() && loadTownBlocks() && loadPlotGroups() && loadRegenList() && loadSnapshotList();
+		return loadWorldList() && loadNationList() && loadTownList() && loadPlotGroupList() && loadWarList() && loadResidentList() && loadTownBlockList() && loadWorlds() && loadNations() && loadTowns() && loadResidents() && loadTownBlocks() && loadPlotGroups() && loadRegenList() && loadSnapshotList();
 	}
 
 	public boolean saveAll() {
 
-		return saveWorldList() && saveNationList() && saveTownList() && savePlotGroupList() && saveResidentList() && saveWorlds() && saveNations() && saveTowns() && saveResidents() && savePlotGroups() && saveAllTownBlocks() && saveRegenList() && saveSnapshotList();
+		return saveWorldList() && saveNationList() && saveTownList() && savePlotGroupList() && saveWarList() && saveResidentList() && saveWorlds() && saveNations() && saveTowns() && saveResidents() && savePlotGroups() && saveAllTownBlocks() && saveRegenList() && saveSnapshotList();
 	}
 
 	public boolean saveAllWorlds() {
@@ -77,6 +78,10 @@ public abstract class TownyDataSource {
 	}
 
 	abstract public void finishTasks();
+	
+	abstract public boolean loadWarList();
+
+	abstract public boolean loadWar(String uuidString);
 
 	abstract public boolean loadTownBlockList();
 
@@ -111,6 +116,12 @@ public abstract class TownyDataSource {
 	abstract public boolean saveTownList();
 
 	abstract public boolean savePlotGroupList();
+
+	abstract public boolean saveWarList();
+
+	abstract public boolean saveWar(War war);
+
+	abstract public void deleteWar(War war);
 
 	abstract public boolean saveNationList();
 

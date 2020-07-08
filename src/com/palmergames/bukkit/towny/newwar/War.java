@@ -5,12 +5,14 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 
 import java.util.List;
+import java.util.UUID;
 
 public class War {
 	private Nation attacker;
 	private Nation defender;
 	private List<CasusBelli> attackerCasusBellis;
 	private List<CasusBelli> defenderCasusBellis;
+	private UUID uuid;
 	
 	public War(Nation attacker, Nation defender, List<CasusBelli> attackerCasusBellis, List<CasusBelli> defenderCasusBellis) {
 		this.attacker = attacker;
@@ -30,6 +32,12 @@ public class War {
 	}
 	public List<CasusBelli> getDefenderCasusBellis() {
 		return defenderCasusBellis;
+	}
+	public UUID getUuid() {
+		return uuid;
+	}
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
 	}
 	
 	public Nation getAtWarWith(Nation nation) throws TownyException {

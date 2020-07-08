@@ -7,6 +7,8 @@ import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -74,7 +76,9 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			dataFolderPath + File.separator + "worlds" + File.separator + "deleted",
 			dataFolderPath + File.separator + "plot-block-data",
 			dataFolderPath + File.separator + "townblocks",
-			dataFolderPath + File.separator + "plotgroups"
+			dataFolderPath + File.separator + "plotgroups",
+			dataFolderPath + File.separator + "casusbellis",
+			dataFolderPath + File.separator + "wars"
 		) || !FileMgmt.checkOrCreateFiles(
 			dataFolderPath + File.separator + "residents.txt",
 			dataFolderPath + File.separator + "towns.txt",
@@ -82,7 +86,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			dataFolderPath + File.separator + "worlds.txt",
 			dataFolderPath + File.separator + "regen.txt",
 			dataFolderPath + File.separator + "snapshot_queue.txt",
-			dataFolderPath + File.separator + "plotgroups.txt"
+			dataFolderPath + File.separator + "plotgroups.txt",
+			dataFolderPath + File.separator + "wars.txt"
 		)) {
 			TownyMessaging.sendErrorMsg("Could not create flatfile default files and folders.");
 		}
@@ -236,6 +241,10 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 		return dataFolderPath + File.separator + "townblocks" + File.separator + townBlock.getWorld().getName() + File.separator + townBlock.getX() + "_" + townBlock.getZ() + "_" + TownySettings.getTownBlockSize() + ".data";
 	}
+
+	public String getWarFilename(War war) {
+		return dataFolderPath + File.separator + "wars" + File.separator + war.getUuid().toString() + "_" + ".data";
+	}
 	
 	public String getPlotGroupFilename(PlotGroup group) {
 		return dataFolderPath + File.separator + "plotgroups" + File.separator + group.getID() + ".data";
@@ -312,7 +321,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 					String townName = null;
 					UUID groupID;
 					String groupName;
-					
+
 					// While in development the PlotGroupList stored a 4th element, a worldname. This was scrapped pre-release. 
 					if (tokens.length == 4) {
 						townName = tokens[1];
@@ -333,17 +342,93 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 						universe.newGroup(town, groupName, groupID);
 				}
 			}
-			
+
 			return true;
-			
+
 		} catch (Exception e) {
 			TownyMessaging.sendErrorMsg("Error Loading Group List at " + line + ", in towny\\data\\groups.txt");
 			e.printStackTrace();
 			return false;
 		}
 	}
+
+	@Override
+	public boolean loadWar(String uuidString) {
+		FileMgmt.checkOrCreateFolder(dataFolderPath + File.separator + "wars");
+		String line = null;
+
+		try (BufferedReader fin = new BufferedReader(new InputStreamReader(new FileInputStream(dataFolderPath + File.separator + "wars" + File.separator + uuidString + "_.data"), StandardCharsets.UTF_8))) {
+
+			Nation attacker = null;
+			Nation defender = null;
+			List<CasusBelli> attackerCasusBellis = null;
+			List<CasusBelli> defenderCasusBellis = null;
+
+			while ((line = fin.readLine()) != null) {
+				if (!line.equals("")) {
+
+					String[] tokens = line.split("=");
+					if (tokens.length == 2) {
+						String property = tokens[0];
+						String value = tokens[1];
+
+						if (property.equalsIgnoreCase("attacker")) {
+							attacker = getNation(value);
+						} else if (property.equalsIgnoreCase("defender")) {
+							defender = getNation(value);
+						} else if (property.equalsIgnoreCase("attackerCasusBellis")) {
+							attackerCasusBellis = new ArrayList<>();
+						} else if (property.equalsIgnoreCase("defenderCasusBellis")) {
+							defenderCasusBellis = new ArrayList<>();
+						}
+ 					}
+				}
+			}
+
+			if (attacker != null && defender != null && attackerCasusBellis != null && defenderCasusBellis != null) {
+				War war = new War(attacker, defender, attackerCasusBellis, defenderCasusBellis);
+				war.setUuid(UUID.fromString(uuidString));
+				attacker.addWar(war);
+				defender.addWar(war);
+				return true;
+			} else {
+				TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\wars\\" + uuidString + "_.data. Variables: " + attacker.toString() + " " + defender.toString());
+				return false;
+			}
+
+		} catch (Exception e) {
+			TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\wars\\" + uuidString + "_.data. File does not exist.");
+			e.printStackTrace();
+			return false;
+
+		}
+	}
 	
-	
+	@Override
+	public boolean loadWarList() {
+
+		TownyMessaging.sendDebugMsg("Loading War List");
+		String line = null;
+		try (BufferedReader fin = new BufferedReader(new InputStreamReader(new FileInputStream(dataFolderPath + File.separator + "wars.txt"), StandardCharsets.UTF_8))) {
+
+			while ((line = fin.readLine()) != null) {
+				if (!line.equals("")) {
+
+					loadWar(line);
+
+				}
+			}
+
+			return true;
+
+		} catch (Exception e) {
+			TownyMessaging.sendErrorMsg("Error Loading War List at " + line + ", in towny\\data\\wars.txt");
+			e.printStackTrace();
+			return false;
+
+		}
+	}
+
 	@Override
 	public boolean loadResidentList() {
 		
@@ -1644,6 +1729,59 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		this.queryQueue.add(new FlatFile_Task(list, dataFolderPath + File.separator + "plotgroups.txt"));
 		
 		return true;
+	}
+	
+	@Override
+	public boolean saveWarList() {
+		List<String> list = new ArrayList<>();
+
+		for (War war : getAllWars()) {
+			if (list.indexOf(war.getUuid().toString()) == -1) {
+				list.add(war.getUuid().toString());
+			}
+		}
+
+		this.queryQueue.add(new FlatFile_Task(list, dataFolderPath + File.separator + "wars.txt"));
+
+		return true;
+	}
+
+	@Override
+	public boolean saveWar(War war) {
+
+		FileMgmt.checkOrCreateFolder(dataFolderPath + File.separator + "wars");
+
+		List<String> list = new ArrayList<>();
+
+		// attacker
+		list.add("attacker=" + war.getAttacker().getName());
+		
+		// defender
+		list.add("defender=" + war.getDefender().getName());
+
+		// attacker casus bellis
+		list.add("attackerCasusBellis=a");
+
+		// defender casus bellis
+		list.add("defenderCasusBellis=a");
+
+		/*
+		 *  Make sure we only save in async
+		 */
+		this.queryQueue.add(new FlatFile_Task(list, getWarFilename(war)));
+
+		saveWarList();
+
+		return true;
+	}
+
+	@Override
+	public void deleteWar(War war) {
+
+		File file = new File(getWarFilename(war));
+		if (file.exists())
+			file.delete();
+		saveWarList();
 	}
 
 	@Override

@@ -1624,6 +1624,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			CasusBelli finalCasusBelli = (CasusBelli) casusBelli.clone();
 			finalCasusBelli.setAttacker(playerNation);
 			finalCasusBelli.setDefender(nation);
+			finalCasusBelli.setUuid(UUID.randomUUID());
 			Confirmation confirmation = new Confirmation(() -> {
 				playerNation.addCasusBelli(finalCasusBelli);
 				finalCasusBelli.onAdd(playerNation, nation);

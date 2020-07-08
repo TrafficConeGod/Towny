@@ -7,10 +7,14 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 import org.bukkit.Bukkit;
 
+import java.util.UUID;
+
 public abstract class CasusBelli implements Cloneable {
 	private Nation attacker;
 	private Nation defender;
+	private UUID uuid;
 	public String getName() { return "default"; }
+	public int getIndex() { return -1; }
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onPeaceAccepted");
 	}
@@ -34,6 +38,12 @@ public abstract class CasusBelli implements Cloneable {
 	}
 	public void setDefender(Nation defender) {
 		this.defender = defender;
+	}
+	public UUID getUuid() {
+		return uuid;
+	}
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
 	}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
