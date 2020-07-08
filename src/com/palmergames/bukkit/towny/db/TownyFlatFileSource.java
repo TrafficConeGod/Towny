@@ -474,7 +474,6 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				casusBelli.setAttacker(attacker);
 				casusBelli.setDefender(defender);
 				for (String checkLine : lines) {
-					System.out.println(checkLine);
 					String[] tokens = checkLine.split("=");
 					if (tokens.length == 2) {
 						casusBelli.loadSaveData(tokens);
@@ -1341,12 +1340,16 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				
 				line = keys.get("casusBellis");
 				if (line != null && !line.isEmpty()) {
-					System.out.println("eeeeeee" + line);
 					String[] split = line.split(",");
 					for (String casusBelliStringUuid : split) {
 						CasusBelli casusBelli = getCasusBelli(casusBelliStringUuid);
 						nation.addCasusBelli(casusBelli);
 					}
+				}
+
+				line = keys.get("infamy");
+				if (line != null && !line.isEmpty()) {
+					nation.setInfamy(Float.parseFloat(line));
 				}
 
 			} catch (Exception e) {
@@ -2286,8 +2289,11 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			}
 		}
 
-		// attacker casus bellis
+		// casus bellis
 		list.add("casusBellis=" + casusBellis);
+
+		// infamy
+		list.add("infamy=" + nation.getInfamy());
 
 		// Spawn
 		if (nation.hasNationSpawn()) {

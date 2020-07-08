@@ -1628,6 +1628,15 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			Confirmation confirmation = new Confirmation(() -> {
 				playerNation.addCasusBelli(finalCasusBelli);
 				finalCasusBelli.onAdd(playerNation, nation);
+				float baseInfamy = finalCasusBelli.getInfamy();
+				float playerInfamy = playerNation.getInfamy();
+				float enemyInfamy = nation.getInfamy();
+				float infamy = (
+					baseInfamy
+					/
+					(enemyInfamy + 12)
+				) * 12;
+				playerNation.setInfamy(playerInfamy + infamy);
 				universe.getDataSource().saveCasusBelli(finalCasusBelli);
 				universe.getDataSource().saveNation(playerNation);
 				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), finalCasusBelli.getName()));
