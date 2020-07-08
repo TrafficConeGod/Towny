@@ -50,6 +50,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	private Location nationSpawn;
 	private List<CasusBelli> casusBellis = new ArrayList<>();
 	private List<War> wars = new ArrayList<>();
+	private float infamy = 0;
 	private boolean isPublic = TownySettings.getNationDefaultPublic();
 	private boolean isOpen = TownySettings.getNationDefaultOpen();
 	private transient List<Invite> receivedinvites = new ArrayList<>();
@@ -939,5 +940,12 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 			}
 		}
 		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+	}
+	
+	public void setInfamy(float infamy) {
+		this.infamy = infamy;
+	}
+	public float getInfamy() {
+		return infamy;
 	}
 }

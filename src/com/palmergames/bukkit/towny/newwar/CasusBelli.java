@@ -15,6 +15,9 @@ public abstract class CasusBelli implements Cloneable {
 	private UUID uuid;
 	public String getName() { return "default"; }
 	public int getIndex() { return -1; }
+	public float getInfamy() {
+		return 0;
+	}
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onPeaceAccepted");
 	}

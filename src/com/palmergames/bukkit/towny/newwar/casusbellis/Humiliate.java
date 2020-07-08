@@ -9,6 +9,9 @@ public class Humiliate extends CasusBelli {
 		return "humiliate";
 	}
 	public int getIndex() { return 0; }
+	public float getInfamy() {
+		return 3;
+	}
 	public void onAdd(Nation attacker, Nation defender) {
 	}
 	public void onDeclare(Nation attacker, Nation defender, String[] params) {

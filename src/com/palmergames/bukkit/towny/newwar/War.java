@@ -12,6 +12,9 @@ public class War {
 	private Nation defender;
 	private List<CasusBelli> attackerCasusBellis;
 	private List<CasusBelli> defenderCasusBellis;
+	// NOT IMPLEMENTED YET
+	private List<Nation> attackerAllies;
+	private List<Nation> defenderAllies;
 	private UUID uuid;
 	
 	public War(Nation attacker, Nation defender, List<CasusBelli> attackerCasusBellis, List<CasusBelli> defenderCasusBellis) {
@@ -41,20 +44,52 @@ public class War {
 	}
 	
 	public Nation getAtWarWith(Nation nation) throws TownyException {
-		if (attacker.getName() == nation.getName()) {
+		if (isAnAttacker(nation)) {
 			return defender;
-		} else if (defender.getName() == nation.getName()) {
+		} else if (isADefender(nation)) {
 			return attacker;
 		}
 		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 	}
 	
-	public List<CasusBelli> getCasusBellisAgainst(Nation nation) throws TownyException {
+	public boolean isAnAttacker(Nation nation) {
 		if (attacker.getName() == nation.getName()) {
+			return true;
+		}
+		for (Nation ally : attackerAllies) {
+			if (ally.getName() == nation.getName()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isADefender(Nation nation) {
+		if (defender.getName() == nation.getName()) {
+			return true;
+		}
+		for (Nation ally : defenderAllies) {
+			if (ally.getName() == nation.getName()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public List<CasusBelli> getCasusBellisAgainst(Nation nation) throws TownyException {
+		if (isAnAttacker(nation)) {
 			return defenderCasusBellis;
-		} else if (defender.getName() == nation.getName()) {
+		} else if (isADefender(nation)) {
 			return attackerCasusBellis;
 		}
 		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+	}
+	
+	public void addAlly(Nation nation, Nation ally) {
+		if (attacker.getName() == nation.getName()) {
+			attackerAllies.add(ally);
+		} else if (defender.getName() == nation.getName()) {
+			defenderAllies.add(ally);
+		}
 	}
 }
