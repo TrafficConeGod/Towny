@@ -19,16 +19,15 @@ public abstract class CasusBelli implements Cloneable {
 		return 0;
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onPeaceAccepted");
 	}
 	public void onAdd() {
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onAdd");
 	}
 	public void onPreDeclare(String[] params) throws TownyException {
-		
 	}
 	public void onDeclare(String[] params) {
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "say This message is never meant to be seen. If you see this please report this to the developers of this server. onAdd");
+	}
+	public boolean canUse() {
+		return true;
 	}
 	public Nation getAttacker() {
 		return attacker;

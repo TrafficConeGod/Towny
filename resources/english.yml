@@ -1160,3 +1160,5 @@ msg_offering_peace: '&b%s is offering peace to you if you would accept all of th
 msg_enemy_justified_on: '&b%s has justified a war against you with casus belli %s.'
 msg_enemy_declared_on: '&b%s has declared a war against you with casus belli %s.'
 msg_err_specify_town_name: '&cYou must specify a valid town name.'
+msg_err_not_war_leader: '&cOnly the war leader can do this.'
+msg_err_cannot_use_cb: '&cYou can''t use this casus belli on this nation.'

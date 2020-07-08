@@ -21,7 +21,8 @@ public class DemandTown extends CasusBelli {
 	public float getInfamy() {
 		return 11;
 	}
-	public void onPreAdd() {
+	public boolean canUse() {
+		return defender.getTowns().size() > 1;
 	}
 	public void onPreDeclare(String[] params) throws TownyException  {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();

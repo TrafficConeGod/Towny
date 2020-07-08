@@ -1631,9 +1631,12 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			finalCasusBelli.setAttacker(playerNation);
 			finalCasusBelli.setDefender(nation);
 			finalCasusBelli.setUuid(UUID.randomUUID());
+			if (!finalCasusBelli.canUse()) {
+				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
+			}
 			Confirmation confirmation = new Confirmation(() -> {
 				playerNation.addCasusBelli(finalCasusBelli);
-				finalCasusBelli.onAdd(playerNation, nation);
+				finalCasusBelli.onAdd();
 				float baseInfamy = finalCasusBelli.getInfamy();
 				float playerInfamy = playerNation.getInfamy();
 				float enemyInfamy = nation.getInfamy();
@@ -1692,11 +1695,13 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_casus_belli_do_not_have"), casusBelliName));
 			}
 			
-			casusBelli.onPreDeclare(playerNation, nation, params);
-
 			CasusBelli finalCasusBelli = casusBelli;
+			finalCasusBelli.onPreDeclare(params);
+			if (!finalCasusBelli.canUse()) {
+				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
+			}
 			Confirmation confirmation = new Confirmation(() -> {
-				finalCasusBelli.onDeclare(playerNation, nation, params);
+				finalCasusBelli.onDeclare(params);
 				playerNation.declareWar(nation, finalCasusBelli);
 				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_on"), nation.getName(), finalCasusBelli.getName()));
 
@@ -1735,7 +1740,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		
 			War war = playerNation.getWar(enemyNation);
 			if (!war.isWarLeader(playerNation)) {
-				throw new TownyException(TownySettings.getLangString("msg_not_war_leader"));
+				throw new TownyException(TownySettings.getLangString("msg_err_not_war_leader"));
 			}
 
 

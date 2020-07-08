@@ -659,7 +659,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 					Nation atWarWith = war.getAtWarWith(nation);
 					atWarWith.peaceWar(war);
 				}
-			} catch (TownyException e) {
+			} catch (TownyException e) { // if these execute then they are real problems and need to be printed out
 				e.printStackTrace();
 			} catch (EmptyNationException e) {
 				e.printStackTrace();
