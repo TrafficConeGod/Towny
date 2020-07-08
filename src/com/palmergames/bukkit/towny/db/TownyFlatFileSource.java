@@ -1758,12 +1758,34 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		
 		// defender
 		list.add("defender=" + war.getDefender().getName());
+		
+		String attackerCasusBellis = "";
+		
+		for (int i = 0; i < war.getAttackerCasusBellis().size(); i++) {
+			CasusBelli casusBelli = war.getAttackerCasusBellis().get(i);
+			if (i == 0) {
+				attackerCasusBellis += casusBelli.getUuid().toString();
+			} else {
+				attackerCasusBellis += ("," + casusBelli.getUuid().toString());
+			}
+		}
 
 		// attacker casus bellis
-		list.add("attackerCasusBellis=a");
+		list.add("attackerCasusBellis=*" + attackerCasusBellis);
 
+		String defenderCasusBellis = "";
+
+		for (int i = 0; i < war.getDefenderCasusBellis().size(); i++) {
+			CasusBelli casusBelli = war.getDefenderCasusBellis().get(i);
+			if (i == 0) {
+				defenderCasusBellis += casusBelli.getUuid().toString();
+			} else {
+				defenderCasusBellis += ("," + casusBelli.getUuid().toString());
+			}
+		}
+		
 		// defender casus bellis
-		list.add("defenderCasusBellis=a");
+		list.add("defenderCasusBellis=*" + defenderCasusBellis);
 
 		/*
 		 *  Make sure we only save in async
