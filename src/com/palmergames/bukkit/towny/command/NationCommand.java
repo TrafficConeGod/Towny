@@ -240,7 +240,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			
 			switch (args[0].toLowerCase()) {
-				case: "call":
+				case "call":
 				case "toggle":
 					if (args.length == 2)
 						return NameUtil.filterByStart(nationToggleTabCompletes, args[1]);
