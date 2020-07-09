@@ -109,7 +109,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"peace",
 		"listcause",
 		"listwars",
-		"infamy"
+		"infamy",
+		"surrender"
 	);
 
 	private static final List<String> nationSetTabCompletes = Arrays.asList(
@@ -698,6 +699,20 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					if (!resident.isKing())
 						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
 					nationPeace(player, split[1]);
+				}
+			} else if (split[0].equalsIgnoreCase("surrender")) {
+
+				//					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
+				//						throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
+
+
+				if (split.length == 1) {
+					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_specify_nation_name"));
+				} else if (split.length == 2) {
+					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+					if (!resident.isKing())
+						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
+					nationSurrender(player, split[1]);
 				}
 			} else if (split[0].equalsIgnoreCase("listcause")) {
 				String nationName = split[1];
@@ -1768,6 +1783,58 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					Confirmation enemyConfirmation = new Confirmation(() -> {
 						try {
 							playerNation.peaceWar(war);
+							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
+							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
+						} catch (TownyException | EmptyNationException e) {
+							TownyMessaging.sendErrorMsg(player, e.getMessage());
+						}
+					});
+					ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
+				});
+				ConfirmationHandler.sendConfirmation(player, confirmation);
+			}
+
+
+		}
+
+	}
+
+	public void nationSurrender(Player player, String enemyNationName) throws TownyException, EmptyNationException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+		Nation enemyNation;
+		Nation remainingNation;
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		Nation playerNation = resident.getTown().getNation();
+
+		try {
+			enemyNation = universe.getDataSource().getNation(enemyNationName);
+			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
+		} catch (NotRegisteredException e) {
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+		}
+		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+
+		if (enemyNation != null) {
+			if (!playerNation.atWarWith(enemyNation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+			}
+
+			War war = playerNation.getWar(enemyNation);
+			if (!war.isWarLeader(playerNation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_not_war_leader"));
+			}
+
+			Resident king = enemyNation.getKing();
+			if (!BukkitTools.isOnline(king.getName())) {
+				throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), enemyNation.getName(), king.getName()));
+			} else {
+				Confirmation confirmation = new Confirmation(() -> {
+					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_surrender"), playerNation.getName()));
+					Confirmation enemyConfirmation = new Confirmation(() -> {
+						try {
+							enemyNation.peaceWar(war);
 							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
 							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
 						} catch (TownyException | EmptyNationException e) {
