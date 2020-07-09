@@ -28,6 +28,7 @@ public class Conquer extends CasusBelli {
 		}
 		townyUniverse.getDataSource().saveNation(victor);
 		townyUniverse.getDataSource().removeNation(loser);
+		townyUniverse.getDataSource().deleteNation(loser);
 		townyUniverse.getDataSource().saveNationList();
 	}
 }

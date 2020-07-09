@@ -23,6 +23,7 @@ public class Dismantle extends CasusBelli {
 			townyUniverse.getDataSource().saveTown(town);
 		}
 		townyUniverse.getDataSource().removeNation(loser);
+		townyUniverse.getDataSource().deleteNation(loser);
 		townyUniverse.getDataSource().saveNationList();
 	}
 }

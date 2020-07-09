@@ -81,6 +81,24 @@ public class CombatUtil {
 			// Allow players to injure themselves
 			if (a == b)
 				return false;
+			
+			// war combat
+			if (a instanceof Player && b instanceof Player) {
+				TownyUniverse universe = TownyUniverse.getInstance();
+				
+				Resident attackerResident = universe.getDataSource().getResident(a.getName());
+				Resident defenderResident = universe.getDataSource().getResident(b.getName());
+				if (attackerResident.getTown() != null && defenderResident.getTown() != null) {
+					Nation attackerNation = attackerResident.getTown().getNation();
+					Nation defenderNation = defenderResident.getTown().getNation();
+					if (attackerNation != null && defenderNation != null) {
+						if (attackerNation.atWarWith(defenderNation)) {
+							return false;
+						}
+					}
+				}
+				
+			}
 
 			return preventDamageCall(plugin, world, attacker, defender, a, b);
 
