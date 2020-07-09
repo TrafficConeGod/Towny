@@ -121,7 +121,8 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 		"join",
 		"invite",
 		"buy",
-		"mayor"
+		"mayor",
+		"independence"
 		);
 	private static final List<String> townSetTabCompletes = Arrays.asList(
 		"board",
@@ -206,6 +207,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 		output.add(ChatTools.formatCommand(TownySettings.getLangString("res_sing"), "/town", "deposit [$]", ""));
 		output.add(ChatTools.formatCommand(TownySettings.getLangString("res_sing"), "/town", "rank add/remove [resident] [rank]", ""));
 		output.add(ChatTools.formatCommand(TownySettings.getLangString("mayor_sing"), "/town", "mayor ?", TownySettings.getLangString("town_help_8")));
+		output.add(ChatTools.formatCommand(TownySettings.getLangString("mayor_sing"), "/town", "independence", TownySettings.getLangString("town_help_12")));
 		output.add(ChatTools.formatCommand(TownySettings.getLangString("admin_sing"), "/town", "delete [town]", ""));
 		
 		invite.add(ChatTools.formatTitle("/town invite"));
@@ -229,6 +231,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 			Player player = (Player) sender;
 			
 			switch (args[0].toLowerCase()) {
+				case "independence":
 				case "online":
 				case "reslist":
 				case "outlawlist":
@@ -455,7 +458,10 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 						}
 					}
 				});
-			} else if (split[0].equalsIgnoreCase("?") || split[0].equalsIgnoreCase("help")) {
+			} else if (split[0].equalsIgnoreCase("independence")) {
+				// do stuff
+			}
+			else if (split[0].equalsIgnoreCase("?") || split[0].equalsIgnoreCase("help")) {
 
 				for (String line : output)
 					player.sendMessage(line);
