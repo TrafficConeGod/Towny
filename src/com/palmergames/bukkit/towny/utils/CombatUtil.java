@@ -92,7 +92,7 @@ public class CombatUtil {
 					if (attackerResident.getTown().hasNation() && defenderResident.getTown().hasNation()) {
 						Nation attackerNation = attackerResident.getTown().getNation();
 						Nation defenderNation = defenderResident.getTown().getNation();
-						if (attackerNation.atWarWith(defenderNation)) {
+						if (attackerNation.atWarWith(defenderNation) && !attackerNation.getName().equalsIgnoreCase(defenderNation.getName())) {
 							System.out.println(attackerNation.getName());
 							System.out.println(defenderNation.getName());
 							return false;

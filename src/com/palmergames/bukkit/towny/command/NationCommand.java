@@ -857,7 +857,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					nationAdd(player, newSplit);
 
 				} else if (split[0].equalsIgnoreCase("invite") || split[0].equalsIgnoreCase("invites")) {
-//						parseInviteCommand(player, newSplit);
+						parseInviteCommand(player, newSplit);
 
 				} else if (split[0].equalsIgnoreCase("kick")) {
 
