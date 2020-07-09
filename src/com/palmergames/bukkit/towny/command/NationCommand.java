@@ -205,6 +205,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		king_help.add(ChatTools.formatCommand(TownySettings.getLangString("king_sing"), "/nation", "set [] .. []", ""));
 		king_help.add(ChatTools.formatCommand(TownySettings.getLangString("king_sing"), "/nation", "toggle [] .. []", ""));
 		king_help.add(ChatTools.formatCommand(TownySettings.getLangString("king_sing"), "/nation", "ally [] .. [] " + TownySettings.getLangString("nation_help_2"), TownySettings.getLangString("king_help_2")));
+		king_help.add(ChatTools.formatCommand(TownySettings.getLangString("king_sing"), "/nation", "call [] .. []", TownySettings.getLangString("nation_help_11")));
 		king_help.add(ChatTools.formatCommand(TownySettings.getLangString("king_sing"), "/nation", "enemy [add/remove] " + TownySettings.getLangString("nation_help_2"), TownySettings.getLangString("king_help_3")));
 		king_help.add(ChatTools.formatCommand(TownySettings.getLangString("king_sing"), "/nation", "delete", ""));
 		king_help.add(ChatTools.formatCommand(TownySettings.getLangString("king_sing"), "/nation", "merge {nation}", ""));
@@ -239,6 +240,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			
 			switch (args[0].toLowerCase()) {
+				case: "call":
 				case "toggle":
 					if (args.length == 2)
 						return NameUtil.filterByStart(nationToggleTabCompletes, args[1]);
@@ -468,8 +470,14 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_dont_belong_nation"));
 					}
 				});
-
-			else if (split[0].equalsIgnoreCase("?"))
+			else if (split[0].equalsIgnoreCase("call")) {
+				if (split.length >= 2) {
+					String callNationName = split[1];
+					// do stuff
+				} else if (split.length == 1) {
+					throw new TownyException(TownySettings.getLangString("msg_specify_nation_name"));
+				}
+			} else if (split[0].equalsIgnoreCase("?"))
 				for (String line : nation_help)
 					player.sendMessage(line);
 			else if (split[0].equalsIgnoreCase("list")) {

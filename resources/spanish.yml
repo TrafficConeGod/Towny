@@ -70,6 +70,7 @@ nation_help_6: 'Crear un nuevo país'
 nation_help_7: 'Lista de los comandos del rey'
 nation_help_8: 'Crear nuevo país'
 nation_help_9: 'Lista de los habitantes conectados del país'
+nation_help_11: 'Llama a una alianza para la guerra'
 
 king_help_1: 'Ayuda del rey del país'
 king_help_2: 'Elige tus aliados.'

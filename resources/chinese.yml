@@ -71,6 +71,7 @@ nation_help_6: "建国"
 nation_help_7: "列出国王的指令列表"
 nation_help_8: "建国"
 nation_help_9: "列出在线的国民"
+nation_help_11: '召集同盟开战'
 
 king_help_1: '国王帮助'
 king_help_2: '设置你的盟国.'

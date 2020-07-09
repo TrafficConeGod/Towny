@@ -69,6 +69,7 @@ nation_help_6: 'Crear una nueva naci�n'
 nation_help_7: 'Lista de comandos para reyes'
 nation_help_8: 'Crear una nueva naci�n'
 nation_help_9: 'Lista de todos los habitantes conectados en tu naci�n'
+nation_help_11: 'Llama a una alianza para la guerra'
 
 king_help_1: 'Ayuda para el rey de la Naci�n'
 king_help_2: 'Establece tus alianzas.'
