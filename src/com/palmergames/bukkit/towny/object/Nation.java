@@ -881,6 +881,26 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		universe.getDataSource().saveNation(this);
 	}
 	
+	public void cancelWar(War war) throws TownyException, EmptyNationException {
+		Nation loser = war.getAtWarWith(this);
+		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
+		List<CasusBelli> loserCasusBellis = war.getCasusBellisAgainst(this);
+		removeWar(war);
+		loser.removeWar(war);
+		TownyUniverse universe = TownyUniverse.getInstance();
+		universe.getDataSource().deleteWar(war);
+		for (CasusBelli casusBelli : casusBellis) {
+			universe.getDataSource().deleteCasusBelli(casusBelli);
+		}
+		for (CasusBelli casusBelli : loserCasusBellis) {
+			universe.getDataSource().deleteCasusBelli(casusBelli);
+		}
+		universe.getDataSource().saveNation(this);
+		universe.getDataSource().saveNation(loser);
+	}
+
+
+
 	public void peaceWar(War war) throws TownyException, EmptyNationException {
 		Nation loser = war.getAtWarWith(this);
 		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
@@ -900,6 +920,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 			universe.getDataSource().deleteCasusBelli(casusBelli);
 		}
 		universe.getDataSource().saveNation(this);
+		universe.getDataSource().saveNation(loser);
 	}
 	
 	public void addWar(War war) {

@@ -597,9 +597,28 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		PreDeleteNationEvent preEvent = new PreDeleteNationEvent(nation.getName());
 		BukkitTools.getPluginManager().callEvent(preEvent);
 		
-		if (preEvent.isCancelled())
+		if (preEvent.isCancelled()) {
+			System.out.println("is cancel");
 			return;
-
+		}
+		
+		try {
+			for (War war : nation.getWars()) {
+				try {
+					if (war.isWarLeader(nation)) {
+						Nation atWarWith = war.getAtWarWith(nation);
+						atWarWith.cancelWar(war);
+					}
+				} catch (TownyException e) { // if these execute then they are real problems and need to be printed out
+					e.printStackTrace();
+				} catch (EmptyNationException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e) { // this happens for some reason lol
+			
+		}
+		
 		//search and remove from all ally/enemy lists
 		List<Nation> toSaveNation = new ArrayList<>();
 		for (Nation toCheck : new ArrayList<>(universe.getNationsMap().values()))
@@ -651,19 +670,6 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 			}
 
 			saveTown(town);
-		}
-		
-		for (War war : nation.getWars()) {
-			try {
-				if (war.isWarLeader(nation)) {
-					Nation atWarWith = war.getAtWarWith(nation);
-					atWarWith.peaceWar(war);
-				}
-			} catch (TownyException e) { // if these execute then they are real problems and need to be printed out
-				e.printStackTrace();
-			} catch (EmptyNationException e) {
-				e.printStackTrace();
-			}
 		}
 
 		plugin.resetCache();

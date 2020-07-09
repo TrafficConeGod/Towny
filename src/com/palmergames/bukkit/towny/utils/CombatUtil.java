@@ -88,11 +88,13 @@ public class CombatUtil {
 				
 				Resident attackerResident = universe.getDataSource().getResident(a.getName());
 				Resident defenderResident = universe.getDataSource().getResident(b.getName());
-				if (attackerResident.getTown() != null && defenderResident.getTown() != null) {
-					Nation attackerNation = attackerResident.getTown().getNation();
-					Nation defenderNation = defenderResident.getTown().getNation();
-					if (attackerNation != null && defenderNation != null) {
+				if (attackerResident != null && defenderResident != null && attackerResident.hasTown() && defenderResident.hasTown()) {
+					if (attackerResident.getTown().hasNation() && defenderResident.getTown().hasNation()) {
+						Nation attackerNation = attackerResident.getTown().getNation();
+						Nation defenderNation = defenderResident.getTown().getNation();
 						if (attackerNation.atWarWith(defenderNation)) {
+							System.out.println(attackerNation.getName());
+							System.out.println(defenderNation.getName());
 							return false;
 						}
 					}

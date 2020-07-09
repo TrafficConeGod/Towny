@@ -20,15 +20,6 @@ public class Conquer extends CasusBelli {
 		return defender.getTowns().size() == 1;
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
-		TownyUniverse townyUniverse = TownyUniverse.getInstance();
-		for (Town town : loser.getTowns()) {
-			loser.removeTown(town);
-			victor.addTown(town);
-			townyUniverse.getDataSource().saveTown(town);
-		}
-		townyUniverse.getDataSource().saveNation(victor);
-		townyUniverse.getDataSource().removeNation(loser);
-		townyUniverse.getDataSource().deleteNation(loser);
-		townyUniverse.getDataSource().saveNationList();
+		TownyUniverse.getInstance().getDataSource().mergeNation(loser, victor);
 	}
 }

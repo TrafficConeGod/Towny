@@ -1,5 +1,7 @@
 package com.palmergames.bukkit.towny.newwar.casusbellis;
 
+import com.palmergames.bukkit.towny.TownyMessaging;
+import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.EmptyNationException;
@@ -14,16 +16,10 @@ public class Dismantle extends CasusBelli {
 	}
 	public int getIndex() { return 3; }
 	public float getInfamy() {
-		return 33;
+		return 44;
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
-		TownyUniverse townyUniverse = TownyUniverse.getInstance();
-		for (Town town : loser.getTowns()) {
-			loser.removeTown(town);
-			townyUniverse.getDataSource().saveTown(town);
-		}
-		townyUniverse.getDataSource().removeNation(loser);
-		townyUniverse.getDataSource().deleteNation(loser);
-		townyUniverse.getDataSource().saveNationList();
+		TownyUniverse.getInstance().getDataSource().removeNation(loser);
+		TownyMessaging.sendGlobalMessage(TownySettings.getDelNationMsg(loser));
 	}
 }
