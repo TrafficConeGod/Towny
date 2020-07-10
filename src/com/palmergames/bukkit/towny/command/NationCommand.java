@@ -111,7 +111,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"listcause",
 		"listwars",
 		"surrender",
-		"addgoal"
+		"addgoal",
+		"call"
 	);
 
 	private static final List<String> nationSetTabCompletes = Arrays.asList(
