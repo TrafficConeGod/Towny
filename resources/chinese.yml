@@ -54,6 +54,7 @@ town_help_7: "新建一个城镇，并且制定一个玩家作为城主。"
 town_help_8: "列出城主可以使用的命令"
 town_help_9: "就在今日!"
 town_help_10: "查看城镇内在线的玩家"
+town_help_12: '宣布独立'
 
 mayor_help_3: "你所选择的区域不附属于城镇"
 mayor_help_4: "声明你附近半径为X的区块"
@@ -72,6 +73,11 @@ nation_help_7: "列出国王的指令列表"
 nation_help_8: "建国"
 nation_help_9: "列出在线的国民"
 nation_help_11: '召集同盟开战'
+nation_help_12: '列出针对特定国家的因果关系'
+nation_help_13: '如果您有战争原因，则向指定的国家宣战'
+nation_help_14: '针对特定国家/地区对死因进行辩护'
+nation_help_15: '在战争中投降'
+nation_help_16: '将您国家中的一个城镇授予另一个国家'
 
 king_help_1: '国王帮助'
 king_help_2: '设置你的盟国.'
