@@ -1164,3 +1164,4 @@ msg_enemy_declared_on: '&b%s has declared a war against you with casus belli %s.
 msg_err_specify_town_name: '&cYou must specify a valid town name.'
 msg_err_not_war_leader: '&cOnly the war leader can do this.'
 msg_err_cannot_use_cb: '&cYou can''t use this casus belli on this nation.'
+msg_war_death_kick: 'You have been killed in war. You can only rejoin once the war is over.'

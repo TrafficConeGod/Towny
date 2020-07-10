@@ -10,8 +10,8 @@ import org.bukkit.Bukkit;
 import java.util.UUID;
 
 public abstract class CasusBelli implements Cloneable {
-	public Nation attacker;
-	public Nation defender;
+	protected Nation attacker;
+	protected Nation defender;
 	private UUID uuid;
 	public String getName() { return "default"; }
 	public int getIndex() { return -1; }

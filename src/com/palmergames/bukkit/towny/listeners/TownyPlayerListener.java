@@ -12,6 +12,7 @@ import com.palmergames.bukkit.towny.event.PlayerEnterTownEvent;
 import com.palmergames.bukkit.towny.event.PlayerLeaveTownEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlayerCache;
@@ -77,6 +78,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Handle events for all Player related events
@@ -95,7 +97,7 @@ public class TownyPlayerListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerJoin(PlayerJoinEvent event) {
+	public void onPlayerJoin(PlayerJoinEvent event) throws NotRegisteredException {
 
 		Player player = event.getPlayer();
 
@@ -117,6 +119,17 @@ public class TownyPlayerListener implements Listener {
 		// Perform login code in it's own thread to update Towny data.
 		if (BukkitTools.scheduleSyncDelayedTask(new OnPlayerLogin(Towny.getPlugin(), player), 0L) == -1) {
 			TownyMessaging.sendErrorMsg("Could not schedule OnLogin.");
+		}
+		
+		TownyUniverse universe = TownyUniverse.getInstance();
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		
+		if (resident.hasTown() && resident.hasNation()) {
+			Nation nation = resident.getTown().getNation();
+			if (nation.isAtWar() && nation.wasKilledInWar(player)) {
+				player.kickPlayer(TownySettings.getLangString("msg_war_death_kick"));
+			}
 		}
 	}
 
@@ -1105,5 +1118,33 @@ public class TownyPlayerListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-	
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onPlayerDead(PlayerDeathEvent event) throws TownyException {
+		if (event.getEntity() instanceof Player && event.getEntity().getKiller() != null && event.getEntity().getKiller() instanceof Player) {
+			Player loser = event.getEntity();
+			Player victor = event.getEntity().getKiller();
+			
+			TownyUniverse universe = TownyUniverse.getInstance();
+
+			Resident victorResident = universe.getDataSource().getResident(victor.getName());
+			Resident loserResident = universe.getDataSource().getResident(loser.getName());
+			if (victorResident != null && loserResident != null && victorResident.hasTown() && loserResident.hasTown()) {
+				if (victorResident.getTown().hasNation() && loserResident.getTown().hasNation()) {
+					Nation victorNation = victorResident.getTown().getNation();
+					Nation loserNation = loserResident.getTown().getNation();
+					if (victorNation.atWarWith(loserNation) && !victorNation.getName().equalsIgnoreCase(loserNation.getName())) {
+						War war = victorNation.getWar(loserNation);
+						if (war.isAnAttacker(loserNation)) {
+							war.addAttackerCasualtyUuid(loser.getUniqueId());
+						} else if (war.isADefender(loserNation)) {
+							war.addDefenderCasualtyUuid(loser.getUniqueId());
+						}
+						universe.getDataSource().saveWar(war);
+						loser.kickPlayer(TownySettings.getLangString("msg_war_death_kick"));
+					}
+				}
+			}
+		}
+	}
 }

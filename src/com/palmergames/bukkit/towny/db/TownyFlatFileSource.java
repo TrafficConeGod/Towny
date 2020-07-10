@@ -368,6 +368,10 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			Nation defender = null;
 			List<CasusBelli> attackerCasusBellis = new ArrayList<>();
 			List<CasusBelli> defenderCasusBellis = new ArrayList<>();
+			List<UUID> attackerCasualtyUuids = new ArrayList<>();
+			List<UUID> defenderCasualtyUuids = new ArrayList<>();
+			List<Nation> attackerAllies = new ArrayList<>();
+			List<Nation> defenderAllies = new ArrayList<>();
 
 			while ((line = fin.readLine()) != null) {
 				if (!line.equals("")) {
@@ -393,6 +397,30 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 								CasusBelli casusBelli = getCasusBelli(casusBelliUuidString);
 								defenderCasusBellis.add(casusBelli);
 							}
+						} else if (property.equalsIgnoreCase("attackerCasualtyUuids")) {
+							String[] split = value.split(",");
+							for (String attackerCasualtyUuid : split) {
+								UUID uuid = UUID.fromString(attackerCasualtyUuid);
+								attackerCasualtyUuids.add(uuid);
+							}
+						} else if (property.equalsIgnoreCase("defenderCasualtyUuids")) {
+							String[] split = value.split(",");
+							for (String defenderCasualtyUuid : split) {
+								UUID uuid = UUID.fromString(defenderCasualtyUuid);
+								defenderCasualtyUuids.add(uuid);
+							}
+						} else if (property.equalsIgnoreCase("attackerAllies")) {
+							String[] split = value.split(",");
+							for (String attackerAlly : split) {
+								Nation ally = getNation(attackerAlly);
+								attackerAllies.add(ally);
+							}
+						} else if (property.equalsIgnoreCase("defenderAllies")) {
+							String[] split = value.split(",");
+							for (String defenderAlly : split) {
+								Nation ally = getNation(defenderAlly);
+								defenderAllies.add(ally);
+							}
 						}
 					}
 				}
@@ -401,6 +429,10 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			if (attacker != null && defender != null && attackerCasusBellis != null && defenderCasusBellis != null) {
 				War war = new War(attacker, defender, attackerCasusBellis, defenderCasusBellis);
 				war.setUuid(UUID.fromString(uuidString));
+				war.setAttackerCasualtyUuids(attackerCasualtyUuids);
+				war.setDefenderCasualtyUuids(defenderCasualtyUuids);
+				war.setAttackerAllies(attackerAllies);
+				war.setDefenderAllies(defenderAllies);
 				attacker.addWar(war);
 				defender.addWar(war);
 				return true;
@@ -1890,6 +1922,62 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		
 		// defender casus bellis
 		list.add("defenderCasusBellis=" + defenderCasusBellis);
+		
+		String attackerCasualtyUuids = "";
+
+		for (int i = 0; i < war.getAttackerCasualtyUuids().size(); i++) {
+			UUID uuid = war.getAttackerCasualtyUuids().get(i);
+			if (i == 0) {
+				attackerCasualtyUuids += uuid.toString();
+			} else {
+				attackerCasualtyUuids += ("," + uuid.toString());
+			}
+		}
+
+		// attacker casualty uuids
+		list.add("attackerCasualtyUuids=" + attackerCasualtyUuids);
+
+		String defenderCasualtyUuids = "";
+
+		for (int i = 0; i < war.getDefenderCasualtyUuids().size(); i++) {
+			UUID uuid = war.getDefenderCasualtyUuids().get(i);
+			if (i == 0) {
+				defenderCasualtyUuids += uuid.toString();
+			} else {
+				defenderCasualtyUuids += ("," + uuid.toString());
+			}
+		}
+
+		// defender casualty uuids
+		list.add("defenderCasualtyUuids=" + defenderCasualtyUuids);
+
+		String attackerAllies = "";
+
+		for (int i = 0; i < war.getAttackerAllies().size(); i++) {
+			Nation nation = war.getAttackerAllies().get(i);
+			if (i == 0) {
+				attackerAllies += nation.getName();
+			} else {
+				attackerAllies += ("," + nation.getName());
+			}
+		}
+
+		// attackerAllies
+		list.add("attackerAllies=" + attackerAllies);
+
+		String defenderAllies = "";
+
+		for (int i = 0; i < war.getDefenderAllies().size(); i++) {
+			Nation nation = war.getDefenderAllies().get(i);
+			if (i == 0) {
+				defenderAllies += nation.getName();
+			} else {
+				defenderAllies += ("," + nation.getName());
+			}
+		}
+
+		// defenderAllies
+		list.add("defenderAllies=" + defenderAllies);
 
 		/*
 		 *  Make sure we only save in async

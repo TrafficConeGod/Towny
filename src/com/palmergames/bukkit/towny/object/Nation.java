@@ -24,6 +24,7 @@ import com.palmergames.util.StringMgmt;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -961,6 +962,22 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 			}
 		}
 		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+	}
+	
+	public boolean wasKilledInWar(Player player) {
+		UUID uuid = player.getUniqueId();
+		for (War war : wars) {
+			if (war.isAnAttacker(this)) {
+				if (war.getAttackerCasualtyUuids().contains(uuid)) {
+					return true;
+				}
+			} else if (war.isADefender(this)) {
+				if (war.getDefenderCasualtyUuids().contains(uuid)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public void setInfamy(float infamy) {

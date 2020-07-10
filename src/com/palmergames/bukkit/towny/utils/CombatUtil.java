@@ -85,7 +85,7 @@ public class CombatUtil {
 			// war combat
 			if (a instanceof Player && b instanceof Player) {
 				TownyUniverse universe = TownyUniverse.getInstance();
-				
+
 				Resident attackerResident = universe.getDataSource().getResident(a.getName());
 				Resident defenderResident = universe.getDataSource().getResident(b.getName());
 				if (attackerResident != null && defenderResident != null && attackerResident.hasTown() && defenderResident.hasTown()) {
@@ -93,13 +93,11 @@ public class CombatUtil {
 						Nation attackerNation = attackerResident.getTown().getNation();
 						Nation defenderNation = defenderResident.getTown().getNation();
 						if (attackerNation.atWarWith(defenderNation) && !attackerNation.getName().equalsIgnoreCase(defenderNation.getName())) {
-							System.out.println(attackerNation.getName());
-							System.out.println(defenderNation.getName());
 							return false;
 						}
 					}
 				}
-				
+
 			}
 
 			return preventDamageCall(plugin, world, attacker, defender, a, b);
