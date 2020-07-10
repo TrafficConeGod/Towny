@@ -21,6 +21,7 @@ public class DemandTown extends CasusBelli {
 	public float getInfamy() {
 		return 11;
 	}
+	public int getDaysForJustification() { return 144; }
 	public boolean canUse() {
 		return defender.getTowns().size() > 1;
 	}

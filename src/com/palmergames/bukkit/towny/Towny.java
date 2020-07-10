@@ -203,12 +203,12 @@ public class Towny extends JavaPlugin {
 			World measureWorld = Bukkit.getServer().getWorlds().get(0); // this is horrible please aaa
 			BukkitScheduler scheduler = getServer().getScheduler();
 			scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-				long lastTime = measureWorld.getTime() % 2400;
+				long lastTime = measureWorld.getTime() % 24000;
 				
 				@Override
 				public void run() {
-					long time = measureWorld.getTime() % 2400;
-					if (lastTime <= 1200 && time >= 1200) {
+					long time = measureWorld.getTime() % 24000;
+					if (lastTime <= 6000 && time >= 6000) {
 						for (Nation nation : universe.getDataSource().getNations()) {
 							if (nation.isJustifying()) {
 								Justification justification = nation.getJustification();

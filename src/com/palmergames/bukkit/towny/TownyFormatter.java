@@ -535,7 +535,10 @@ public class TownyFormatter {
 			enemies[11] = TownySettings.getLangString("status_town_reslist_overlength");
 		}
         out.addAll(ChatTools.listArr(enemies, String.format(TownySettings.getLangString("status_nation_enemies"), nation.getEnemies().size())));
-
+		
+		// Infamy: 7.3
+		out.add(String.format(TownySettings.getLangString("status_nation_infamy"), String.format("%.2f", nation.getInfamy())));
+		
 		out.addAll(getExtraFields(nation));
 		
 		out = formatStatusScreens(out);

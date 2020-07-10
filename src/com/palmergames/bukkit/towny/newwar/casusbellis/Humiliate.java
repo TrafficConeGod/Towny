@@ -9,6 +9,7 @@ public class Humiliate extends CasusBelli {
 		return "humiliate";
 	}
 	public int getIndex() { return 0; }
+	public int getDaysForJustification() { return 72; }
 	public float getInfamy() {
 		return 3;
 	}
