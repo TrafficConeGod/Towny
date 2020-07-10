@@ -15,6 +15,7 @@ import com.palmergames.bukkit.towny.invites.Invite;
 import com.palmergames.bukkit.towny.invites.InviteHandler;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
 import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.CasusBellis;
 import com.palmergames.bukkit.towny.newwar.Justification;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
@@ -27,6 +28,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.awt.datatransfer.DataFlavor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -982,6 +984,20 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		return false;
 	}
 
+	public boolean wasKilledInSpecificWar(Player player, War war) {
+		UUID uuid = player.getUniqueId();
+		if (war.isAnAttacker(this)) {
+			if (war.getAttackerCasualtyUuids().contains(uuid)) {
+				return true;
+			}
+		} else if (war.isADefender(this)) {
+			if (war.getDefenderCasualtyUuids().contains(uuid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean wasKilledInWar(UUID uuid) {
 		for (War war : wars) {
 			if (war.isAnAttacker(this)) {
@@ -1002,5 +1018,54 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	}
 	public float getInfamy() {
 		return infamy;
+	}
+	
+	public void setJustification(Justification justification) {
+		this.justification = justification;
+	}
+	public Justification getJustification() {
+		return justification;
+	}
+	public boolean isJustifying() {
+		return justification != null;
+	}
+	public void finishJustifying() throws TownyException, CloneNotSupportedException {
+		TownyUniverse universe = TownyUniverse.getInstance();
+		Nation nation = justification.getNation();
+		
+		CasusBelli casusBelli = CasusBellis.casusBellis[justification.getIndex()];
+		
+		CasusBelli finalCasusBelli = (CasusBelli) casusBelli.clone();
+		finalCasusBelli.setAttacker(this);
+		finalCasusBelli.setDefender(nation);
+		finalCasusBelli.setUuid(UUID.randomUUID());
+		if (!finalCasusBelli.canUse()) {
+			justification = null;
+			universe.getDataSource().saveNation(this);
+			throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
+		}
+		addCasusBelli(finalCasusBelli);
+		finalCasusBelli.onAdd();
+		float baseInfamy = finalCasusBelli.getInfamy();
+		float enemyInfamy = nation.getInfamy();
+		float calculatedInfamy = (
+			baseInfamy
+			/
+			(enemyInfamy + 12)
+		) * 12;
+		infamy += calculatedInfamy;
+		justification = null;
+		universe.getDataSource().saveCasusBelli(finalCasusBelli);
+		universe.getDataSource().saveNation(this);
+		Resident playerKing = getKing();
+		if (BukkitTools.isOnline(playerKing.getName())) {
+			TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(playerKing.getName()), String.format(TownySettings.getLangString("msg_justified_on"), nation.getName(), finalCasusBelli.getName()));
+		}
+
+		Resident king = nation.getKing();
+		if (BukkitTools.isOnline(king.getName())) {
+			TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_justified_on"), getName(), finalCasusBelli.getName()));
+		}
+
 	}
 }

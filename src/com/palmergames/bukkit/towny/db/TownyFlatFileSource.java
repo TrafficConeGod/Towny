@@ -9,6 +9,7 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.newwar.CasusBelli;
 import com.palmergames.bukkit.towny.newwar.CasusBellis;
+import com.palmergames.bukkit.towny.newwar.Justification;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
@@ -1383,6 +1384,14 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				if (line != null && !line.isEmpty()) {
 					nation.setInfamy(Float.parseFloat(line));
 				}
+				
+				line = keys.get("justification");
+				if (line != null && !line.isEmpty()) {
+					String[] split = line.split(",");
+					Justification justification = new Justification(Integer.valueOf(split[0]), Integer.valueOf(split[1]), getNation(split[2]));
+					nation.setJustification(justification);
+				}
+				
 
 			} catch (Exception e) {
 				TownyMessaging.sendErrorMsg("Loading Error: Exception while reading nation file " + nation.getName() + " at line: " + line + ", in towny\\data\\nations\\" + nation.getName() + ".txt");
@@ -2382,6 +2391,12 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 		// infamy
 		list.add("infamy=" + nation.getInfamy());
+		
+		if (nation.isJustifying()) {
+			Justification justification = nation.getJustification();
+			// justification
+			list.add("justification=" + justification.getIndex() + "," + justification.getDaysLeft() + "," + justification.getNation().getName());
+		}
 
 		// Spawn
 		if (nation.hasNationSpawn()) {

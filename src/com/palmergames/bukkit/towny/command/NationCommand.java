@@ -33,6 +33,7 @@ import com.palmergames.bukkit.towny.invites.TownyInviteSender;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
 import com.palmergames.bukkit.towny.newwar.CasusBelli;
 import com.palmergames.bukkit.towny.newwar.CasusBellis;
+import com.palmergames.bukkit.towny.newwar.Justification;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -1662,25 +1663,18 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (!finalCasusBelli.canUse()) {
 				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
 			}
+			if (playerNation.isJustifying()) {
+				Nation justifyingOn = playerNation.getJustification().getNation();
+				throw new TownyException(String.format(TownySettings.getLangString("msg_err_already_justifying"), justifyingOn.getName()));
+			}
 			Confirmation confirmation = new Confirmation(() -> {
-				playerNation.addCasusBelli(finalCasusBelli);
-				finalCasusBelli.onAdd();
-				float baseInfamy = finalCasusBelli.getInfamy();
-				float playerInfamy = playerNation.getInfamy();
-				float enemyInfamy = nation.getInfamy();
-				float infamy = (
-					baseInfamy
-					/
-					(enemyInfamy + 12)
-				) * 12;
-				playerNation.setInfamy(playerInfamy + infamy);
-				universe.getDataSource().saveCasusBelli(finalCasusBelli);
+				Justification justification = new Justification(finalCasusBelli.getIndex(), finalCasusBelli.getDaysForJustification(), nation);
+				playerNation.setJustification(justification);
 				universe.getDataSource().saveNation(playerNation);
 				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_on"), nation.getName(), finalCasusBelli.getName()));
-
 				Resident king = nation.getKing();
 				if (BukkitTools.isOnline(king.getName())) {
-					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_justified_on"), playerNation.getName(), finalCasusBelli.getName()));
+					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_justifying_on"), playerNation.getName(), finalCasusBelli.getName()));
 				}
 			});
 			ConfirmationHandler.sendConfirmation(player, confirmation);

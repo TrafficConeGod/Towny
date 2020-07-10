@@ -8,6 +8,7 @@ import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.event.DisallowedPVPEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlayerCache;
@@ -93,7 +94,10 @@ public class CombatUtil {
 						Nation attackerNation = attackerResident.getTown().getNation();
 						Nation defenderNation = defenderResident.getTown().getNation();
 						if (attackerNation.atWarWith(defenderNation) && !attackerNation.getName().equalsIgnoreCase(defenderNation.getName())) {
-							return false;
+							War war = attackerNation.getWar(defenderNation);
+							if (!attackerNation.wasKilledInSpecificWar(a, war)) {
+								return false;
+							}
 						}
 					}
 				}

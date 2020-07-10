@@ -125,12 +125,6 @@ public class TownyPlayerListener implements Listener {
 
 		Resident resident = universe.getDataSource().getResident(player.getName());
 		
-		if (resident.hasTown() && resident.hasNation()) {
-			Nation nation = resident.getTown().getNation();
-			if (nation.isAtWar() && nation.wasKilledInWar(player)) {
-				player.kickPlayer(TownySettings.getLangString("msg_war_death_kick"));
-			}
-		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -1141,7 +1135,7 @@ public class TownyPlayerListener implements Listener {
 							war.addDefenderCasualtyUuid(loser.getUniqueId());
 						}
 						universe.getDataSource().saveWar(war);
-						loser.kickPlayer(TownySettings.getLangString("msg_war_death_kick"));
+						TownyMessaging.sendErrorMsg(loser, TownySettings.getLangString("msg_war_death_kick"));
 					}
 				}
 			}

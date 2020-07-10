@@ -30,10 +30,8 @@ import com.palmergames.bukkit.towny.listeners.TownyPlayerListener;
 import com.palmergames.bukkit.towny.listeners.TownyVehicleListener;
 import com.palmergames.bukkit.towny.listeners.TownyWeatherListener;
 import com.palmergames.bukkit.towny.listeners.TownyWorldListener;
-import com.palmergames.bukkit.towny.object.Coord;
-import com.palmergames.bukkit.towny.object.PlayerCache;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.palmergames.bukkit.towny.newwar.Justification;
+import com.palmergames.bukkit.towny.object.*;
 import com.palmergames.bukkit.towny.permissions.BukkitPermSource;
 import com.palmergames.bukkit.towny.permissions.GroupManagerSource;
 import com.palmergames.bukkit.towny.permissions.TownyPerms;
@@ -67,6 +65,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.io.IOException;
@@ -198,6 +197,39 @@ public class Towny extends JavaPlugin {
 						TownyMessaging.sendErrorMsg("Could not schedule OnLogin.");
 					}
 				}
+			
+			TownyUniverse universe = TownyUniverse.getInstance();
+			
+			World measureWorld = Bukkit.getServer().getWorlds().get(0); // this is horrible please aaa
+			BukkitScheduler scheduler = getServer().getScheduler();
+			scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+				long lastTime = measureWorld.getTime() % 2400;
+				
+				@Override
+				public void run() {
+					long time = measureWorld.getTime() % 2400;
+					if (lastTime <= 1200 && time >= 1200) {
+						for (Nation nation : universe.getDataSource().getNations()) {
+							if (nation.isJustifying()) {
+								Justification justification = nation.getJustification();
+								int daysLeft = justification.getDaysLeft();
+								justification.setDaysLeft(daysLeft - 1);
+								if (justification.getDaysLeft() <= 0) {
+									try {
+										nation.finishJustifying();
+									} catch (TownyException | CloneNotSupportedException e) {
+										Resident playerKing = nation.getKing();
+										if (BukkitTools.isOnline(playerKing.getName())) {
+											TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(playerKing.getName()), e.getMessage());
+										}
+									}
+								}
+							}
+						}
+					}
+					lastTime = time;
+				}
+			}, 0L, 200L);
 		}
 	}
 
