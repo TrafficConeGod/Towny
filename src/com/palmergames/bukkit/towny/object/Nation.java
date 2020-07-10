@@ -15,6 +15,7 @@ import com.palmergames.bukkit.towny.invites.Invite;
 import com.palmergames.bukkit.towny.invites.InviteHandler;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
 import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.Justification;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
 import com.palmergames.bukkit.towny.permissions.TownyPerms;
@@ -52,6 +53,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	private List<CasusBelli> casusBellis = new ArrayList<>();
 	private List<War> wars = new ArrayList<>();
 	private float infamy = 0;
+	private Justification justification;
 	private boolean isPublic = TownySettings.getNationDefaultPublic();
 	private boolean isOpen = TownySettings.getNationDefaultOpen();
 	private transient List<Invite> receivedinvites = new ArrayList<>();
@@ -963,9 +965,24 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		}
 		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 	}
-	
+
 	public boolean wasKilledInWar(Player player) {
 		UUID uuid = player.getUniqueId();
+		for (War war : wars) {
+			if (war.isAnAttacker(this)) {
+				if (war.getAttackerCasualtyUuids().contains(uuid)) {
+					return true;
+				}
+			} else if (war.isADefender(this)) {
+				if (war.getDefenderCasualtyUuids().contains(uuid)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean wasKilledInWar(UUID uuid) {
 		for (War war : wars) {
 			if (war.isAnAttacker(this)) {
 				if (war.getAttackerCasualtyUuids().contains(uuid)) {
