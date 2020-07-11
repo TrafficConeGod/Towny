@@ -598,7 +598,6 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		BukkitTools.getPluginManager().callEvent(preEvent);
 		
 		if (preEvent.isCancelled()) {
-			System.out.println("is cancel");
 			return;
 		}
 		
@@ -608,6 +607,8 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 					if (war.isWarLeader(nation)) {
 						Nation atWarWith = war.getAtWarWith(nation);
 						atWarWith.cancelWar(war);
+					} else {
+						war.removeCombatant(nation);
 					}
 				} catch (TownyException e) { // if these execute then they are real problems and need to be printed out
 					e.printStackTrace();

@@ -15,7 +15,6 @@ public class War {
 	private List<CasusBelli> defenderCasusBellis;
 	private List<UUID> attackerCasualtyUuids = new ArrayList<>();
 	private List<UUID> defenderCasualtyUuids = new ArrayList<>();
-	// NOT IMPLEMENTED YET
 	private List<Nation> attackerAllies = new ArrayList<>();
 	private List<Nation> defenderAllies = new ArrayList<>();
 	private UUID uuid;
@@ -98,12 +97,16 @@ public class War {
 		throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 	}
 	
-	public void addAlly(Nation nation, Nation ally) {
-		if (attacker.getName() == nation.getName()) {
+	public void addAlly(Nation leader, Nation ally) {
+		if (attacker.getName() == leader.getName()) {
 			attackerAllies.add(ally);
-		} else if (defender.getName() == nation.getName()) {
+		} else if (defender.getName() == leader.getName()) {
 			defenderAllies.add(ally);
 		}
+	}
+	
+	public boolean isInWar(Nation nation) {
+		return isAnAttacker(nation) || isADefender(nation);
 	}
 
 	public void setAttackerCasualtyUuids(List<UUID> attackerCasualtyUuids) {
@@ -152,5 +155,67 @@ public class War {
 
 	public void removeDefenderCasualtyUuid(UUID uuid) {
 		defenderCasualtyUuids.remove(uuid);
+	}
+	
+	public void addWarToCombatants() {
+		if (!attacker.getWars().contains(this)) {
+			attacker.addWar(this);
+		}
+		if (!defender.getWars().contains(this)) {
+			defender.addWar(this);
+		}
+		for (Nation nation : attackerAllies) {
+			if (!nation.getWars().contains(this)) {
+				nation.addWar(this);
+			}
+		}
+		for (Nation nation : defenderAllies) {
+			if (!nation.getWars().contains(this)) {
+				nation.addWar(this);
+			}
+		}
+	}
+	
+	public void removeWarFromCombatants() {
+		attacker.removeWar(this);
+		defender.removeWar(this);
+		for (Nation nation : attackerAllies) {
+			nation.removeWar(this);
+		}
+		for (Nation nation : defenderAllies) {
+			nation.removeWar(this);
+		}
+	}
+	
+	public void removeCombatant(Nation nation) {
+		attackerAllies.remove(nation);
+		defenderAllies.remove(nation);
+		nation.removeWar(this);
+	}
+	
+	public float getAttackerWarscore() {
+		int population = attacker.getNumResidents();
+		for (Nation ally : attackerAllies) {
+			population += ally.getNumResidents();
+		}
+		float warscore = defenderCasualtyUuids.size() / population;
+		return warscore;
+	}
+
+	public float getDefenderWarscore() {
+		int population = defender.getNumResidents();
+		for (Nation ally : defenderAllies) {
+			population += ally.getNumResidents();
+		}
+		float warscore = attackerCasualtyUuids.size() / population;
+		return warscore;
+	}
+	
+	public void addAttackerCasusBelli(CasusBelli casusBelli) {
+		attackerCasusBellis.add(casusBelli);
+	}
+
+	public void addDefenderCasusBelli(CasusBelli casusBelli) {
+		defenderCasusBellis.add(casusBelli);
 	}
 }

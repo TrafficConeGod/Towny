@@ -210,6 +210,12 @@ public class Towny extends JavaPlugin {
 					long time = measureWorld.getTime() % 24000;
 					if (lastTime <= 6000 && time >= 6000) {
 						for (Nation nation : universe.getDataSource().getNations()) {
+							float infamy = nation.getInfamy();
+							infamy -= 0.01;
+							if (infamy <= 0) {
+								infamy = 0;
+							}
+							nation.setInfamy(infamy);
 							if (nation.isJustifying()) {
 								Justification justification = nation.getJustification();
 								int daysLeft = justification.getDaysLeft();

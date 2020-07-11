@@ -434,8 +434,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				war.setDefenderCasualtyUuids(defenderCasualtyUuids);
 				war.setAttackerAllies(attackerAllies);
 				war.setDefenderAllies(defenderAllies);
-				attacker.addWar(war);
-				defender.addWar(war);
+				war.addWarToCombatants();
 				return true;
 			} else {
 				TownyMessaging.sendErrorMsg("Error Loading War in towny\\data\\wars\\" + uuidString + "_.data. Variables: " + attacker.toString() + " " + defender.toString());

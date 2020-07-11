@@ -877,8 +877,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		attackerCasusBellis.add(casusBelli);
 		War war = new War(this, enemyNation, attackerCasusBellis, new ArrayList<>());
 		war.setUuid(UUID.randomUUID());
-		addWar(war);
-		enemyNation.addWar(war);
+		war.addWarToCombatants();
 		removeCasusBelli(casusBelli);
 		TownyUniverse universe = TownyUniverse.getInstance();
 		universe.getDataSource().saveWar(war);
@@ -890,8 +889,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		Nation loser = war.getAtWarWith(this);
 		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
 		List<CasusBelli> loserCasusBellis = war.getCasusBellisAgainst(this);
-		removeWar(war);
-		loser.removeWar(war);
+		war.removeWarFromCombatants();
 		TownyUniverse universe = TownyUniverse.getInstance();
 		universe.getDataSource().deleteWar(war);
 		for (CasusBelli casusBelli : casusBellis) {
@@ -910,12 +908,10 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		Nation loser = war.getAtWarWith(this);
 		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
 		List<CasusBelli> loserCasusBellis = war.getCasusBellisAgainst(this);
-		System.out.println(casusBellis.size());
 		for (CasusBelli casusBelli : casusBellis) {
 			casusBelli.onPeaceAccepted(this, loser);
 		}
-		removeWar(war);
-		loser.removeWar(war);
+		war.removeWarFromCombatants();
 		TownyUniverse universe = TownyUniverse.getInstance();
 		universe.getDataSource().deleteWar(war);
 		for (CasusBelli casusBelli : casusBellis) {
@@ -926,6 +922,14 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		}
 		universe.getDataSource().saveNation(this);
 		universe.getDataSource().saveNation(loser);
+	}
+	
+	public void joinWar(Nation leader, War war) {
+		war.addAlly(leader, this);
+		war.addWarToCombatants();
+		TownyUniverse universe = TownyUniverse.getInstance();
+		universe.getDataSource().saveWar(war);
+		universe.getDataSource().saveNation(this);
 	}
 	
 	public void addWar(War war) {
@@ -947,7 +951,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	public boolean atWarWith(Nation nation) {
 		for (War war : wars) {
 			try {
-				war.getAtWarWith(nation);
+				Nation atWarWith = war.getAtWarWith(nation);
 				return true;
 			} catch (TownyException e) {
 				

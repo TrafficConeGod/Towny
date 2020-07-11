@@ -248,7 +248,6 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			
 			switch (args[0].toLowerCase()) {
-				case "call":
 				case "toggle":
 					if (args.length == 2)
 						return NameUtil.filterByStart(nationToggleTabCompletes, args[1]);
@@ -480,11 +479,13 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					}
 				});
 			else if (split[0].equalsIgnoreCase("call")) {
-				if (split.length >= 2) {
-					String callNationName = split[1];
-					// do stuff
-				} else if (split.length == 1) {
-					throw new TownyException(TownySettings.getLangString("msg_specify_nation_name"));
+				if (split.length == 1) {
+					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_specify_nation_name"));
+				} else if (split.length == 2) {
+					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+					if (!resident.isKing())
+						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
+					nationCallAlly(player, split[1]);
 				}
 			} else if (split[0].equalsIgnoreCase("?"))
 				for (String line : nation_help)
@@ -670,6 +671,26 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					if (!resident.isKing())
 						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
 					nationJustify(player, split[1], split[2]);
+				}
+			} else if (split[0].equalsIgnoreCase("ijustify")) {
+				// DEBUG COMMAND
+				//
+				//
+				
+				if (player.isOp()) {
+
+					if (split.length == 1)
+						TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_specify_nation_name"));
+					else if (split.length == 2) {
+						TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_must_specify_casus_belli"));
+					} else if (split.length == 3) {
+						Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+						if (!resident.isKing())
+							throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
+						nationInstantJustify(player, split[1], split[2]);
+					}
+				} else {
+					player.sendMessage("You have to be an op to use this command");
 				}
 			} else if (split[0].equalsIgnoreCase("declare")) {
 
@@ -1697,6 +1718,73 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		}
 		
 	}
+	
+	// FOR DEBUG /n ijustify COMMAND
+	public void nationInstantJustify(Player player, String enemyNationName, String casusBelliName) throws TownyException, CloneNotSupportedException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+		Nation nation;
+		Nation remainingNation;
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		Nation playerNation = resident.getTown().getNation();
+
+		try {
+			nation = universe.getDataSource().getNation(enemyNationName);
+			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
+		} catch (NotRegisteredException e) {
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+		}
+		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+
+		if (nation != null) {
+			if (playerNation.atWarWith(nation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_at_war_with"));
+			}
+			CasusBelli casusBelli = null;
+			for (CasusBelli checkCasusBelli : CasusBellis.casusBellis) {
+				if (checkCasusBelli.getName().equalsIgnoreCase(casusBelliName)) {
+					casusBelli = checkCasusBelli;
+					break;
+				}
+			}
+
+			if (casusBelli == null) {
+				throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), casusBelliName));
+			}
+
+			CasusBelli finalCasusBelli = (CasusBelli) casusBelli.clone();
+			finalCasusBelli.setAttacker(playerNation);
+			finalCasusBelli.setDefender(nation);
+			finalCasusBelli.setUuid(UUID.randomUUID());
+			if (!finalCasusBelli.canUse()) {
+				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
+			}
+			Confirmation confirmation = new Confirmation(() -> {
+				playerNation.addCasusBelli(finalCasusBelli);
+				finalCasusBelli.onAdd();
+				float baseInfamy = finalCasusBelli.getInfamy();
+				float playerInfamy = playerNation.getInfamy();
+				float enemyInfamy = nation.getInfamy();
+				float infamy = (
+					baseInfamy
+						/
+						(enemyInfamy + 12)
+				) * 12;
+				playerNation.setInfamy(playerInfamy + infamy);
+				universe.getDataSource().saveCasusBelli(finalCasusBelli);
+				universe.getDataSource().saveNation(playerNation);
+				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justified_on"), nation.getName(), finalCasusBelli.getName()));
+
+				Resident king = nation.getKing();
+				if (BukkitTools.isOnline(king.getName())) {
+					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_justified_on"), playerNation.getName(), finalCasusBelli.getName()));
+				}
+			});
+			ConfirmationHandler.sendConfirmation(player, confirmation);
+		}
+
+	}
 
 	public void nationDeclare(Player player, String enemyNationName, String casusBelliName, String[] params) throws TownyException {
 		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
@@ -1718,6 +1806,9 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		if (nation != null) {
 			if (playerNation.atWarWith(nation)) {
 				throw new TownyException(TownySettings.getLangString("msg_err_at_war_with"));
+			}
+			if (playerNation.isAlliedWith(nation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_allied_with"));
 			}
 			List<CasusBelli> casusBellis = playerNation.getCasusBellis();
 			CasusBelli casusBelli = null;
@@ -1754,59 +1845,77 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 	}
 	
-	public void nationAddWargoal(Player player, String enemyNationName, String casusBelliName, String[] params) throws TownyException {
-//		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
-//		Nation nation;
-//		Nation remainingNation;
-//
-//		Resident resident = universe.getDataSource().getResident(player.getName());
-//		Nation playerNation = resident.getTown().getNation();
-//
-//		try {
-//			nation = universe.getDataSource().getNation(enemyNationName);
-//			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
-//		} catch (NotRegisteredException e) {
-//			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
-//		}
-//		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
-//			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
-//
-//		if (nation != null) {
-//			if (playerNation.atWarWith(nation)) {
-//				throw new TownyException(TownySettings.getLangString("msg_err_at_war_with"));
-//			}
-//			List<CasusBelli> casusBellis = playerNation.getCasusBellis();
-//			CasusBelli casusBelli = null;
-//			for (CasusBelli checkCasusBelli : casusBellis) {
-//				Nation checkNation = checkCasusBelli.getDefender();
-//				if (checkCasusBelli.getName().equalsIgnoreCase(casusBelliName) && checkNation.getName().equals(nation.getName())) {
-//					casusBelli = checkCasusBelli;
-//					break;
-//				}
-//			}
-//
-//			if (casusBelli == null) {
-//				throw new TownyException(String.format(TownySettings.getLangString("msg_err_casus_belli_do_not_have"), casusBelliName));
-//			}
-//
-//			CasusBelli finalCasusBelli = casusBelli;
-//			finalCasusBelli.onPreDeclare(params);
-//			if (!finalCasusBelli.canUse()) {
-//				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
-//			}
-//			Confirmation confirmation = new Confirmation(() -> {
-//				finalCasusBelli.onDeclare(params);
-//				playerNation.declareWar(nation, finalCasusBelli);
-//				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_on"), nation.getName(), finalCasusBelli.getName()));
-//
-//				Resident king = nation.getKing();
-//				if (BukkitTools.isOnline(king.getName())) {
-//					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_declared_on"), playerNation.getName(), finalCasusBelli.getName()));
-//				}
-//			});
-//			ConfirmationHandler.sendConfirmation(player, confirmation);
-//
-//		}
+	public void nationAddWargoal(Player player, String enemyNationName, String casusBelliName, String[] params) throws TownyException, CloneNotSupportedException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+		Nation nation;
+		Nation remainingNation;
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		Nation playerNation = resident.getTown().getNation();
+
+		try {
+			nation = universe.getDataSource().getNation(enemyNationName);
+			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
+		} catch (NotRegisteredException e) {
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+		}
+		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+
+		if (nation != null) {
+			if (!playerNation.atWarWith(nation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+			}
+			CasusBelli casusBelli = null;
+			for (CasusBelli checkCasusBelli : CasusBellis.casusBellis) {
+				if (checkCasusBelli.getName().equalsIgnoreCase(casusBelliName)) {
+					casusBelli = checkCasusBelli;
+					break;
+				}
+			}
+
+			if (casusBelli == null) {
+				throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), casusBelliName));
+			}
+
+			CasusBelli finalCasusBelli = (CasusBelli) casusBelli.clone();
+			finalCasusBelli.setAttacker(playerNation);
+			finalCasusBelli.setDefender(nation);
+			finalCasusBelli.setUuid(UUID.randomUUID());
+			finalCasusBelli.onPreDeclare(params);
+			if (!finalCasusBelli.canUse()) {
+				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
+			}
+			War war = playerNation.getWar(nation);
+			Confirmation confirmation = new Confirmation(() -> {
+				finalCasusBelli.onAdd();
+				finalCasusBelli.onDeclare(params);
+				float baseInfamy = finalCasusBelli.getInfamy();
+				float playerInfamy = playerNation.getInfamy();
+				float enemyInfamy = nation.getInfamy();
+				float infamy = (
+					baseInfamy
+						/
+						(enemyInfamy + 12)
+				) * 12;
+				playerNation.setInfamy(playerInfamy + infamy);
+				if (war.isAnAttacker(playerNation)) {
+					war.addAttackerCasusBelli(finalCasusBelli);
+				} else if (war.isADefender(playerNation)) {
+					war.addDefenderCasusBelli(finalCasusBelli);
+				}
+				universe.getDataSource().saveWar(war);
+				universe.getDataSource().saveCasusBelli(finalCasusBelli);
+				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_add_wargoal"), nation.getName(), finalCasusBelli.getName()));
+
+				Resident king = nation.getKing();
+				if (BukkitTools.isOnline(king.getName())) {
+					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_add_wargoal"), playerNation.getName(), finalCasusBelli.getName()));
+				}
+			});
+			ConfirmationHandler.sendConfirmation(player, confirmation);
+
+		}
 
 	}
 
@@ -1927,6 +2036,49 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				ConfirmationHandler.sendConfirmation(player, confirmation);
 			}
 
+
+		}
+
+	}
+	
+	public void nationCallAlly(Player player, String allyNationName) throws TownyException, EmptyNationException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+		Nation allyNation;
+		Nation remainingNation;
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		Nation playerNation = resident.getTown().getNation();
+
+		try {
+			allyNation = universe.getDataSource().getNation(allyNationName);
+			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
+		} catch (NotRegisteredException e) {
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), allyNationName));
+		}
+		if (remainingNation.getName().equalsIgnoreCase(allyNationName))
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), allyNationName));
+
+		if (allyNation != null) {
+			if (!playerNation.isAlliedWith(allyNation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_not_ally"));
+			}
+
+
+			Resident king = allyNation.getKing();
+			if (!BukkitTools.isOnline(king.getName())) {
+				throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), allyNation.getName(), king.getName()));
+			} else {
+				for (War war : playerNation.getWars()) {
+					if (war.isWarLeader(playerNation) && !war.isInWar(allyNation)) {
+						TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_call_ally"), playerNation.getName()));
+						Confirmation confirmation = new Confirmation(() -> {
+							allyNation.joinWar(playerNation, war);
+							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("accepted_call_to_arms"), allyNation.getName()));
+						});
+						ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), confirmation);
+					}
+				}
+			}
 
 		}
 
