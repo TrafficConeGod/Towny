@@ -108,8 +108,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"justify",
 		"declare",
 		"peace",
-		"listcause",
-		"listwars",
+		"war",
 		"surrender",
 		"addgoal",
 		"call"
@@ -365,6 +364,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				case "justify":
 				case "addgoal":
 				case "declare":
+					System.out.println(args);
 					if (args.length == 2)
 						return NameUtil.filterByStart(nationCasusBelliTabCompletes, args[1]);
 					break;
@@ -742,7 +742,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
 					nationSurrender(player, split[1]);
 				}
-			} else if (split[0].equalsIgnoreCase("listcause")) {
+			} else if (split[0].equalsIgnoreCase("war")) {
 				String nationName = split[1];
 
 				if (split.length == 1)
@@ -767,32 +767,68 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_casus_bellis_for"), enemyNation.getName()));
 
 				if (enemyNation != null) {
-					List<CasusBelli> casusBellis = playerNation.getCasusBellis();
-					for (CasusBelli casusBelli : casusBellis) {
-						Nation checkNation = casusBelli.getDefender();
-						if (checkNation.getName().equals(enemyNation.getName())) {
-							TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_casus_belli_elem"), casusBelli.getName()));
+					if (!playerNation.atWarWith(enemyNation)) {
+						throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+					}
+					War war = playerNation.getWar(enemyNation);
+					// attacker
+					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_attackers"));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_leader"), war.getAttacker().getName()));
+					List<Nation> attackerAllies = war.getAttackerAllies();
+					String attackerAllyString = "";
+					for (int i = 0; i < attackerAllies.size(); i++) {
+						if (i == 0) {
+							attackerAllyString += attackerAllies.get(i).getName();
+						} else {
+							attackerAllyString += (", " + attackerAllies.get(i).getName());
 						}
 					}
-				}
-			} else if (split[0].equalsIgnoreCase("listwars")) {
-
-				TownyMessaging.sendMessage(player, TownySettings.getLangString("msg_list_wars"));
-
-				TownyUniverse universe = TownyUniverse.getInstance();
-				Resident resident = universe.getDataSource().getResident(player.getName());
-				Nation nation = resident.getTown().getNation();
-
-				List<War> wars = nation.getWars();
-				
-				for (War war : wars) {
-					Nation atWarWith = war.getAtWarWith(nation);
-					List<CasusBelli> casusBellis = war.getCasusBellisAgainst(atWarWith);
-					String casusBellisString = "";
-					for (CasusBelli casusBelli : casusBellis) {
-						casusBellisString += (", " + casusBelli.getName());
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_allies"), attackerAllies.size(), attackerAllyString));
+					List<CasusBelli> attackerCasusBellis = war.getAttackerCasusBellis();
+					String attackerCasusBelliString = "";
+					for (int i = 0; i < attackerCasusBellis.size(); i++) {
+						CasusBelli casusBelli = attackerCasusBellis.get(i);
+						String display = casusBelli.getAttacker().getName() + " " + casusBelli.getName() + " -> " + casusBelli.getDefender().getName();
+						if (i == 0) {
+							attackerCasusBelliString += display;
+						} else {
+							attackerCasusBelliString += (", " + display);
+						}
 					}
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_war_elem"), atWarWith.getName(), casusBellisString));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), attackerCasusBellis.size(), attackerCasusBelliString));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getAttackerWarscore() * 100)));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getAttackerCasualtyUuids().size())));
+					
+					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_divider"));
+					
+					// defender
+					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_defenders"));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_leader"), war.getDefender().getName()));
+					List<Nation> defenderAllies = war.getDefenderAllies();
+					String defenderAllyString = "";
+					for (int i = 0; i < defenderAllies.size(); i++) {
+						if (i == 0) {
+							defenderAllyString += defenderAllies.get(i).getName();
+						} else {
+							defenderAllyString += (", " + defenderAllies.get(i).getName());
+						}
+					}
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_allies"), defenderAllies.size(), defenderAllyString));
+					List<CasusBelli> defenderCasusBellis = war.getDefenderCasusBellis();
+					String defenderCasusBelliString = "";
+					for (int i = 0; i < defenderCasusBellis.size(); i++) {
+						CasusBelli casusBelli = defenderCasusBellis.get(i);
+						String display = casusBelli.getDefender().getName() + " " + casusBelli.getName() + " -> " + casusBelli.getDefender().getName();
+						if (i == 0) {
+							defenderCasusBelliString += display;
+						} else {
+							defenderCasusBelliString += (", " + display);
+						}
+					}
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), defenderCasusBellis.size(), defenderCasusBelliString));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getDefenderWarscore() * 100)));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getDefenderCasualtyUuids().size())));
+					
 				}
 			} else if (split[0].equalsIgnoreCase("addgoal")) {
 

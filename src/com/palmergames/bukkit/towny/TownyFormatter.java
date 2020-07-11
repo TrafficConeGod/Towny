@@ -3,6 +3,10 @@ package com.palmergames.bukkit.towny;
 import com.palmergames.bukkit.towny.exceptions.EconomyException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.CasusBellis;
+import com.palmergames.bukkit.towny.newwar.Justification;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -538,6 +542,54 @@ public class TownyFormatter {
 		
 		// Infamy: 7.3
 		out.add(String.format(TownySettings.getLangString("status_nation_infamy"), String.format("%.2f", nation.getInfamy())));
+		
+		// Wars [1]: Test
+		List<War> wars = nation.getWars();
+		String warString = "";
+		for (int i = 0; i < wars.size(); i++) {
+			War war = wars.get(i);
+			String display = "";
+			if (war.isAnAttacker(nation)) {
+				display += war.getDefender().getName();
+				for (Nation defender : war.getDefenderAllies()) {
+					display += (", " + defender.getName());
+				}
+			} else if (war.isADefender(nation)) {
+				display += war.getAttacker().getName();
+				for (Nation attacker : war.getAttackerAllies()) {
+					display += (", " + attacker.getName());
+				}
+			}
+			if (i == 0) {
+				warString += display;
+			} else {
+				warString += (", " + display);
+			}
+		}
+		out.add(String.format(TownySettings.getLangString("status_nation_wars"), String.valueOf(wars.size()), warString));
+
+		// Casus Bellis [2]: Test humiliate, Nation conquer
+		List<CasusBelli> casusBellis = nation.getCasusBellis();
+		String casusBelliString = "";
+		for (int i = 0; i < casusBellis.size(); i++) {
+			CasusBelli casusBelli = casusBellis.get(i);
+			String display = casusBelli.getDefender().getName() + " " + casusBelli.getName();
+			
+			if (i == 0) {
+				casusBelliString += display;
+			} else {
+				casusBelliString += (", " + display);
+			}
+		}
+		out.add(String.format(TownySettings.getLangString("status_nation_casus_bellis"), String.valueOf(casusBellis.size()), casusBelliString));
+
+
+		// Justifying: Nation conquer
+		if (nation.isJustifying()) {
+			Justification justification = nation.getJustification();
+			CasusBelli casusBelli = CasusBellis.casusBellis[justification.getIndex()];
+			out.add(String.format(TownySettings.getLangString("status_nation_justifying"), justification.getNation().getName(), casusBelli.getName()));
+		}
 		
 		out.addAll(getExtraFields(nation));
 		
