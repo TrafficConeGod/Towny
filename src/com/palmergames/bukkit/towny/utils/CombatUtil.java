@@ -93,7 +93,6 @@ public class CombatUtil {
 					if (attackerResident.getTown().hasNation() && defenderResident.getTown().hasNation()) {
 						Nation attackerNation = attackerResident.getTown().getNation();
 						Nation defenderNation = defenderResident.getTown().getNation();
-						// make sure allies arent called into wars they are already in
 						if (attackerNation.atWarWith(defenderNation)) {
 							War war = attackerNation.getWar(defenderNation);
 							if (!(attackerNation.wasKilledInSpecificWar(a, war) || defenderNation.wasKilledInSpecificWar(b, war))) {

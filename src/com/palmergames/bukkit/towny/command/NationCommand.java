@@ -809,7 +809,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						}
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), attackerCasusBellis.size(), attackerCasusBelliString));
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getAttackerWarscore() * 100)));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getAttackerWarscore() * 100)) + "%");
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getAttackerCasualtyUuids().size())));
 					
 					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_divider"));
@@ -839,7 +839,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						}
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), defenderCasusBellis.size(), defenderCasusBelliString));
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getDefenderWarscore() * 100)));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getDefenderWarscore() * 100)) + "%");
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getDefenderCasualtyUuids().size())));
 					
 				}
@@ -1702,18 +1702,32 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					newNation(finalTown.getName(), finalTown);
 					Nation townNation = finalTown.getNation();
 
-					CasusBelli casusBelli = (CasusBelli) CasusBellis.casusBellis[4].clone();
+					CasusBelli independenceCasusBelli = (CasusBelli) CasusBellis.casusBellis[4].clone();
 					
-					casusBelli.setAttacker(townNation);
-					casusBelli.setDefender(finalNation);
-					casusBelli.setUuid(UUID.randomUUID());
-					casusBelli.onPreDeclare(new String[0]);
+					independenceCasusBelli.setAttacker(townNation);
+					independenceCasusBelli.setDefender(finalNation);
+					independenceCasusBelli.setUuid(UUID.randomUUID());
+					independenceCasusBelli.onPreDeclare(new String[0]);
 
-					casusBelli.onAdd();
-					casusBelli.onDeclare(new String[0]);
+					independenceCasusBelli.onAdd();
+					independenceCasusBelli.onDeclare(new String[0]);
 
-					townNation.declareWar(finalNation, casusBelli);
+					War war = townNation.declareWar(finalNation, independenceCasusBelli);
 					
+					CasusBelli conquerCasusBelli = (CasusBelli) CasusBellis.casusBellis[2].clone();
+
+					conquerCasusBelli.setAttacker(finalNation);
+					conquerCasusBelli.setDefender(townNation);
+					conquerCasusBelli.setUuid(UUID.randomUUID());
+					conquerCasusBelli.onPreDeclare(new String[0]);
+
+					conquerCasusBelli.onAdd();
+					conquerCasusBelli.onDeclare(new String[0]);
+
+					war.addDefenderCasusBelli(conquerCasusBelli);
+					
+					townyUniverse.getDataSource().saveWar(war);
+					townyUniverse.getDataSource().saveCasusBelli(conquerCasusBelli);
 					townyUniverse.getDataSource().saveTown(finalTown);
 					townyUniverse.getDataSource().saveNation(finalNation);
 					townyUniverse.getDataSource().saveNation(townNation);

@@ -7,13 +7,7 @@ import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
-import com.palmergames.bukkit.towny.object.Coord;
-import com.palmergames.bukkit.towny.object.PlayerCache;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownBlockType;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyWorld;
+import com.palmergames.bukkit.towny.object.*;
 import com.palmergames.bukkit.towny.regen.TownyRegenAPI;
 import com.palmergames.bukkit.towny.tasks.MobRemovalTimerTask;
 import com.palmergames.bukkit.towny.utils.CombatUtil;
@@ -715,7 +709,7 @@ public class TownyEntityListener implements Listener {
 	 * @param event - EntityExplodeEvent
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onEntityExplode(EntityExplodeEvent event) {
+	public void onEntityExplode(EntityExplodeEvent event) throws NotRegisteredException {
 
 		if (plugin.isError()) {
 			event.setCancelled(true);
@@ -828,13 +822,30 @@ public class TownyEntityListener implements Listener {
 				if (!TownyAPI.getInstance().isWilderness(block.getLocation())) {
 					townBlock = TownyAPI.getInstance().getTownBlock(block.getLocation());
 
-					// If explosions are off, or it's wartime and explosions are off
-					// and the towns has no nation
-					if (!townyWorld.isForceExpl() && !townBlock.getPermissions().explosion) {
-						if (event.getEntity() != null){
-							TownyMessaging.sendDebugMsg("onEntityExplode: Canceled " + event.getEntity().getEntityId() + " from exploding within " + coord.toString() + ".");
-							event.setCancelled(true); 
-							return;
+					boolean atWar = false;
+					if (townBlock.hasTown()) {
+						Town town = townBlock.getTown();
+						if (town.hasNation()) {
+							Nation nation = town.getNation();
+							if (nation.isAtWar()) {
+								atWar = true;
+							}
+						}
+					}
+					
+					if (!atWar) {
+						// If explosions are off, or it's wartime and explosions are off
+						// and the towns has no nation
+						if (!townyWorld.isForceExpl() && !townBlock.getPermissions().explosion) {
+							if (event.getEntity() != null) {
+								TownyMessaging.sendDebugMsg("onEntityExplode: Canceled " + event.getEntity().getEntityId() + " from exploding within " + coord.toString() + ".");
+								event.setCancelled(true);
+								return;
+							}
+						}
+					} else {
+						if (townyWorld.isUsingPlotManagementWildRevert() && entity != null && townyWorld.isProtectingExplosionEntity(entity)) {
+							TownyRegenAPI.beginProtectionRegenTask(block, count);
 						}
 					}
 				} else {

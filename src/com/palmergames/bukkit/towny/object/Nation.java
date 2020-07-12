@@ -872,7 +872,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		casusBellis.remove(casusBelli);
 	}
 	
-	public void declareWar(Nation enemyNation, CasusBelli casusBelli) {
+	public War declareWar(Nation enemyNation, CasusBelli casusBelli) {
 		List<CasusBelli> attackerCasusBellis = new ArrayList<>();
 		attackerCasusBellis.add(casusBelli);
 		War war = new War(this, enemyNation, attackerCasusBellis, new ArrayList<>());
@@ -883,6 +883,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		universe.getDataSource().saveWar(war);
 		universe.getDataSource().saveCasusBelli(casusBelli);
 		universe.getDataSource().saveNation(this);
+		return war;
 	}
 	
 	public void cancelWar(War war) throws TownyException, EmptyNationException {
@@ -950,11 +951,14 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	
 	public boolean atWarWith(Nation nation) {
 		for (War war : wars) {
-			try {
-				Nation atWarWith = war.getAtWarWith(nation);
-				return true;
-			} catch (TownyException e) {
-				
+			if (war.isAnAttacker(this)) {
+				if (war.isADefender(nation)) {
+					return true;
+				}
+			} else if (war.isADefender(this)) {
+				if (war.isAnAttacker(nation)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -990,6 +994,19 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 
 	public boolean wasKilledInSpecificWar(Player player, War war) {
 		UUID uuid = player.getUniqueId();
+		if (war.isAnAttacker(this)) {
+			if (war.getAttackerCasualtyUuids().contains(uuid)) {
+				return true;
+			}
+		} else if (war.isADefender(this)) {
+			if (war.getDefenderCasualtyUuids().contains(uuid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean wasKilledInSpecificWar(UUID uuid, War war) {
 		if (war.isAnAttacker(this)) {
 			if (war.getAttackerCasualtyUuids().contains(uuid)) {
 				return true;

@@ -4,9 +4,7 @@ import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class War {
 	private Nation attacker;
@@ -17,6 +15,7 @@ public class War {
 	private List<UUID> defenderCasualtyUuids = new ArrayList<>();
 	private List<Nation> attackerAllies = new ArrayList<>();
 	private List<Nation> defenderAllies = new ArrayList<>();
+	private HashMap<Nation, Boolean> isAttackerMap = new HashMap<>();
 	private UUID uuid;
 	
 	public War(Nation attacker, Nation defender, List<CasusBelli> attackerCasusBellis, List<CasusBelli> defenderCasusBellis) {
@@ -55,27 +54,43 @@ public class War {
 	}
 	
 	public boolean isAnAttacker(Nation nation) {
-		if (attacker.getName() == nation.getName()) {
-			return true;
-		}
-		for (Nation ally : attackerAllies) {
-			if (ally.getName() == nation.getName()) {
-				return true;
+		if (!isAttackerMap.containsKey(nation)) {
+			if (attacker.getName() == nation.getName()) {
+				isAttackerMap.put(attacker, true);
+			}
+			if (!isAttackerMap.containsKey(nation)) {
+				for (Nation ally : attackerAllies) {
+					if (ally.getName() == nation.getName()) {
+						isAttackerMap.put(ally, true);
+					}
+				}
 			}
 		}
-		return false;
+		if (isAttackerMap.containsKey(nation)) {
+			return isAttackerMap.get(nation);
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean isADefender(Nation nation) {
-		if (defender.getName() == nation.getName()) {
-			return true;
-		}
-		for (Nation ally : defenderAllies) {
-			if (ally.getName() == nation.getName()) {
-				return true;
+		if (!isAttackerMap.containsKey(nation)) {
+			if (defender.getName() == nation.getName()) {
+				isAttackerMap.put(defender, false);
+			}
+			if (!isAttackerMap.containsKey(nation)) {
+				for (Nation ally : defenderAllies) {
+					if (ally.getName() == nation.getName()) {
+						isAttackerMap.put(ally, false);
+					}
+				}
 			}
 		}
-		return false;
+		if (isAttackerMap.containsKey(nation)) {
+			return !isAttackerMap.get(nation);
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean isWarLeader(Nation nation) {
@@ -194,8 +209,8 @@ public class War {
 	}
 	
 	public float getAttackerWarscore() {
-		int population = attacker.getNumResidents();
-		for (Nation ally : attackerAllies) {
+		int population = defender.getNumResidents();
+		for (Nation ally : defenderAllies) {
 			population += ally.getNumResidents();
 		}
 		float warscore = defenderCasualtyUuids.size() / population;
@@ -203,8 +218,8 @@ public class War {
 	}
 
 	public float getDefenderWarscore() {
-		int population = defender.getNumResidents();
-		for (Nation ally : defenderAllies) {
+		int population = attacker.getNumResidents();
+		for (Nation ally : attackerAllies) {
 			population += ally.getNumResidents();
 		}
 		float warscore = attackerCasualtyUuids.size() / population;

@@ -7,13 +7,8 @@ import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
-import com.palmergames.bukkit.towny.object.Coord;
-import com.palmergames.bukkit.towny.object.PlayerCache;
+import com.palmergames.bukkit.towny.object.*;
 import com.palmergames.bukkit.towny.object.PlayerCache.TownBlockStatus;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyWorld;
-import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.regen.TownyRegenAPI;
 import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 import com.palmergames.bukkit.towny.war.common.WarZoneConfig;
@@ -106,6 +101,27 @@ public class TownyBlockListener implements Listener {
 		try {
 			TownyWorld world = townyUniverse.getDataSource().getWorld(block.getWorld().getName());
 			worldCoord = new WorldCoord(world.getName(), Coord.parseCoord(block));
+			
+//			if (worldCoord.getTownBlock() != null) {
+//				TownBlock townBlock = worldCoord.getTownBlock();
+//				Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+//				if (townBlock.hasTown() && resident.hasNation()) {
+//					Town town = townBlock.getTown();
+//					if (town.hasNation()) {
+//						Nation attackerNation = resident.getTown().getNation();
+//						Nation defenderNation = town.getNation();
+//						if (attackerNation.atWarWith(defenderNation)) {
+//							com.palmergames.bukkit.towny.newwar.War war = attackerNation.getWar(defenderNation);
+//							if (!(attackerNation.wasKilledInSpecificWar(player, war) || defenderNation.wasKilledInSpecificWar(defenderNation.getKing().getUUID(), war))) {
+//								return;
+//							} else {
+//								event.setCancelled(true);
+//								return;
+//							}
+//						}
+//					}
+//				}
+//			}
 
 			//Get build permissions (updates if none exist)
 			boolean bBuild = PlayerCacheUtil.getCachePermission(player, block.getLocation(), block.getType(), TownyPermission.ActionType.BUILD);
@@ -158,6 +174,8 @@ public class TownyBlockListener implements Listener {
 		} catch (NotRegisteredException e1) {
 			TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_not_configured"));
 			event.setCancelled(true);
+		} catch (TownyException e) {
+			e.printStackTrace();
 		}
 
 	}
