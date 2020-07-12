@@ -809,7 +809,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						}
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), attackerCasusBellis.size(), attackerCasusBelliString));
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getAttackerWarscore() * 100)) + "%");
+//					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getAttackerWarscore() * 100)) + "%");
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getAttackerCasualtyUuids().size())));
 					
 					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_divider"));
@@ -839,7 +839,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						}
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), defenderCasusBellis.size(), defenderCasusBelliString));
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getDefenderWarscore() * 100)) + "%");
+//					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getDefenderWarscore() * 100)) + "%");
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getDefenderCasualtyUuids().size())));
 					
 				}
@@ -1985,15 +1985,15 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			
 			War war = playerNation.getWar(nation);
 
-			if (war.isAnAttacker(playerNation)) {
-				if (war.getAttackerWarscore() < casusBelli.getWarscoreNeeded()) {
-					throw new TownyException(String.format(TownySettings.getLangString("msg_err_need_more_warscore"), String.valueOf(casusBelli.getWarscoreNeeded() * 100) + "%"));
-				}
-			} else if (war.isADefender(playerNation)) {
-				if (war.getDefenderWarscore() < casusBelli.getWarscoreNeeded()) {
-					throw new TownyException(String.format(TownySettings.getLangString("msg_err_need_more_warscore"), String.valueOf(casusBelli.getWarscoreNeeded() * 100) + "%"));
-				}
-			}
+//			if (war.isAnAttacker(playerNation)) {
+//				if (war.getAttackerWarscore() < casusBelli.getWarscoreNeeded()) {
+//					throw new TownyException(String.format(TownySettings.getLangString("msg_err_need_more_warscore"), String.valueOf(casusBelli.getWarscoreNeeded() * 100) + "%"));
+//				}
+//			} else if (war.isADefender(playerNation)) {
+//				if (war.getDefenderWarscore() < casusBelli.getWarscoreNeeded()) {
+//					throw new TownyException(String.format(TownySettings.getLangString("msg_err_need_more_warscore"), String.valueOf(casusBelli.getWarscoreNeeded() * 100) + "%"));
+//				}
+//			}
 
 			CasusBelli finalCasusBelli = (CasusBelli) casusBelli.clone();
 			finalCasusBelli.setAttacker(playerNation);
