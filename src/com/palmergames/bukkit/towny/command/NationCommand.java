@@ -1970,6 +1970,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (!playerNation.atWarWith(nation)) {
 				throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 			}
+			
 			CasusBelli casusBelli = null;
 			for (CasusBelli checkCasusBelli : CasusBellis.casusBellis) {
 				if (checkCasusBelli.getName().equalsIgnoreCase(casusBelliName)) {
@@ -1981,6 +1982,18 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (casusBelli == null) {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), casusBelliName));
 			}
+			
+			War war = playerNation.getWar(nation);
+
+			if (war.isAnAttacker(playerNation)) {
+				if (war.getAttackerWarscore() < casusBelli.getWarscoreNeeded()) {
+					throw new TownyException(String.format(TownySettings.getLangString("msg_err_need_more_warscore"), String.valueOf(casusBelli.getWarscoreNeeded() * 100) + "%"));
+				}
+			} else if (war.isADefender(playerNation)) {
+				if (war.getDefenderWarscore() < casusBelli.getWarscoreNeeded()) {
+					throw new TownyException(String.format(TownySettings.getLangString("msg_err_need_more_warscore"), String.valueOf(casusBelli.getWarscoreNeeded() * 100) + "%"));
+				}
+			}
 
 			CasusBelli finalCasusBelli = (CasusBelli) casusBelli.clone();
 			finalCasusBelli.setAttacker(playerNation);
@@ -1990,7 +2003,6 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (!finalCasusBelli.canUse()) {
 				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
 			}
-			War war = playerNation.getWar(nation);
 			Confirmation confirmation = new Confirmation(() -> {
 				finalCasusBelli.onAdd();
 				finalCasusBelli.onDeclare(params);

@@ -213,7 +213,7 @@ public class War {
 		for (Nation ally : defenderAllies) {
 			population += ally.getNumResidents();
 		}
-		float warscore = defenderCasualtyUuids.size() / population;
+		float warscore = (float)defenderCasualtyUuids.size() / (float)population;
 		return warscore;
 	}
 
@@ -222,7 +222,7 @@ public class War {
 		for (Nation ally : attackerAllies) {
 			population += ally.getNumResidents();
 		}
-		float warscore = attackerCasualtyUuids.size() / population;
+		float warscore = (float)attackerCasualtyUuids.size() / (float)population;
 		return warscore;
 	}
 	

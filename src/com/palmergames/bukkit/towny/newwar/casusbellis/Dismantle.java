@@ -21,6 +21,7 @@ public class Dismantle extends CasusBelli {
 	public int getDaysForJustification() {
 		return 216;
 	}
+	public float getWarscoreNeeded() { return 0.7f; }
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
 		TownyUniverse.getInstance().getDataSource().removeNation(loser);
 		TownyMessaging.sendGlobalMessage(TownySettings.getDelNationMsg(loser));

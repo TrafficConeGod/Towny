@@ -19,6 +19,7 @@ public class Conquer extends CasusBelli {
 	public int getDaysForJustification() {
 		return 216;
 	}
+	public float getWarscoreNeeded() { return 1; }
 	public boolean canUse() {
 		return defender.getTowns().size() == 1;
 	}

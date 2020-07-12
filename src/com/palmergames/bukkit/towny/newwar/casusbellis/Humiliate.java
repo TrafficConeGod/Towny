@@ -15,4 +15,5 @@ public class Humiliate extends CasusBelli {
 	public float getInfamy() {
 		return 3;
 	}
+	public float getWarscoreNeeded() { return 0.1f; }
 }

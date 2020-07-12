@@ -1188,6 +1188,7 @@ msg_enemy_add_wargoal: '&b%s has expanded their demands to include the wargoal %
 msg_should_declare_independence: '&bYou are about to declare independence which will result in a war of independence with your parent nation. Are you sure you want to continue?'
 msg_declared_independence: '&bYou have declared a war of independence against %s.'
 msg_enemy_declared_independence: '&b%s has declared a war of independence against you.'
+msg_err_need_more_warscore: '&cYou need at least %s warscore to add this wargoal.'
 status_war_attackers: '&2Attackers:'
 status_war_defenders: '&2Defenders:'
 status_war_divider: '&a-------------------'

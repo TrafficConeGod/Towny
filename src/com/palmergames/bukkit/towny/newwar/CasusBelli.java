@@ -19,6 +19,7 @@ public abstract class CasusBelli implements Cloneable {
 		return 0;
 	}
 	public int getDaysForJustification() { return 1; }
+	public float getWarscoreNeeded() { return 2; }
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
 	}
 	public void onAdd() {
