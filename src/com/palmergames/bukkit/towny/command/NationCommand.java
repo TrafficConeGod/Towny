@@ -364,9 +364,19 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				case "justify":
 				case "addgoal":
 				case "declare":
-					System.out.println(args);
-					if (args.length == 2)
-						return NameUtil.filterByStart(nationCasusBelliTabCompletes, args[1]);
+					if (args.length == 2) {
+						return getTownyStartingWith(args[1], "n");
+					} else if (args.length == 3) {
+						return NameUtil.filterByStart(nationCasusBelliTabCompletes, args[2]);
+					}
+					break;
+				case "surrender":
+				case "war":
+				case "call":
+				case "peace":
+					if (args.length == 2) {
+						return getTownyStartingWith(args[1], "n");
+					}
 					break;
 				default:
 					if (args.length == 1) {
@@ -607,6 +617,11 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
 					if (!resident.isKing())
 						throw new TownyException(TownySettings.getLangString("msg_err_merging_for_kings_only"));
+					if (resident.isKing()) {
+						if (resident.getTown().getNation().isAtWar()) {
+							throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+						}
+					}
 					mergeNation(player, split[1]);
 				}
 				
@@ -763,9 +778,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				}
 				if (remainingNation.getName().equalsIgnoreCase(nationName))
 					throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), nationName));
-
-				TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("msg_casus_bellis_for"), enemyNation.getName()));
-
+				
 				if (enemyNation != null) {
 					if (!playerNation.atWarWith(enemyNation)) {
 						throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
@@ -986,10 +999,17 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					nationEnemy(player, newSplit);
 
 				} else if (split[0].equalsIgnoreCase("delete")) {
-
+					
 					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_DELETE.getNode()))
 						throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
 
+					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+					if (resident.isKing()) {
+						if (resident.getTown().getNation().isAtWar()) {
+							throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+						}
+					}
+					
 					nationDelete(player, newSplit);
 
 				} else if (split[0].equalsIgnoreCase("online")) {
@@ -1672,8 +1692,42 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(TownySettings.getLangString("msg_war_flag_deny_recently_attacked"));
 			}
 			
+			TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_should_declare_independence"));
+
+			Nation finalNation = nation;
+			Town finalTown = town;
 			Confirmation confirmation = new Confirmation(() -> {
-				player.sendMessage("lol you cant actually  independence yet lmao.");
+				try {
+					finalNation.removeTown(finalTown);
+					newNation(finalTown.getName(), finalTown);
+					Nation townNation = finalTown.getNation();
+
+					CasusBelli casusBelli = (CasusBelli) CasusBellis.casusBellis[4].clone();
+					
+					casusBelli.setAttacker(townNation);
+					casusBelli.setDefender(finalNation);
+					casusBelli.setUuid(UUID.randomUUID());
+					casusBelli.onPreDeclare(new String[0]);
+
+					casusBelli.onAdd();
+					casusBelli.onDeclare(new String[0]);
+
+					townNation.declareWar(finalNation, casusBelli);
+					
+					townyUniverse.getDataSource().saveTown(finalTown);
+					townyUniverse.getDataSource().saveNation(finalNation);
+					townyUniverse.getDataSource().saveNation(townNation);
+
+					TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_declared_independence"), finalNation.getName()));
+
+					Resident king = finalNation.getKing();
+					if (BukkitTools.isOnline(king.getName())) {
+						TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_declared_independence"), townNation.getName()));
+					}
+					
+				} catch (Exception e) {
+					TownyMessaging.sendErrorMsg(player, e.getMessage());
+				}
 			});
 			ConfirmationHandler.sendConfirmation(player, confirmation);
 			
@@ -2109,7 +2163,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_call_ally"), playerNation.getName()));
 						Confirmation confirmation = new Confirmation(() -> {
 							allyNation.joinWar(playerNation, war);
-							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("accepted_call_to_arms"), allyNation.getName()));
+							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_accepted_call_to_arms"), allyNation.getName()));
 						});
 						ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), confirmation);
 					}
