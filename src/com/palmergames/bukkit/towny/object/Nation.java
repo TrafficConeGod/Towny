@@ -1078,15 +1078,6 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		justification = null;
 		universe.getDataSource().saveCasusBelli(finalCasusBelli);
 		universe.getDataSource().saveNation(this);
-		Resident playerKing = getKing();
-		if (BukkitTools.isOnline(playerKing.getName())) {
-			TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(playerKing.getName()), String.format(TownySettings.getLangString("msg_justified_on"), nation.getName(), finalCasusBelli.getName()));
-		}
-
-		Resident king = nation.getKing();
-		if (BukkitTools.isOnline(king.getName())) {
-			TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_enemy_justified_on"), getName(), finalCasusBelli.getName()));
-		}
-
+		TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_justified_on"), getName(), nation.getName(), finalCasusBelli.getName()));
 	}
 }

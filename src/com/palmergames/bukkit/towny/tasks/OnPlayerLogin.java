@@ -114,6 +114,7 @@ public class OnPlayerLogin implements Runnable {
 				if (TownySettings.getShowNationBoardOnLogin()) {
 					if (resident.getTown().hasNation()) {
 						TownyMessaging.sendNationBoard(player, resident.getTown().getNation());
+						
 					}
 				}
 				resident.getTown(); // Exception check, this does not do anything at all!
