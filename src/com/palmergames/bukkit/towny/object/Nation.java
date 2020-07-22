@@ -1074,7 +1074,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 			/
 			(enemyInfamy + 12)
 		) * 12;
-		infamy += calculatedInfamy;
+		infamy += calculatedInfamy / 2;
 		justification = null;
 		universe.getDataSource().saveCasusBelli(finalCasusBelli);
 		universe.getDataSource().saveNation(this);
