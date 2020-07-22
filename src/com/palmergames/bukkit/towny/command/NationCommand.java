@@ -1811,10 +1811,17 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_already_justifying"), justifyingOn.getName()));
 			}
 			Confirmation confirmation = new Confirmation(() -> {
-				Justification justification = new Justification(finalCasusBelli.getIndex(), finalCasusBelli.getDaysForJustification(), nation);
+				float baseDaysForJustification = (float)finalCasusBelli.getDaysForJustification(); // baseD
+				float enemyInfamy = nation.getInfamy();
+				float calculatedDaysForJustification = (
+					baseDaysForJustification
+					/
+					(enemyInfamy + 12)
+				) * 12;
+				Justification justification = new Justification(finalCasusBelli.getIndex(), (int)calculatedDaysForJustification, nation);
 				playerNation.setJustification(justification);
 				universe.getDataSource().saveNation(playerNation);
-				TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_justifying_on"), playerNation.getName(), nation.getName(), finalCasusBelli.getName(), finalCasusBelli.getDaysForJustification() / 72));
+				TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_justifying_on"), playerNation.getName(), nation.getName(), finalCasusBelli.getName(), calculatedDaysForJustification / 72));
 			});
 			ConfirmationHandler.sendConfirmation(player, confirmation);
 		}
