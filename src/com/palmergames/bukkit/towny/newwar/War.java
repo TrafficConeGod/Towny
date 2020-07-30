@@ -11,8 +11,8 @@ public class War {
 	private Nation defender;
 	private List<CasusBelli> attackerCasusBellis;
 	private List<CasusBelli> defenderCasusBellis;
-	private List<UUID> attackerCasualtyUuids = new ArrayList<>();
-	private List<UUID> defenderCasualtyUuids = new ArrayList<>();
+	private HashMap<UUID, Integer> attackerLives = new HashMap<>();
+	private HashMap<UUID, Integer> defenderLives = new HashMap<>();
 	private List<Nation> attackerAllies = new ArrayList<>();
 	private List<Nation> defenderAllies = new ArrayList<>();
 	private HashMap<Nation, Boolean> isAttackerMap = new HashMap<>();
@@ -124,12 +124,12 @@ public class War {
 		return isAnAttacker(nation) || isADefender(nation);
 	}
 
-	public void setAttackerCasualtyUuids(List<UUID> attackerCasualtyUuids) {
-		this.attackerCasualtyUuids = attackerCasualtyUuids;
+	public void setAttackerLives(HashMap<UUID, Integer> attackerLives) {
+		this.attackerLives = attackerLives;
 	}
 
-	public void setDefenderCasualtyUuids(List<UUID> defenderCasualtyUuids) {
-		this.defenderCasualtyUuids = defenderCasualtyUuids;
+	public void setDefenderLives(HashMap<UUID, Integer> defenderLives) {
+		this.defenderLives = defenderLives;
 	}
 
 	public void setAttackerAllies(List<Nation> attackerAllies) {
@@ -148,28 +148,71 @@ public class War {
 		return defenderAllies;
 	}
 
-	public List<UUID> getAttackerCasualtyUuids() {
-		return attackerCasualtyUuids;
+	public HashMap<UUID, Integer> getAttackerLives() {
+		return attackerLives;
 	}
 
-	public void addAttackerCasualtyUuid(UUID uuid) {
-		attackerCasualtyUuids.add(uuid);
+	public void setAttackerLife(UUID uuid, int lives) {
+		attackerLives.put(uuid, lives);
 	}
+	
+	// UNUSED
+//	public void removeAttackerCasualtyUuid(UUID uuid) {
+//		attackerCasualtyUuids.remove(uuid);
+//	}
 
-	public void removeAttackerCasualtyUuid(UUID uuid) {
-		attackerCasualtyUuids.remove(uuid);
+	public HashMap<UUID, Integer> getDefenderLives() {
+		return defenderLives;
 	}
-
-	public List<UUID> getDefenderCasualtyUuids() {
-		return defenderCasualtyUuids;
+	
+	public void setDefenderLife(UUID uuid, int lives) {
+		defenderLives.put(uuid, lives);
 	}
-
-	public void addDefenderCasualtyUuid(UUID uuid) {
-		defenderCasualtyUuids.add(uuid);
+	
+	// UNUSED
+//	public void removeDefenderCasualtyUuid(UUID uuid) {
+//		defenderCasualtyUuids.remove(uuid);
+//	}
+	
+	public boolean wasKilledInCombat(Nation nation, UUID uuid) {
+		if (isAnAttacker(nation)) {
+			if (!attackerLives.containsKey(uuid)) {
+				return false;
+			}
+			int lives = attackerLives.get(uuid);
+			if (lives <= 0) {
+				return true;
+			}
+		} else if (isADefender(nation)) {
+			if (!defenderLives.containsKey(uuid)) {
+				return false;
+			}
+			int lives = defenderLives.get(uuid);
+			if (lives <= 0) {
+				return true;
+			}
+		}
+		return false;
 	}
-
-	public void removeDefenderCasualtyUuid(UUID uuid) {
-		defenderCasualtyUuids.remove(uuid);
+	
+	public int getCasualtyCount(Nation nation) {
+		int count = 0;
+		if (isAnAttacker(nation)) {
+			for (Map.Entry<UUID, Integer> entry : attackerLives.entrySet()) {
+				int lives = entry.getValue();
+				if (lives <= 0) {
+					count++;
+				}
+			}
+		} else if (isADefender(nation)) {
+			for (Map.Entry<UUID, Integer> entry : defenderLives.entrySet()) {
+				int lives = entry.getValue();
+				if (lives <= 0) {
+					count++;
+				}
+			}
+		}
+		return count;
 	}
 	
 	public void addWarToCombatants() {
@@ -208,24 +251,25 @@ public class War {
 		nation.removeWar(this);
 	}
 	
-	public float getAttackerWarscore() {
-		int population = defender.getNumResidents();
-		for (Nation ally : defenderAllies) {
-			population += ally.getNumResidents();
-		}
-		float warscore = (float)defenderCasualtyUuids.size() / (float)population;
-		return warscore;
-	}
-
-	public float getDefenderWarscore() {
-		int population = attacker.getNumResidents();
-		for (Nation ally : attackerAllies) {
-			population += ally.getNumResidents();
-		}
-		float warscore = (float)attackerCasualtyUuids.size() / (float)population;
-		return warscore;
-	}
-	
+	// UNUSED
+//	public float getAttackerWarscore() {
+//		int population = defender.getNumResidents();
+//		for (Nation ally : defenderAllies) {
+//			population += ally.getNumResidents();
+//		}
+//		float warscore = (float)defenderLives.size() / (float)population;
+//		return warscore;
+//	}
+//
+//	public float getDefenderWarscore() {
+//		int population = attacker.getNumResidents();
+//		for (Nation ally : attackerAllies) {
+//			population += ally.getNumResidents();
+//		}
+//		float warscore = (float)attackerLives.size() / (float)population;
+//		return warscore;
+//	}
+//	
 	public void addAttackerCasusBelli(CasusBelli casusBelli) {
 		attackerCasusBellis.add(casusBelli);
 	}

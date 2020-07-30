@@ -979,14 +979,8 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	public boolean wasKilledInWar(Player player) {
 		UUID uuid = player.getUniqueId();
 		for (War war : wars) {
-			if (war.isAnAttacker(this)) {
-				if (war.getAttackerCasualtyUuids().contains(uuid)) {
-					return true;
-				}
-			} else if (war.isADefender(this)) {
-				if (war.getDefenderCasualtyUuids().contains(uuid)) {
-					return true;
-				}
+			if (war.wasKilledInCombat(this, uuid)) {
+				return true;
 			}
 		}
 		return false;
@@ -994,41 +988,17 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 
 	public boolean wasKilledInSpecificWar(Player player, War war) {
 		UUID uuid = player.getUniqueId();
-		if (war.isAnAttacker(this)) {
-			if (war.getAttackerCasualtyUuids().contains(uuid)) {
-				return true;
-			}
-		} else if (war.isADefender(this)) {
-			if (war.getDefenderCasualtyUuids().contains(uuid)) {
-				return true;
-			}
-		}
-		return false;
+		return war.wasKilledInCombat(this, uuid);
 	}
 
 	public boolean wasKilledInSpecificWar(UUID uuid, War war) {
-		if (war.isAnAttacker(this)) {
-			if (war.getAttackerCasualtyUuids().contains(uuid)) {
-				return true;
-			}
-		} else if (war.isADefender(this)) {
-			if (war.getDefenderCasualtyUuids().contains(uuid)) {
-				return true;
-			}
-		}
-		return false;
+		return war.wasKilledInCombat(this, uuid);
 	}
 
 	public boolean wasKilledInWar(UUID uuid) {
 		for (War war : wars) {
-			if (war.isAnAttacker(this)) {
-				if (war.getAttackerCasualtyUuids().contains(uuid)) {
-					return true;
-				}
-			} else if (war.isADefender(this)) {
-				if (war.getDefenderCasualtyUuids().contains(uuid)) {
-					return true;
-				}
+			if (war.wasKilledInCombat(this, uuid)) {
+				return true;
 			}
 		}
 		return false;

@@ -78,6 +78,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -1129,13 +1130,35 @@ public class TownyPlayerListener implements Listener {
 					Nation loserNation = loserResident.getTown().getNation();
 					if (victorNation.atWarWith(loserNation) && !victorNation.getName().equalsIgnoreCase(loserNation.getName())) {
 						War war = victorNation.getWar(loserNation);
+						int maxLives = 3;
 						if (war.isAnAttacker(loserNation)) {
-							war.addAttackerCasualtyUuid(loser.getUniqueId());
+							HashMap<UUID, Integer> attackerLives = war.getAttackerLives();
+							if (!attackerLives.containsKey(loser.getUniqueId())) {
+								war.setAttackerLife(loser.getUniqueId(), maxLives);
+							}
+							int lives = attackerLives.get(loser.getUniqueId());
+							lives -= 1;
+							war.setAttackerLife(loser.getUniqueId(), lives);
+							if (lives <= 0) {
+								TownyMessaging.sendErrorMsg(loser, TownySettings.getLangString("msg_war_death_kick"));
+							} else {
+								TownyMessaging.sendErrorMsg(loser, String.format(TownySettings.getLangString("msg_war_death_life_lost"), String.valueOf(lives)));
+							}
 						} else if (war.isADefender(loserNation)) {
-							war.addDefenderCasualtyUuid(loser.getUniqueId());
+							HashMap<UUID, Integer> defenderLives = war.getDefenderLives();
+							if (!defenderLives.containsKey(loser.getUniqueId())) {
+								war.setDefenderLife(loser.getUniqueId(), maxLives);
+							}
+							int lives = defenderLives.get(loser.getUniqueId());
+							lives -= 1;
+							war.setDefenderLife(loser.getUniqueId(), lives);
+							if (lives <= 0) {
+								TownyMessaging.sendErrorMsg(loser, TownySettings.getLangString("msg_war_death_kick"));
+							} else {
+								TownyMessaging.sendErrorMsg(loser, String.format(TownySettings.getLangString("msg_war_death_life_lost"), String.valueOf(lives)));
+							}
 						}
 						universe.getDataSource().saveWar(war);
-						TownyMessaging.sendErrorMsg(loser, TownySettings.getLangString("msg_war_death_kick"));
 					}
 				}
 			}

@@ -45,16 +45,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-import java.util.Queue;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.HashSet;
+import java.util.regex.Pattern;
 
 public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
@@ -369,8 +362,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			Nation defender = null;
 			List<CasusBelli> attackerCasusBellis = new ArrayList<>();
 			List<CasusBelli> defenderCasusBellis = new ArrayList<>();
-			List<UUID> attackerCasualtyUuids = new ArrayList<>();
-			List<UUID> defenderCasualtyUuids = new ArrayList<>();
+			HashMap<UUID, Integer> attackerLives = new HashMap<>();
+			HashMap<UUID, Integer> defenderLives = new HashMap<>();
 			List<Nation> attackerAllies = new ArrayList<>();
 			List<Nation> defenderAllies = new ArrayList<>();
 
@@ -398,17 +391,21 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 								CasusBelli casusBelli = getCasusBelli(casusBelliUuidString);
 								defenderCasusBellis.add(casusBelli);
 							}
-						} else if (property.equalsIgnoreCase("attackerCasualtyUuids")) {
-							String[] split = value.split(",");
-							for (String attackerCasualtyUuid : split) {
-								UUID uuid = UUID.fromString(attackerCasualtyUuid);
-								attackerCasualtyUuids.add(uuid);
+						} else if (property.equalsIgnoreCase("attackerLives")) {
+							String[] split = value.split(Pattern.quote("|"));
+							for (String attackerUuidAndLife : split) {
+								String[] uuidAndLifeSplit = attackerUuidAndLife.split(",");
+								UUID uuid = UUID.fromString(uuidAndLifeSplit[0]);
+								int lives = Integer.parseInt(uuidAndLifeSplit[1]);
+								attackerLives.put(uuid, lives);
 							}
-						} else if (property.equalsIgnoreCase("defenderCasualtyUuids")) {
-							String[] split = value.split(",");
-							for (String defenderCasualtyUuid : split) {
-								UUID uuid = UUID.fromString(defenderCasualtyUuid);
-								defenderCasualtyUuids.add(uuid);
+						} else if (property.equalsIgnoreCase("defenderLives")) {
+							String[] split = value.split(Pattern.quote("|"));
+							for (String defenderUuidAndLife : split) {
+								String[] uuidAndLifeSplit = defenderUuidAndLife.split(",");
+								UUID uuid = UUID.fromString(uuidAndLifeSplit[0]);
+								int lives = Integer.parseInt(uuidAndLifeSplit[1]);
+								defenderLives.put(uuid, lives);
 							}
 						} else if (property.equalsIgnoreCase("attackerAllies")) {
 							String[] split = value.split(",");
@@ -430,8 +427,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			if (attacker != null && defender != null && attackerCasusBellis != null && defenderCasusBellis != null) {
 				War war = new War(attacker, defender, attackerCasusBellis, defenderCasusBellis);
 				war.setUuid(UUID.fromString(uuidString));
-				war.setAttackerCasualtyUuids(attackerCasualtyUuids);
-				war.setDefenderCasualtyUuids(defenderCasualtyUuids);
+				war.setAttackerLives(attackerLives);
+				war.setDefenderLives(defenderLives);
 				war.setAttackerAllies(attackerAllies);
 				war.setDefenderAllies(defenderAllies);
 				war.addWarToCombatants();
@@ -1931,33 +1928,41 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 		// defender casus bellis
 		list.add("defenderCasusBellis=" + defenderCasusBellis);
 		
-		String attackerCasualtyUuids = "";
+		String attackerLives = "";
 
-		for (int i = 0; i < war.getAttackerCasualtyUuids().size(); i++) {
-			UUID uuid = war.getAttackerCasualtyUuids().get(i);
-			if (i == 0) {
-				attackerCasualtyUuids += uuid.toString();
+		int attackerLifeIndex = 0;
+		for (Map.Entry<UUID, Integer> entry : war.getAttackerLives().entrySet()) {
+			UUID uuid = entry.getKey();
+			int lives = entry.getValue();
+			String displayString = uuid.toString() + "," + lives;
+			if (attackerLifeIndex == 0) {
+				attackerLives += displayString;
 			} else {
-				attackerCasualtyUuids += ("," + uuid.toString());
+				attackerLives += ("," + displayString);
 			}
+			attackerLifeIndex++;
 		}
 
-		// attacker casualty uuids
-		list.add("attackerCasualtyUuids=" + attackerCasualtyUuids);
+		// attacker lives
+		list.add("attackerLives=" + attackerLives);
 
-		String defenderCasualtyUuids = "";
+		String defenderLives = "";
 
-		for (int i = 0; i < war.getDefenderCasualtyUuids().size(); i++) {
-			UUID uuid = war.getDefenderCasualtyUuids().get(i);
-			if (i == 0) {
-				defenderCasualtyUuids += uuid.toString();
+		int defenderLifeIndex = 0;
+		for (Map.Entry<UUID, Integer> entry : war.getDefenderLives().entrySet()) {
+			UUID uuid = entry.getKey();
+			int lives = entry.getValue();
+			String displayString = uuid.toString() + "," + lives;
+			if (defenderLifeIndex == 0) {
+				defenderLives += displayString;
 			} else {
-				defenderCasualtyUuids += ("," + uuid.toString());
+				defenderLives += ("," + displayString);
 			}
+			defenderLifeIndex++;
 		}
 
-		// defender casualty uuids
-		list.add("defenderCasualtyUuids=" + defenderCasualtyUuids);
+		// defender lives
+		list.add("defenderLives=" + defenderLives);
 
 		String attackerAllies = "";
 
@@ -2195,7 +2200,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 	@Override
 	public boolean saveTown(Town town) {
-
+		
 		List<String> list = new ArrayList<>();
 
 		// Name
