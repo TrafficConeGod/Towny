@@ -17,6 +17,7 @@ import com.palmergames.bukkit.towny.command.commandobjects.CancelCommand;
 import com.palmergames.bukkit.towny.command.commandobjects.ConfirmCommand;
 import com.palmergames.bukkit.towny.command.commandobjects.DenyCommand;
 import com.palmergames.bukkit.towny.confirmations.ConfirmationHandler;
+import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.huds.HUDManager;
@@ -199,9 +200,25 @@ public class Towny extends JavaPlugin {
 				}
 			
 			TownyUniverse universe = TownyUniverse.getInstance();
+
+			BukkitScheduler scheduler = getServer().getScheduler();
+			scheduler.scheduleSyncRepeatingTask(this, () -> {
+				for (Town town : universe.getDataSource().getTowns()) {
+					if (!town.hasNation()) {
+						System.out.println("Town " + town.getName() + " doesn't have a nation, auto generating one...");
+						try {
+							universe.generateNation(town.getName(), town);
+						} catch (AlreadyRegisteredException e) {
+							e.printStackTrace();
+						} catch (NotRegisteredException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}, 0L, 20000L);
+			
 			
 			World measureWorld = Bukkit.getServer().getWorlds().get(0); // this is horrible please aaa
-			BukkitScheduler scheduler = getServer().getScheduler();
 			scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
 				long lastTime = measureWorld.getTime() % 24000;
 				

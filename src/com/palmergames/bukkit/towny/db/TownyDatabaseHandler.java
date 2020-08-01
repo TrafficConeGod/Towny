@@ -543,7 +543,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 			}
 			town.clear();
 		} catch (EmptyNationException e) {
-			removeNation(e.getNation());
+			removeNation(e.getNation(), true);
 			TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), e.getNation()));
 		} catch (NotRegisteredException e) {
 			e.printStackTrace();
@@ -592,7 +592,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 	}
 
 	@Override
-	public void removeNation(Nation nation) {
+	public void removeNation(Nation nation, boolean generateNewNations) {
 
 		PreDeleteNationEvent preEvent = new PreDeleteNationEvent(nation.getName());
 		BukkitTools.getPluginManager().callEvent(preEvent);
@@ -667,6 +667,15 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 					res.setTitle("");
 					res.setSurname("");
 					saveResident(res);
+				}
+			}
+			
+			if (generateNewNations && !town.hasNation()) {
+				TownyUniverse townyUniverse = TownyUniverse.getInstance();
+				try {
+					townyUniverse.generateNation(town.getName(), town);
+				} catch (AlreadyRegisteredException | NotRegisteredException e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -1154,7 +1163,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 			prevailingNation.addTown(lastTown);
 			saveTown(lastTown);
 			String name = en.getNation().getName();
-			universe.getDataSource().removeNation(en.getNation());
+			universe.getDataSource().removeNation(en.getNation(), false);
 			saveNation(prevailingNation);
 			universe.getDataSource().saveNationList();
 			TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), name));

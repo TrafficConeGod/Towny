@@ -478,7 +478,7 @@ public class DailyTimerTask extends TownyTimerTask {
 					// Town is paying upkeep
 
 					if (!nation.getAccount().pay(TownySettings.getNationUpkeepCost(nation), "Nation Upkeep")) {
-						townyUniverse.getDataSource().removeNation(nation);
+						townyUniverse.getDataSource().removeNation(nation, true);
 						removedNations.add(nation.getName());
 					}
 					if (nation.isNeutral()) {

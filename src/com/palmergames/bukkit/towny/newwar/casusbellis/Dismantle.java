@@ -23,7 +23,7 @@ public class Dismantle extends CasusBelli {
 	}
 	public float getWarscoreNeeded() { return 0.7f; }
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
-		TownyUniverse.getInstance().getDataSource().removeNation(loser);
+		TownyUniverse.getInstance().getDataSource().removeNation(loser, true);
 		TownyMessaging.sendGlobalMessage(TownySettings.getDelNationMsg(loser));
 	}
 }

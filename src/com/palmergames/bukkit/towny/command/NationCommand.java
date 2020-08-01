@@ -2066,34 +2066,70 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			
 			// real code
 			Resident king = enemyNation.getKing();
-			if (!(BukkitTools.isOnline(king.getName()) || enemyNation.wasKilledInWar(king.getUUID()))) {
-				throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), enemyNation.getName(), king.getName()));
-			} else {
+
+			System.out.println(king.getLastOnline());
+			System.out.println(System.currentTimeMillis() - king.getLastOnline());
+			System.out.println(20 * TownySettings.getInactiveAfter());
+			
+			if (enemyNation.wasKilledInWar(king.getUUID()) || (System.currentTimeMillis() - king.getLastOnline() >= 3600000)) {
+				// king is dead force peace
 				Confirmation confirmation = new Confirmation(() -> {
-					if (enemyNation.wasKilledInWar(king.getUUID())) {
+					try {
+						playerNation.peaceWar(war);
+					} catch (TownyException | EmptyNationException e) {
+						TownyMessaging.sendErrorMsg(player, e.getMessage());
+					}
+					TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
+				});
+				ConfirmationHandler.sendConfirmation(player, confirmation);
+			} else {
+				if (!BukkitTools.isOnline(king.getName())) {
+					throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), enemyNation.getName(), king.getName()));
+				}
+				// king is online no force peace
+				Confirmation confirmation = new Confirmation(() -> {
+					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_peace"), playerNation.getName()));
+					Confirmation enemyConfirmation = new Confirmation(() -> {
 						try {
 							playerNation.peaceWar(war);
+							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
+							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
 						} catch (TownyException | EmptyNationException e) {
 							TownyMessaging.sendErrorMsg(player, e.getMessage());
 						}
-						TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
-					} else {
-						TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_peace"), playerNation.getName()));
-						Confirmation enemyConfirmation = new Confirmation(() -> {
-							try {
-								playerNation.peaceWar(war);
-								TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
-								TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
-							} catch (TownyException | EmptyNationException e) {
-								TownyMessaging.sendErrorMsg(player, e.getMessage());
-							}
-						});
-						ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
-
-					}
+					});
+					ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
 				});
 				ConfirmationHandler.sendConfirmation(player, confirmation);
 			}
+			
+			
+			
+			
+			
+			
+//			if (!(BukkitTools.isOnline(king.getName()) || enemyNation.wasKilledInWar(king.getUUID()))) {
+//				throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), enemyNation.getName(), king.getName()));
+//			} else {
+//				Confirmation confirmation = new Confirmation(() -> {
+//					if (enemyNation.wasKilledInWar(king.getUUID())) {
+//					} else {
+//						TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_peace"), playerNation.getName()));
+//						Confirmation enemyConfirmation = new Confirmation(() -> {
+//							try {
+//								playerNation.peaceWar(war);
+//								TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
+//								TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
+//							} catch (TownyException | EmptyNationException e) {
+//								TownyMessaging.sendErrorMsg(player, e.getMessage());
+//							}
+//						});
+//						ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
+//
+//					}
+//				});
+//				ConfirmationHandler.sendConfirmation(player, confirmation);
+//			}
 
 
 		}
@@ -2202,7 +2238,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				Resident resident = townyUniverse.getDataSource().getResident(player.getName());
 				Nation nation = resident.getTown().getNation();
 				Confirmation confirmation = new Confirmation(() -> {
-					TownyUniverse.getInstance().getDataSource().removeNation(nation);
+					TownyUniverse.getInstance().getDataSource().removeNation(nation, true);
 					TownyMessaging.sendGlobalMessage(TownySettings.getDelNationMsg(nation));
 				});
 				ConfirmationHandler.sendConfirmation(player, confirmation);
@@ -2216,7 +2252,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					throw new TownyException(TownySettings.getLangString("msg_err_admin_only_delete_nation"));
 
 				Nation nation = townyUniverse.getDataSource().getNation(split[0]);
-				townyUniverse.getDataSource().removeNation(nation);
+				townyUniverse.getDataSource().removeNation(nation, true);
 				TownyMessaging.sendGlobalMessage(TownySettings.getDelNationMsg(nation));
 			} catch (TownyException x) {
 				TownyMessaging.sendErrorMsg(player, x.getMessage());
@@ -2493,9 +2529,15 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					// so there will always be at least one resident.
 				}
 
-		for (Town town : remove)
+		for (Town town : remove) {
 			kicking.remove(town);
-
+			try {
+				townyUniverse.generateNation(town.getName(), town);
+			} catch (AlreadyRegisteredException | NotRegisteredException e) {
+				e.printStackTrace();
+			}
+		}
+			
 		if (kicking.size() > 0) {
 			StringBuilder msg = new StringBuilder();
 

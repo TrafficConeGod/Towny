@@ -552,14 +552,13 @@ public class TownyUniverse {
 	public String getLoadDbType() {
 		return loadDbType;
 	}
-
 	
 	public Nation generateNation(String name, Town town) throws AlreadyRegisteredException, NotRegisteredException {
-		System.out.println("GENERATE NATION VIA THIS METHOD");
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
 		if (townyUniverse.getDataSource().hasNation(name)) {
 			return generateNation(name + "0", town);
 		}
+		System.out.println("Auto generating nation for town " + town.getName() + " with name " + name);
 		townyUniverse.getDataSource().newNation(name);
 		Nation nation = townyUniverse.getDataSource().getNation(name);
 		nation.setMapColorHexCode(MapUtil.generateRandomNationColourAsHexCode());

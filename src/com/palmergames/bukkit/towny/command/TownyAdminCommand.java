@@ -1071,7 +1071,7 @@ public class TownyAdminCommand extends BaseCommand implements CommandExecutor {
 					TownyMessaging.sendPrefixedNationMessage(nation, String.format(TownySettings.getLangString("msg_nation_town_left"), StringMgmt.remUnderscore(town.getName())));
 					TownyMessaging.sendPrefixedTownMessage(town, String.format(TownySettings.getLangString("msg_town_left_nation"), StringMgmt.remUnderscore(nation.getName())));
 				} catch (EmptyNationException en) {
-					townyUniverse.getDataSource().removeNation(en.getNation());
+					townyUniverse.getDataSource().removeNation(en.getNation(), true);
 					townyUniverse.getDataSource().saveNationList();
 					TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), en.getNation().getName()));
 				} finally {
@@ -1237,10 +1237,10 @@ public class TownyAdminCommand extends BaseCommand implements CommandExecutor {
 				if (!isConsole) {
 					TownyMessaging.sendMessage(sender, String.format(TownySettings.getLangString("nation_deleted_by_admin"), nation.getName()));
 					TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_del_nation"), nation.getName()));
-					townyUniverse.getDataSource().removeNation(nation);
+					townyUniverse.getDataSource().removeNation(nation, true);
 				} else {
 					Confirmation confirmation = new Confirmation(() -> {
-						TownyUniverse.getInstance().getDataSource().removeNation(nation);
+						TownyUniverse.getInstance().getDataSource().removeNation(nation, true);
 						TownyMessaging.sendGlobalMessage(TownySettings.getDelNationMsg(nation));
 					});
 					ConfirmationHandler.sendConfirmation(sender, confirmation); // It takes the nation, an admin deleting another town has no confirmation.

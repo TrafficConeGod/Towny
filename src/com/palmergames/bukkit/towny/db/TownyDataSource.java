@@ -302,7 +302,7 @@ public abstract class TownyDataSource {
 
 	abstract public void removeResidentList(Resident resident);
 
-	abstract public void removeNation(Nation nation);
+	abstract public void removeNation(Nation nation, boolean generateNewNations);
 
 	abstract public boolean hasResident(String name);
 
