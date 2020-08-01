@@ -2519,6 +2519,12 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						res.updatePermsForNationRemoval(); // Clears the nationRanks.
 						townyUniverse.getDataSource().saveResident(res);
 					}
+
+					try {
+						townyUniverse.generateNation(town.getName(), town);
+					} catch (AlreadyRegisteredException | NotRegisteredException e) {
+						e.printStackTrace();
+					}
 					
 					townyUniverse.getDataSource().saveTown(town);
 				} catch (NotRegisteredException e) {
@@ -2529,14 +2535,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					// so there will always be at least one resident.
 				}
 
-		for (Town town : remove) {
+		for (Town town : remove)
 			kicking.remove(town);
-			try {
-				townyUniverse.generateNation(town.getName(), town);
-			} catch (AlreadyRegisteredException | NotRegisteredException e) {
-				e.printStackTrace();
-			}
-		}
 			
 		if (kicking.size() > 0) {
 			StringBuilder msg = new StringBuilder();

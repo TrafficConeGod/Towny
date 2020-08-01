@@ -215,7 +215,7 @@ public class Towny extends JavaPlugin {
 						}
 					}
 				}
-			}, 0L, 20000L);
+			}, 0L, 1200L);
 			
 			
 			World measureWorld = Bukkit.getServer().getWorlds().get(0); // this is horrible please aaa
