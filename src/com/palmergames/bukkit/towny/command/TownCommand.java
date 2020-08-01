@@ -2749,7 +2749,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 				Resident resident = townyUniverse.getDataSource().getResident(player.getName());
 				town = resident.getTown();
 				Confirmation confirmation = new Confirmation(() -> {
-					if (town.hasNation()) {
+					if (town.hasNation() && town.isCapital()) {
 						try {
 							Nation nation = town.getNation();
 							TownyUniverse.getInstance().getDataSource().removeNation(nation, true);
