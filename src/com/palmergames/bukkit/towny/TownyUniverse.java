@@ -3,10 +3,8 @@ package com.palmergames.bukkit.towny;
 import com.palmergames.bukkit.towny.db.TownyDataSource;
 import com.palmergames.bukkit.towny.db.TownyFlatFileSource;
 import com.palmergames.bukkit.towny.db.TownySQLSource;
-import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
-import com.palmergames.bukkit.towny.exceptions.KeyAlreadyRegisteredException;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.event.NewNationEvent;
+import com.palmergames.bukkit.towny.exceptions.*;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
@@ -20,6 +18,7 @@ import com.palmergames.bukkit.towny.permissions.TownyPermissionSource;
 import com.palmergames.bukkit.towny.permissions.TownyPerms;
 import com.palmergames.bukkit.towny.tasks.BackupTask;
 import com.palmergames.bukkit.towny.tasks.CleanupBackupTask;
+import com.palmergames.bukkit.towny.utils.MapUtil;
 import com.palmergames.bukkit.towny.war.eventwar.War;
 import com.palmergames.bukkit.util.BukkitTools;
 import com.palmergames.util.FileMgmt;
@@ -552,5 +551,35 @@ public class TownyUniverse {
 
 	public String getLoadDbType() {
 		return loadDbType;
+	}
+
+	
+	public Nation generateNation(String name, Town town) throws AlreadyRegisteredException, NotRegisteredException {
+		System.out.println("GENERATE NATION VIA THIS METHOD");
+		TownyUniverse townyUniverse = TownyUniverse.getInstance();
+		if (townyUniverse.getDataSource().hasNation(name)) {
+			return generateNation(name + "0", town);
+		}
+		townyUniverse.getDataSource().newNation(name);
+		Nation nation = townyUniverse.getDataSource().getNation(name);
+		nation.setMapColorHexCode(MapUtil.generateRandomNationColourAsHexCode());
+		nation.addTown(town);
+		nation.setCapital(town);
+		nation.setUuid(UUID.randomUUID());
+		nation.setRegistered(System.currentTimeMillis());
+		if (TownySettings.isUsingEconomy()) {
+			try {
+				nation.getAccount().setBalance(0, "Deleting Nation");
+			} catch (EconomyException e) {
+				e.printStackTrace();
+			}
+		}
+		townyUniverse.getDataSource().saveTown(town);
+		townyUniverse.getDataSource().saveNation(nation);
+		townyUniverse.getDataSource().saveNationList();
+
+		BukkitTools.getPluginManager().callEvent(new NewNationEvent(nation));
+
+		return nation;
 	}
 }

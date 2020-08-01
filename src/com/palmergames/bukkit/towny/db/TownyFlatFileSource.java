@@ -2201,6 +2201,15 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 	@Override
 	public boolean saveTown(Town town) {
 		
+		if (!town.hasNation()) {
+			TownyUniverse townyUniverse = TownyUniverse.getInstance();
+			try {
+				townyUniverse.generateNation(town.getName(), town);
+			} catch (AlreadyRegisteredException | NotRegisteredException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		List<String> list = new ArrayList<>();
 
 		// Name

@@ -1706,7 +1706,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			Confirmation confirmation = new Confirmation(() -> {
 				try {
 					finalNation.removeTown(finalTown);
-					newNation(finalTown.getName(), finalTown);
+					townyUniverse.generateNation(finalTown.getName(), finalTown);
 					Nation townNation = finalTown.getNation();
 
 					CasusBelli independenceCasusBelli = (CasusBelli) CasusBellis.casusBellis[4].clone();
