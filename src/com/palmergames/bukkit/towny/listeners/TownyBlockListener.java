@@ -53,6 +53,39 @@ public class TownyBlockListener implements Listener {
 
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
+		WorldCoord worldCoord;
+
+		TownyUniverse townyUniverse = TownyUniverse.getInstance();
+		try {
+			TownyWorld world = townyUniverse.getDataSource().getWorld(block.getWorld().getName());
+			worldCoord = new WorldCoord(world.getName(), Coord.parseCoord(block));
+
+			if (worldCoord.hasTownBlock()) {
+				TownBlock townBlock = worldCoord.getTownBlock();
+				Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+				if (townBlock.hasTown() && resident.hasNation()) {
+					Town town = townBlock.getTown();
+					if (town.hasNation()) {
+						Nation attackerNation = resident.getTown().getNation();
+						Nation defenderNation = town.getNation();
+						if (attackerNation.atWarWith(defenderNation)) {
+							com.palmergames.bukkit.towny.newwar.War war = attackerNation.getWar(defenderNation);
+							if (!(attackerNation.wasKilledInSpecificWar(player, war) || defenderNation.wasKilledInSpecificWar(defenderNation.getKing().getUUID(), war))) {
+								TownyRegenAPI.beginProtectionRegenTask(block, (int)(10.0 * Math.random()));
+								return;
+							} else {
+								event.setCancelled(true);
+								return;
+							}
+						}
+					}
+				}
+			}
+		} catch (NotRegisteredException e) {
+			e.printStackTrace();
+		} catch (TownyException e) {
+			e.printStackTrace();
+		}
 
 		//Get build permissions (updates cache if none exist)
 		boolean bDestroy = PlayerCacheUtil.getCachePermission(player, block.getLocation(), block.getType(), TownyPermission.ActionType.DESTROY);
