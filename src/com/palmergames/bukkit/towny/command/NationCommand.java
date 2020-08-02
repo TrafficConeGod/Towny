@@ -2071,7 +2071,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			System.out.println(System.currentTimeMillis() - king.getLastOnline());
 			System.out.println(20 * TownySettings.getInactiveAfter());
 			
-			if (enemyNation.wasKilledInWar(king.getUUID()) || (System.currentTimeMillis() - king.getLastOnline() >= 604800000)) {
+			if (enemyNation.wasKilledInWar(king.getUUID()) || (System.currentTimeMillis() - king.getLastOnline() >= (long)604800000)) {
 				// king is dead force peace
 				Confirmation confirmation = new Confirmation(() -> {
 					try {
