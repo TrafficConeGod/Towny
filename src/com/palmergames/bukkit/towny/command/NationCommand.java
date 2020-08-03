@@ -743,6 +743,21 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
 					nationPeace(player, split[1]);
 				}
+			} else if (split[0].equalsIgnoreCase("forcepeace")) {
+
+				//					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
+				//						throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
+
+
+				if (player.isOp()) {
+					if (split.length == 1 || split.length == 2 || split.length == 3) {
+						TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_specify_nation_name"));
+					} else if (split.length == 4) {
+						nationForcePeace(player, split[1], split[2], split[3]);
+					}
+				} else {
+					player.sendMessage("You have to be an op to use this command");
+				}
 			} else if (split[0].equalsIgnoreCase("surrender")) {
 
 				//					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
@@ -1890,6 +1905,37 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 	}
 
+	// FOR DEBUG AND RULEBREAK PREVENTION COMMAND /n forcepeace
+	public void nationForcePeace(Player player, String attackerName, String defenderName, String victor) throws TownyException, EmptyNationException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+		Nation attackerNation = universe.getDataSource().getNation(attackerName);
+		Nation defenderNation = universe.getDataSource().getNation(defenderName);
+		
+		if (attackerNation != null && defenderNation != null) {
+			if (!attackerNation.atWarWith(defenderNation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+			}
+
+			War war = attackerNation.getWar(defenderNation);
+			if (!war.isWarLeader(attackerNation) || !war.isWarLeader(defenderNation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_not_war_leader"));
+			}
+			
+			if (victor.equalsIgnoreCase("a")) {
+				attackerNation.peaceWar(war);
+			} else if (victor.equalsIgnoreCase("d")) {
+				defenderNation.peaceWar(war);
+			}
+			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), defenderNation.getName()));
+
+
+
+
+		}
+
+	}
+
+
 	public void nationDeclare(Player player, String enemyNationName, String casusBelliName, String[] params) throws TownyException {
 		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
 		Nation nation;
@@ -2066,10 +2112,6 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			
 			// real code
 			Resident king = enemyNation.getKing();
-
-			System.out.println(king.getLastOnline());
-			System.out.println(System.currentTimeMillis() - king.getLastOnline());
-			System.out.println(20 * TownySettings.getInactiveAfter());
 			
 			if (enemyNation.wasKilledInWar(king.getUUID()) || (System.currentTimeMillis() - king.getLastOnline() >= (long)604800000)) {
 				// king is dead force peace
