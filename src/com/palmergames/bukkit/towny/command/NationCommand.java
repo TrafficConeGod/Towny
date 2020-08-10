@@ -669,7 +669,9 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
 					throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
 
-				nationLeave(player);
+				Resident resident = TownyUniverse.getInstance().getDataSource().getResident(player.getName());
+				if (!resident.isKing())
+					nationLeave(player);
 			} else if (split[0].equalsIgnoreCase("justify")) {
 
 //					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
