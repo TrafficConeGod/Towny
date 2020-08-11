@@ -15,11 +15,8 @@ public class Dismantle extends CasusBelli {
 		return "dismantle";
 	}
 	public int getIndex() { return 3; }
-	public float getInfamy() {
-		return 44;
-	}
-	public int getDaysForJustification() {
-		return 216;
+	public boolean canUse() {
+		return false;
 	}
 	public float getWarscoreNeeded() { return 0.7f; }
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {

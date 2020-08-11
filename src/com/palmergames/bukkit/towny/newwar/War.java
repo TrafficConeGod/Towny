@@ -273,8 +273,14 @@ public class War {
 	public void addAttackerCasusBelli(CasusBelli casusBelli) {
 		attackerCasusBellis.add(casusBelli);
 	}
+	public void removeAttackerCasusBelli(CasusBelli casusBelli) {
+		attackerCasusBellis.remove(casusBelli);
+	}
 
 	public void addDefenderCasusBelli(CasusBelli casusBelli) {
 		defenderCasusBellis.add(casusBelli);
+	}
+	public void removeDefenderCasusBelli(CasusBelli casusBelli) {
+		defenderCasusBellis.remove(casusBelli);
 	}
 }

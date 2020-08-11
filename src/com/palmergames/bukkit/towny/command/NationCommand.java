@@ -1727,7 +1727,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					Nation townNation = finalTown.getNation();
 
 					CasusBelli independenceCasusBelli = (CasusBelli) CasusBellis.casusBellis[4].clone();
-					
+
 					independenceCasusBelli.setAttacker(townNation);
 					independenceCasusBelli.setDefender(finalNation);
 					independenceCasusBelli.setUuid(UUID.randomUUID());
@@ -2120,7 +2120,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				Confirmation confirmation = new Confirmation(() -> {
 					try {
 						playerNation.peaceWar(war);
-					} catch (TownyException | EmptyNationException e) {
+					} catch (TownyException e) {
 						TownyMessaging.sendErrorMsg(player, e.getMessage());
 					}
 					TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
@@ -2138,7 +2138,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 							playerNation.peaceWar(war);
 							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
 							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
-						} catch (TownyException | EmptyNationException e) {
+						} catch (TownyException e) {
 							TownyMessaging.sendErrorMsg(player, e.getMessage());
 						}
 					});
@@ -2218,7 +2218,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 							enemyNation.peaceWar(war);
 							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
 							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
-						} catch (TownyException | EmptyNationException e) {
+						} catch (TownyException e) {
 							TownyMessaging.sendErrorMsg(player, e.getMessage());
 						}
 					});

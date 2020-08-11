@@ -58,6 +58,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	private Justification justification;
 	private boolean isPublic = TownySettings.getNationDefaultPublic();
 	private boolean isOpen = TownySettings.getNationDefaultOpen();
+	private int infamyLimit = 50;
 	private transient List<Invite> receivedinvites = new ArrayList<>();
 	private transient List<Invite> sentinvites = new ArrayList<>();
 	private transient List<Invite> sentallyinvites = new ArrayList<>();
@@ -905,12 +906,16 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 
 
 
-	public void peaceWar(War war) throws TownyException, EmptyNationException {
+	public void peaceWar(War war) throws TownyException {
 		Nation loser = war.getAtWarWith(this);
 		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
 		List<CasusBelli> loserCasusBellis = war.getCasusBellisAgainst(this);
 		for (CasusBelli casusBelli : casusBellis) {
-			casusBelli.onPeaceAccepted(this, loser);
+			try {
+				casusBelli.onPeaceAccepted(this, loser);
+			} catch (AlreadyRegisteredException | EmptyNationException | NotRegisteredException e) {
+				e.printStackTrace();
+			}
 		}
 		war.removeWarFromCombatants();
 		TownyUniverse universe = TownyUniverse.getInstance();
@@ -1006,6 +1011,38 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	
 	public void setInfamy(float infamy) {
 		this.infamy = infamy;
+		TownyUniverse universe = TownyUniverse.getInstance();
+		for (Nation nation : universe.getDataSource().getNations()) {
+			if (nation.getName() != this.getName()) {
+				boolean foundCasusBelli = false;
+				for (CasusBelli casusBelli : nation.getCasusBellis()) {
+					if (casusBelli.getName() == "dismantle" && casusBelli.getDefender().getName() == getName()) {
+						foundCasusBelli = true;
+						if (infamy < infamyLimit) {
+							nation.removeCasusBelli(casusBelli);
+							universe.getDataSource().saveNation(nation);
+						}
+						break;
+					}
+				}
+				if (!foundCasusBelli && infamy >= infamyLimit) {
+					try {
+						CasusBelli dismantleCasusBelli = (CasusBelli) CasusBellis.casusBellis[3].clone();
+
+						dismantleCasusBelli.setAttacker(nation);
+						dismantleCasusBelli.setDefender(this);
+						dismantleCasusBelli.setUuid(UUID.randomUUID());
+						nation.addCasusBelli(dismantleCasusBelli);
+						dismantleCasusBelli.onAdd();
+
+						universe.getDataSource().saveCasusBelli(dismantleCasusBelli);
+						universe.getDataSource().saveNation(nation);
+					} catch (CloneNotSupportedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 	public float getInfamy() {
 		return infamy;

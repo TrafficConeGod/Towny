@@ -21,6 +21,8 @@ import com.palmergames.bukkit.towny.exceptions.EmptyNationException;
 import com.palmergames.bukkit.towny.exceptions.EmptyTownException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
+import com.palmergames.bukkit.towny.newwar.Justification;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.PlotGroup;
@@ -604,16 +606,44 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		try {
 			for (War war : nation.getWars()) {
 				try {
+					if (war.isAnAttacker(nation)) {
+						for (CasusBelli casusBelli : war.getDefenderCasusBellis()) {
+							if (casusBelli.getDefender().getName() == nation.getName()) {
+								war.removeDefenderCasusBelli(casusBelli);
+							}
+						}
+					} else if (war.isADefender(nation)) {
+						for (CasusBelli casusBelli : war.getAttackerCasusBellis()) {
+							if (casusBelli.getDefender().getName() == nation.getName()) {
+								war.removeAttackerCasusBelli(casusBelli);
+							}
+						}
+					}
 					if (war.isWarLeader(nation)) {
 						Nation atWarWith = war.getAtWarWith(nation);
 						atWarWith.cancelWar(war);
 					} else {
 						war.removeCombatant(nation);
 					}
+					universe.getDataSource().saveWar(war);
 				} catch (TownyException e) { // if these execute then they are real problems and need to be printed out
 					e.printStackTrace();
 				} catch (EmptyNationException e) {
 					e.printStackTrace();
+				}
+			}
+			for (Nation checkNation : universe.getDataSource().getNations()) {
+				if (checkNation.isJustifying()) {
+					Justification justification = checkNation.getJustification();
+					if (justification.getNation().getName() == nation.getName()) {
+						checkNation.setJustification(null);
+					}
+				}
+				for (CasusBelli casusBelli : checkNation.getCasusBellis()) {
+					if (casusBelli.getDefender().getName() == nation.getName()) {
+						checkNation.removeCasusBelli(casusBelli);
+						universe.getDataSource().saveNation(checkNation);
+					}
 				}
 			}
 		} catch (Exception e) { // this happens for some reason lol
