@@ -1730,6 +1730,48 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					townyUniverse.generateNation(finalTown.getName(), finalTown);
 					Nation townNation = finalTown.getNation();
 
+					for (War checkWar : finalNation.getWars()) {
+						Nation otherNation = null;
+						if (checkWar.isAnAttacker(finalNation)) {
+							otherNation = checkWar.getDefender();
+						} else if (checkWar.isADefender(finalNation)) {
+							otherNation = checkWar.getAttacker();
+						}
+						
+						if (otherNation != null) {
+
+							CasusBelli independenceCasusBelli = (CasusBelli) CasusBellis.casusBellis[4].clone();
+
+							independenceCasusBelli.setAttacker(townNation);
+							independenceCasusBelli.setDefender(otherNation);
+							independenceCasusBelli.setUuid(UUID.randomUUID());
+							independenceCasusBelli.onPreDeclare(new String[0]);
+
+							independenceCasusBelli.onAdd();
+							independenceCasusBelli.onDeclare(new String[0]);
+
+							War war = townNation.declareWar(otherNation, independenceCasusBelli);
+
+							CasusBelli conquerCasusBelli = (CasusBelli) CasusBellis.casusBellis[2].clone();
+
+							conquerCasusBelli.setAttacker(otherNation);
+							conquerCasusBelli.setDefender(townNation);
+							conquerCasusBelli.setUuid(UUID.randomUUID());
+							conquerCasusBelli.onPreDeclare(new String[0]);
+
+							conquerCasusBelli.onAdd();
+							conquerCasusBelli.onDeclare(new String[0]);
+
+							war.addDefenderCasusBelli(conquerCasusBelli);
+
+							townyUniverse.getDataSource().saveWar(war);
+							townyUniverse.getDataSource().saveCasusBelli(conquerCasusBelli);
+							townyUniverse.getDataSource().saveNation(otherNation);
+
+						}
+
+					}
+
 					CasusBelli independenceCasusBelli = (CasusBelli) CasusBellis.casusBellis[4].clone();
 
 					independenceCasusBelli.setAttacker(townNation);
