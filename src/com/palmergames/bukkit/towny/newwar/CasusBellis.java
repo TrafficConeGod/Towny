@@ -8,6 +8,7 @@ public class CasusBellis {
 		new DemandTown(),
 		new Conquer(),
 		new Dismantle(),
-		new DemandIndependence()
+		new DemandIndependence(),
+		new FreeTown()
 	};
 }
