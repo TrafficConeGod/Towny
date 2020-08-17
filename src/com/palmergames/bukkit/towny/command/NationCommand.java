@@ -671,7 +671,11 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 				Resident resident = TownyUniverse.getInstance().getDataSource().getResident(player.getName());
 				if (!resident.isKing())
-					nationLeave(player);
+					if (split.length == 0) {
+						nationLeave(player);
+					} else if (split.length >= 1) {
+						nationLeave(player, split[1]);
+					}
 			} else if (split[0].equalsIgnoreCase("justify")) {
 
 //					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
@@ -1781,6 +1785,57 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		} finally {
 			townyUniverse.getDataSource().saveTown(town);
 		}
+	}
+
+
+	public void nationLeave(Player player, String joiningNationName) throws TownyException {
+		TownyUniverse universe = TownyUniverse.getInstance();
+		Nation joiningNation;
+		Nation remainingNation;
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		Town town = resident.getTown();
+		Nation parentNation = resident.getTown().getNation();
+
+		try {
+			joiningNation = universe.getDataSource().getNation(joiningNationName);
+			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
+		} catch (NotRegisteredException e) {
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), joiningNationName));
+		}
+		if (remainingNation.getName().equalsIgnoreCase(joiningNationName))
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), joiningNationName));
+		
+		
+		if (!parentNation.atWarWith(joiningNation)) {
+			throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+		}
+
+		Confirmation confirmation = new Confirmation(() -> {
+			try {
+				
+				parentNation.removeTown(town);
+				joiningNation.addTown(town);
+				
+				universe.getDataSource().saveTown(town);
+				universe.getDataSource().saveNation(joiningNation);
+				universe.getDataSource().saveNation(parentNation);
+
+				TownyMessaging.sendGlobalMessage(String.format(TownySettings.getLangString("msg_declared_independence"), town.getName(), parentNation.getName()));
+
+			} catch (Exception e) {
+				TownyMessaging.sendErrorMsg(player, e.getMessage());
+			}
+		});
+		ConfirmationHandler.sendConfirmation(player, confirmation);
+
+//			townyUniverse.getDataSource().saveNation(nation);
+//			townyUniverse.getDataSource().saveNationList();
+//
+//			plugin.resetCache();
+//
+//			TownyMessaging.sendPrefixedNationMessage(nation, String.format(TownySettings.getLangString("msg_nation_town_left"), StringMgmt.remUnderscore(town.getName())));
+//			TownyMessaging.sendPrefixedTownMessage(town, String.format(TownySettings.getLangString("msg_town_left_nation"), StringMgmt.remUnderscore(nation.getName())));
 	}
 	
 	public void nationJustify(Player player, String enemyNationName, String casusBelliName) throws TownyException, CloneNotSupportedException {
