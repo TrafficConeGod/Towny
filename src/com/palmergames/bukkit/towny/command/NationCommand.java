@@ -671,9 +671,9 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 				Resident resident = TownyUniverse.getInstance().getDataSource().getResident(player.getName());
 				if (!resident.isKing())
-					if (split.length == 0) {
+					if (split.length == 1) {
 						nationLeave(player);
-					} else if (split.length >= 1) {
+					} else if (split.length >= 2) {
 						nationLeave(player, split[1]);
 					}
 			} else if (split[0].equalsIgnoreCase("justify")) {
