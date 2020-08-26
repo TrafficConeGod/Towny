@@ -908,8 +908,10 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 
 	public void peaceWar(War war) throws TownyException {
 		Nation loser = war.getAtWarWith(this);
-		List<CasusBelli> casusBellis = war.getCasusBellisAgainst(loser);
+		List<CasusBelli> casusBellisList = war.getCasusBellisAgainst(loser);
 		List<CasusBelli> loserCasusBellis = war.getCasusBellisAgainst(this);
+		CasusBelli[] casusBellis = new CasusBelli[casusBellisList.size()];
+		casusBellisList.toArray(casusBellis);
 		for (CasusBelli casusBelli : casusBellis) {
 			try {
 				casusBelli.onPeaceAccepted(this, loser);
