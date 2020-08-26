@@ -2925,6 +2925,14 @@ public class TownySettings {
 	public static boolean isNotificationsTownNamesVerbose() {
 		return getBoolean(ConfigNodes.NOTIFICATION_TOWN_NAMES_ARE_VERBOSE);
 	}
+	
+	public static float getInfamyLimit() {
+		return (float) getDouble(ConfigNodes.NEWWAR_CONFIG_INFAMY_LIMIT);
+	}
+
+	public static int getLives() {
+		return getInt(ConfigNodes.NEWWAR_CONFIG_LIVES);
+	}
 
 	public static Map<String,String> getNationColorsMap() {
 		List<String> nationColorsList = getStrArr(ConfigNodes.GNATION_SETTINGS_ALLOWED_NATION_COLORS);

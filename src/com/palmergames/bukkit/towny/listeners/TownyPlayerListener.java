@@ -1130,7 +1130,7 @@ public class TownyPlayerListener implements Listener {
 					Nation loserNation = loserResident.getTown().getNation();
 					if (victorNation.atWarWith(loserNation) && !victorNation.getName().equalsIgnoreCase(loserNation.getName())) {
 						War war = victorNation.getWar(loserNation);
-						int maxLives = 3;
+						int maxLives = TownySettings.getLives();
 						if (war.isAnAttacker(loserNation)) {
 							HashMap<UUID, Integer> attackerLives = war.getAttackerLives();
 							if (!attackerLives.containsKey(loser.getUniqueId())) {

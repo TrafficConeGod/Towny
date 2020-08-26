@@ -58,7 +58,7 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	private Justification justification;
 	private boolean isPublic = TownySettings.getNationDefaultPublic();
 	private boolean isOpen = TownySettings.getNationDefaultOpen();
-	private int infamyLimit = 50;
+	private float infamyLimit = TownySettings.getInfamyLimit();
 	private transient List<Invite> receivedinvites = new ArrayList<>();
 	private transient List<Invite> sentinvites = new ArrayList<>();
 	private transient List<Invite> sentallyinvites = new ArrayList<>();
