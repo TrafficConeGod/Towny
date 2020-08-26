@@ -645,7 +645,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 					if ((split.length > 2 && split[2].equals("-ignore"))) {
 						ignoreWarning = true;
 					}
-					
+
 					townSpawn(player, newSplit, false, ignoreWarning);
 
 				} else if (split[0].equalsIgnoreCase("outpost")) {
@@ -2728,6 +2728,13 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 				// split.length > 1
 				town = townyUniverse.getDataSource().getTown(split[0]);
 				notAffordMSG = String.format(TownySettings.getLangString("msg_err_cant_afford_tp_town"), town.getName());
+			}
+			
+			if (town != null) {
+				if (town.hasNation() && town.getNation().isAtWar()) {
+					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_at_war"));
+					return;
+				}
 			}
 			
 			SpawnUtil.sendToTownySpawn(player, split, town, notAffordMSG, outpost, ignoreWarning, SpawnType.TOWN);

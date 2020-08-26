@@ -3680,6 +3680,13 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
                 notAffordMSG = String.format(TownySettings.getLangString("msg_err_cant_afford_tp_nation"), nation.getName());
 
 			}
+
+			if (nation != null) {
+				if (nation.isAtWar()) {
+					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_at_war"));
+					return;
+				}
+			}
             
 			SpawnUtil.sendToTownySpawn(player, split, nation, notAffordMSG, false, ignoreWarning, SpawnType.NATION);
 		} catch (NotRegisteredException e) {
