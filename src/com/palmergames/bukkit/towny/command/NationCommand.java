@@ -1925,14 +1925,15 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				Nation justifyingOn = playerNation.getJustification().getNation();
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_already_justifying"), justifyingOn.getName()));
 			}
-			Confirmation confirmation = new Confirmation(() -> {
-				float baseDaysForJustification = (float)finalCasusBelli.getDaysForJustification(); // baseD
-				float enemyInfamy = nation.getInfamy();
-				float calculatedDaysForJustification = (
-					baseDaysForJustification
+			float baseDaysForJustification = (float)finalCasusBelli.getDaysForJustification(); // baseD
+			float enemyInfamy = nation.getInfamy();
+			float calculatedDaysForJustification = (
+				baseDaysForJustification
 					/
 					(enemyInfamy + 12)
-				) * 12;
+			) * 12;
+			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_justifying_confirmation"), finalCasusBelli.getInfamy() / 2, calculatedDaysForJustification / 72));
+			Confirmation confirmation = new Confirmation(() -> {
 				Justification justification = new Justification(finalCasusBelli.getIndex(), (int)calculatedDaysForJustification, nation);
 				playerNation.setJustification(justification);
 				universe.getDataSource().saveNation(playerNation);
@@ -2144,6 +2145,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			if (!finalCasusBelli.canUse()) {
 				throw new TownyException(TownySettings.getLangString("msg_err_cannot_use_cb"));
 			}
+			TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_wargoal_confirmation"), finalCasusBelli.getInfamy()));
 			Confirmation confirmation = new Confirmation(() -> {
 				finalCasusBelli.onAdd();
 				finalCasusBelli.onDeclare(params);
@@ -2226,7 +2228,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				ConfirmationHandler.sendConfirmation(player, confirmation);
 			} else {
 				if (!BukkitTools.isOnline(king.getName())) {
-					throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), enemyNation.getName(), king.getName()));
+					throw new TownyException(String.format(TownySettings.getLangString("msg_err_other_king_not_online"), enemyNation.getName(), king.getName()));
 				}
 				// king is online no force peace
 				Confirmation confirmation = new Confirmation(() -> {
