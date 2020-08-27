@@ -46,12 +46,14 @@ public class FreeTown extends CasusBelli {
 		}
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
-		TownyUniverse townyUniverse = TownyUniverse.getInstance();
-		loser.removeTown(town);
-		townyUniverse.generateNation(town.getName(), town);
-		townyUniverse.getDataSource().saveTown(town);
-		townyUniverse.getDataSource().saveNation(loser);
-		townyUniverse.getDataSource().saveNationList();
+		if (town.hasNation() && town.getNation().getName().equals(loser.getName())) {
+			TownyUniverse townyUniverse = TownyUniverse.getInstance();
+			loser.removeTown(town);
+			townyUniverse.generateNation(town.getName(), town);
+			townyUniverse.getDataSource().saveTown(town);
+			townyUniverse.getDataSource().saveNation(loser);
+			townyUniverse.getDataSource().saveNationList();
+		}
 	}
 	public void loadSaveData(String[] tokens) throws NotRegisteredException {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
