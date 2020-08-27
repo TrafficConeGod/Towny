@@ -24,6 +24,9 @@ public class DemandTown extends CasusBelli {
 	public int getDaysForJustification() {
 		return TownySettings.getDemandTownDays();//144;
 	}
+	public String getDisplaySuffix() {
+		return " " + town.getName();
+	}
 	public float getWarscoreNeeded() { return 0.3f; }
 	public boolean canUse() {
 		return TownySettings.getDemandTownEnabled() && defender.getTowns().size() > 1;

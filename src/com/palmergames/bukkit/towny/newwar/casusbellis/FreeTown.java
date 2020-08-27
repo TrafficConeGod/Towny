@@ -24,6 +24,9 @@ public class FreeTown extends CasusBelli {
 	public int getDaysForJustification() {
 		return TownySettings.getFreeTownDays();//144;
 	}
+	public String getDisplaySuffix() {
+		return " " + town.getName();
+	}
 	public float getWarscoreNeeded() { return 0.3f; }
 	public boolean canUse() {
 		return TownySettings.getFreeTownEnabled() && defender.getTowns().size() > 1;

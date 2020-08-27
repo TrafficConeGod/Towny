@@ -822,7 +822,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					String attackerCasusBelliString = "";
 					for (int i = 0; i < attackerCasusBellis.size(); i++) {
 						CasusBelli casusBelli = attackerCasusBellis.get(i);
-						String display = casusBelli.getAttacker().getName() + " " + casusBelli.getName() + " -> " + casusBelli.getDefender().getName();
+						String display = casusBelli.getAttacker().getName() + " " + casusBelli.getName() + casusBelli.getDisplaySuffix() + " -> " + casusBelli.getDefender().getName();
 						if (i == 0) {
 							attackerCasusBelliString += display;
 						} else {
@@ -852,7 +852,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					String defenderCasusBelliString = "";
 					for (int i = 0; i < defenderCasusBellis.size(); i++) {
 						CasusBelli casusBelli = defenderCasusBellis.get(i);
-						String display = casusBelli.getDefender().getName() + " " + casusBelli.getName() + " -> " + casusBelli.getDefender().getName();
+						String display = casusBelli.getDefender().getName() + " " + casusBelli.getName() + casusBelli.getDisplaySuffix() + " -> " + casusBelli.getDefender().getName();
 						if (i == 0) {
 							defenderCasusBelliString += display;
 						} else {
