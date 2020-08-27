@@ -1864,6 +1864,10 @@ public enum ConfigNodes {
 		"newwar.humiliate",
 		"",
 		"# humiliate casus belli"),
+	NEWWAR_HUMILIATE_ENABLED(
+		"newwar.humiliate.enabled",
+		"true",
+		""),
 	NEWWAR_HUMILIATE_INFAMY(
 		"newwar.humiliate.infamy",
 		"3",
@@ -1876,6 +1880,10 @@ public enum ConfigNodes {
 		"newwar.demand_town",
 		"",
 		"# demand_town casus belli"),
+	NEWWAR_DEMAND_TOWN_ENABLED(
+		"newwar.demand_town.enabled",
+		"true",
+		""),
 	NEWWAR_DEMAND_TOWN_INFAMY(
 		"newwar.demand_town.infamy",
 		"11",
@@ -1888,6 +1896,10 @@ public enum ConfigNodes {
 		"newwar.conquer",
 		"",
 		"# conquer casus belli"),
+	NEWWAR_CONQUER_ENABLED(
+		"newwar.conquer.enabled",
+		"true",
+		""),
 	NEWWAR_CONQUER_INFAMY(
 		"newwar.conquer.infamy",
 			"22",
@@ -1900,6 +1912,10 @@ public enum ConfigNodes {
 		"newwar.free_town",
 		"",
 		"# free_town casus belli"),
+	NEWWAR_FREE_TOWN_ENABLED(
+		"newwar.free_town.enabled",
+		"true",
+		""),
 	NEWWAR_FREE_TOWN_INFAMY(
 		"newwar.free_town.infamy",
 		"5",

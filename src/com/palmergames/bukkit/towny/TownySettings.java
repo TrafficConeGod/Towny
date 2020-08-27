@@ -2934,12 +2934,20 @@ public class TownySettings {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_LIVES);
 	}
 
+	public static boolean getHumiliateEnabled() {
+		return getBoolean(ConfigNodes.NEWWAR_HUMILIATE_ENABLED);
+	}
+
 	public static float getHumiliateInfamy() {
 		return (float) getDouble(ConfigNodes.NEWWAR_HUMILIATE_DAYS);
 	}
 
 	public static int getHumiliateDays() {
 		return getInt(ConfigNodes.NEWWAR_HUMILIATE_DAYS);
+	}
+
+	public static boolean getDemandTownEnabled() {
+		return getBoolean(ConfigNodes.NEWWAR_DEMAND_TOWN_ENABLED);
 	}
 
 	public static float getDemandTownInfamy() {
@@ -2950,12 +2958,20 @@ public class TownySettings {
 		return getInt(ConfigNodes.NEWWAR_DEMAND_TOWN_DAYS);
 	}
 
+	public static boolean getConquerEnabled() {
+		return getBoolean(ConfigNodes.NEWWAR_CONQUER_ENABLED);
+	}
+
 	public static float getConquerInfamy() {
 		return (float) getDouble(ConfigNodes.NEWWAR_CONQUER_INFAMY);
 	}
 
 	public static int getConquerDays() {
 		return getInt(ConfigNodes.NEWWAR_CONQUER_DAYS);
+	}
+
+	public static boolean getFreeTownEnabled() {
+		return getBoolean(ConfigNodes.NEWWAR_FREE_TOWN_ENABLED);
 	}
 
 	public static float getFreeTownInfamy() {

@@ -22,7 +22,7 @@ public class Conquer extends CasusBelli {
 	}
 	public float getWarscoreNeeded() { return 1; }
 	public boolean canUse() {
-		return defender.getTowns().size() == 1;
+		return TownySettings.getConquerEnabled() && defender.getTowns().size() == 1;
 	}
 	public void onPeaceAccepted(Nation victor, Nation loser) throws AlreadyRegisteredException, EmptyNationException, NotRegisteredException {
 		TownyUniverse.getInstance().getDataSource().mergeNation(loser, victor);

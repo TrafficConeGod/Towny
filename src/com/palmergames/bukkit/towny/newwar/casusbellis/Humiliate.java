@@ -15,7 +15,10 @@ public class Humiliate extends CasusBelli {
 		return TownySettings.getHumiliateDays();//72;
 	}
 	public float getInfamy() {
-		return TownySettings.getHumiliateDays();//3;
+		return TownySettings.getHumiliateInfamy();//3;
+	}
+	public boolean canUse() {
+		return TownySettings.getHumiliateEnabled();
 	}
 	public float getWarscoreNeeded() { return 0.1f; }
 }

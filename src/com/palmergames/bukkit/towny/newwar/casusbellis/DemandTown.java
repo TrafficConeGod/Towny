@@ -26,7 +26,7 @@ public class DemandTown extends CasusBelli {
 	}
 	public float getWarscoreNeeded() { return 0.3f; }
 	public boolean canUse() {
-		return defender.getTowns().size() > 1;
+		return TownySettings.getDemandTownEnabled() && defender.getTowns().size() > 1;
 	}
 	public void onPreDeclare(String[] params) throws TownyException  {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
