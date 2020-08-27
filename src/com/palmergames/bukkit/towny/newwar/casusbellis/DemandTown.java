@@ -19,10 +19,10 @@ public class DemandTown extends CasusBelli {
 	}
 	public int getIndex() { return 1; }
 	public float getInfamy() {
-		return 11;
+		return TownySettings.getDemandTownInfamy();//11;
 	}
 	public int getDaysForJustification() {
-		return 144;
+		return TownySettings.getDemandTownDays();//144;
 	}
 	public float getWarscoreNeeded() { return 0.3f; }
 	public boolean canUse() {

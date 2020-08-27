@@ -1860,18 +1860,54 @@ public enum ConfigNodes {
 		"newwar.config.lives",
 		"3",
 		"# The amount of lives a player has in a war'"),
+	NEWWAR_HUMILIATE(
+		"newwar.humiliate",
+		"",
+		"# humiliate casus belli"),
+	NEWWAR_HUMILIATE_INFAMY(
+		"newwar.humiliate.infamy",
+		"3",
+		"# Infamy"),
+	NEWWAR_HUMILIATE_DAYS(
+		"newwar.humiliate.days",
+		"72",
+		"# Days for justification"),
+	NEWWAR_DEMAND_TOWN(
+		"newwar.demand_town",
+		"",
+		"# demand_town casus belli"),
+	NEWWAR_DEMAND_TOWN_INFAMY(
+		"newwar.demand_town.infamy",
+		"11",
+		"# Infamy"),
+	NEWWAR_DEMAND_TOWN_DAYS(
+		"newwar.demand_town.days",
+		"144",
+		"# Days for justification"),
 	NEWWAR_CONQUER(
 		"newwar.conquer",
 		"",
-		"# Conquer casus belli"),
+		"# conquer casus belli"),
 	NEWWAR_CONQUER_INFAMY(
 		"newwar.conquer.infamy",
-		"22",
-		"# Conquer infamy"),
+			"22",
+			"# Infamy"),
 	NEWWAR_CONQUER_DAYS(
 		"newwar.conquer.days",
 		"216",
-		"# Conquer days for justification");
+		"# Days for justification"),
+	NEWWAR_FREE_TOWN(
+		"newwar.free_town",
+		"",
+		"# free_town casus belli"),
+	NEWWAR_FREE_TOWN_INFAMY(
+		"newwar.free_town.infamy",
+		"5",
+		"# Infamy"),
+	NEWWAR_FREE_TOWN_DAYS(
+		"newwar.free_town.days",
+		"144",
+		"# Days for justification");
 	
 
 	private final String Root;

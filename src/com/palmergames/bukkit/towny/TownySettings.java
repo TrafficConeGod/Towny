@@ -2934,12 +2934,36 @@ public class TownySettings {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_LIVES);
 	}
 
+	public static float getHumiliateInfamy() {
+		return (float) getDouble(ConfigNodes.NEWWAR_HUMILIATE_DAYS);
+	}
+
+	public static int getHumiliateDays() {
+		return getInt(ConfigNodes.NEWWAR_HUMILIATE_DAYS);
+	}
+
+	public static float getDemandTownInfamy() {
+		return (float) getDouble(ConfigNodes.NEWWAR_DEMAND_TOWN_INFAMY);
+	}
+
+	public static int getDemandTownDays() {
+		return getInt(ConfigNodes.NEWWAR_DEMAND_TOWN_DAYS);
+	}
+
 	public static float getConquerInfamy() {
 		return (float) getDouble(ConfigNodes.NEWWAR_CONQUER_INFAMY);
 	}
 
 	public static int getConquerDays() {
 		return getInt(ConfigNodes.NEWWAR_CONQUER_DAYS);
+	}
+
+	public static float getFreeTownInfamy() {
+		return (float) getDouble(ConfigNodes.NEWWAR_FREE_TOWN_INFAMY);
+	}
+
+	public static int getFreeTownDays() {
+		return getInt(ConfigNodes.NEWWAR_FREE_TOWN_DAYS);
 	}
 
 	public static Map<String,String> getNationColorsMap() {

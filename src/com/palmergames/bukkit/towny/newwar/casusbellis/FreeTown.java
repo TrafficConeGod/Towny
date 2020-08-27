@@ -19,10 +19,10 @@ public class FreeTown extends CasusBelli {
 	}
 	public int getIndex() { return 5; }
 	public float getInfamy() {
-		return 5;
+		return TownySettings.getFreeTownInfamy();//5;
 	}
 	public int getDaysForJustification() {
-		return 144;
+		return TownySettings.getFreeTownDays()//144;
 	}
 	public float getWarscoreNeeded() { return 0.3f; }
 	public boolean canUse() {
