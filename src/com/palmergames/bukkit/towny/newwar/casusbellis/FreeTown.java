@@ -22,7 +22,7 @@ public class FreeTown extends CasusBelli {
 		return TownySettings.getFreeTownInfamy();//5;
 	}
 	public int getDaysForJustification() {
-		return TownySettings.getFreeTownDays()//144;
+		return TownySettings.getFreeTownDays();//144;
 	}
 	public float getWarscoreNeeded() { return 0.3f; }
 	public boolean canUse() {
