@@ -1846,9 +1846,9 @@ public enum ConfigNodes {
 				"",
 				"############################################################",
 				"# +------------------------------------------------------+ #",
-				"# |              NewWar Config                          | #",
+				"# |              NewWar Config                           | #",
 				"# |                                                      | #",
-				"# |              Used in the NewWar                     | #",
+				"# |              Used in the NewWar                      | #",
 				"# +------------------------------------------------------+ #",
 				"############################################################",
 				""),
@@ -1857,9 +1857,21 @@ public enum ConfigNodes {
 				"50",
 				"# The amount of infamy a nation needs until every other nation gets the dismantle casus belli on them'"),
 	NEWWAR_CONFIG_LIVES(
-			"newwar.config.lives",
-				"3",
-				"# The amount of lives a player has in a war'");
+		"newwar.config.lives",
+		"3",
+		"# The amount of lives a player has in a war'"),
+	NEWWAR_CONQUER(
+		"newwar.conquer",
+		"",
+		"# Conquer casus belli"),
+	NEWWAR_CONQUER_INFAMY(
+		"newwar.conquer.infamy",
+		"22",
+		"# Conquer infamy"),
+	NEWWAR_CONQUER_DAYS(
+		"newwar.conquer.days",
+		"216",
+		"# Conquer days for justification");
 	
 
 	private final String Root;

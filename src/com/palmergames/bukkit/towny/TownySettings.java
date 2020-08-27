@@ -2934,6 +2934,14 @@ public class TownySettings {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_LIVES);
 	}
 
+	public static float getConquerInfamy() {
+		return (float) getDouble(ConfigNodes.NEWWAR_CONQUER_INFAMY);
+	}
+
+	public static int getConquerDays() {
+		return getInt(ConfigNodes.NEWWAR_CONQUER_DAYS);
+	}
+
 	public static Map<String,String> getNationColorsMap() {
 		List<String> nationColorsList = getStrArr(ConfigNodes.GNATION_SETTINGS_ALLOWED_NATION_COLORS);
 		Map<String,String> nationColorsMap = new HashMap<>();

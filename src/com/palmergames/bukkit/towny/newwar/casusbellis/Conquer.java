@@ -1,5 +1,6 @@
 package com.palmergames.bukkit.towny.newwar.casusbellis;
 
+import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.EmptyNationException;
@@ -14,10 +15,10 @@ public class Conquer extends CasusBelli {
 	}
 	public int getIndex() { return 2; }
 	public float getInfamy() {
-		return 22;
+		return TownySettings.getConquerInfamy();
 	}
 	public int getDaysForJustification() {
-		return 216;
+		return TownySettings.getConquerDays();
 	}
 	public float getWarscoreNeeded() { return 1; }
 	public boolean canUse() {
