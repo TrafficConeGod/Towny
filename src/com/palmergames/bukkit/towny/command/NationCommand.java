@@ -1030,13 +1030,14 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					
 					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_DELETE.getNode()))
 						throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
-
-					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
-					if (resident.isKing()) {
-						if (resident.getTown().getNation().isAtWar()) {
-							throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
-						}
-					}
+					
+					// not necessary anymore
+//					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+//					if (resident.isKing()) {
+//						if (resident.getTown().getNation().isAtWar()) {
+//							throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+//						}
+//					}
 					
 					nationDelete(player, newSplit);
 
@@ -2379,7 +2380,19 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				Resident resident = townyUniverse.getDataSource().getResident(player.getName());
 				Nation nation = resident.getTown().getNation();
 				Confirmation confirmation = new Confirmation(() -> {
-					TownyUniverse.getInstance().getDataSource().removeNation(nation, true);
+//					TownyUniverse.getInstance().getDataSource().removeNation(nation, true);
+					List<Town> townList = nation.getTowns();
+					Town[] towns = new Town[townList.size()];
+					townList.toArray(towns);
+					for (Town town : towns) {
+						if (!town.isCapital()) {
+							try {
+								nation.removeTown(town);
+							} catch (EmptyNationException | NotRegisteredException e) {
+								e.printStackTrace();
+							}
+						}
+					}
 					TownyMessaging.sendGlobalMessage(TownySettings.getDelNationMsg(nation));
 				});
 				ConfirmationHandler.sendConfirmation(player, confirmation);
