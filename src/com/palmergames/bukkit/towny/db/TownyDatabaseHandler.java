@@ -632,22 +632,23 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 					e.printStackTrace();
 				}
 			}
-			for (Nation checkNation : universe.getDataSource().getNations()) {
-				if (checkNation.isJustifying()) {
-					Justification justification = checkNation.getJustification();
-					if (justification.getNation().getName() == nation.getName()) {
-						checkNation.setJustification(null);
-					}
-				}
-				for (CasusBelli casusBelli : checkNation.getCasusBellis()) {
-					if (casusBelli.getDefender().getName() == nation.getName()) {
-						checkNation.removeCasusBelli(casusBelli);
-						universe.getDataSource().saveNation(checkNation);
-					}
+		} catch (Exception e) { // this happens for some reason lol
+			e.printStackTrace();
+		}
+
+		for (Nation checkNation : universe.getDataSource().getNations()) {
+			if (checkNation.isJustifying()) {
+				Justification justification = checkNation.getJustification();
+				if (justification.getNation().getName().equals(nation.getName())) {
+					checkNation.setJustification(null);
 				}
 			}
-		} catch (Exception e) { // this happens for some reason lol
-			
+			for (CasusBelli casusBelli : checkNation.getCasusBellis()) {
+				if (casusBelli.getDefender().getName().equals(nation.getName())) {
+					checkNation.removeCasusBelli(casusBelli);
+					universe.getDataSource().saveNation(checkNation);
+				}
+			}
 		}
 		
 		//search and remove from all ally/enemy lists
