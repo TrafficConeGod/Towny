@@ -2215,7 +2215,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			// real code
 			Resident king = enemyNation.getKing();
 			
-			if (enemyNation.wasKilledInWar(king.getUUID()) || (System.currentTimeMillis() - king.getLastOnline() >= (long)604800000)) {
+			if (enemyNation.wasKilledInWar(king.getUUID()) || (System.currentTimeMillis() - king.getLastOnline() >= (long)1*1000*60*60*24*TownySettings.getInactivityThreshold())) {
 				// king is dead force peace
 				Confirmation confirmation = new Confirmation(() -> {
 					try {

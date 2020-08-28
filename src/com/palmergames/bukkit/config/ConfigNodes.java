@@ -1856,6 +1856,14 @@ public enum ConfigNodes {
 			"newwar.config.infamy_limit",
 				"50",
 				"# The amount of infamy a nation needs until every other nation gets the dismantle casus belli on them'"),
+	NEWWAR_CONFIG_INFAMY_REDUCTION(
+		"newwar.config.infamy_reduction",
+		"0.01",
+		"# The amount of infamy reduced every in game day'"),
+	NEWWAR_CONFIG_INACTIVITY_THRESHOLD(
+		"newwar.config.inactivity_threshold",
+		"7",
+		"# The amount of real life days until a player is considered inactive in a war.'"),
 	NEWWAR_CONFIG_LIVES(
 		"newwar.config.lives",
 		"3",

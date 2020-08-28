@@ -2930,6 +2930,14 @@ public class TownySettings {
 		return (float) getDouble(ConfigNodes.NEWWAR_CONFIG_INFAMY_LIMIT);
 	}
 
+	public static float getInfamyReduction() {
+		return (float) getDouble(ConfigNodes.NEWWAR_CONFIG_INFAMY_REDUCTION);
+	}
+
+	public static int getInactivityThreshold() {
+		return getInt(ConfigNodes.NEWWAR_CONFIG_INACTIVITY_THRESHOLD);
+	}
+
 	public static int getLives() {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_LIVES);
 	}

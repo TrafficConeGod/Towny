@@ -228,7 +228,7 @@ public class Towny extends JavaPlugin {
 					if (lastTime <= 6000 && time >= 6000) {
 						for (Nation nation : universe.getDataSource().getNations()) {
 							float infamy = nation.getInfamy();
-							infamy -= 0.01;
+							infamy -= TownySettings.getInfamyReduction();
 							if (infamy <= 0) {
 								infamy = 0;
 							}
