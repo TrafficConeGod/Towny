@@ -1753,20 +1753,20 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 							War war = townNation.declareWar(otherNation, independenceCasusBelli);
 
-							CasusBelli conquerCasusBelli = (CasusBelli) CasusBellis.casusBellis[2].clone();
-
-							conquerCasusBelli.setAttacker(otherNation);
-							conquerCasusBelli.setDefender(townNation);
-							conquerCasusBelli.setUuid(UUID.randomUUID());
-							conquerCasusBelli.onPreDeclare(new String[0]);
-
-							conquerCasusBelli.onAdd();
-							conquerCasusBelli.onDeclare(new String[0]);
-
-							war.addDefenderCasusBelli(conquerCasusBelli);
-
-							townyUniverse.getDataSource().saveWar(war);
-							townyUniverse.getDataSource().saveCasusBelli(conquerCasusBelli);
+//							CasusBelli conquerCasusBelli = (CasusBelli) CasusBellis.casusBellis[2].clone();
+//
+//							conquerCasusBelli.setAttacker(otherNation);
+//							conquerCasusBelli.setDefender(townNation);
+//							conquerCasusBelli.setUuid(UUID.randomUUID());
+//							conquerCasusBelli.onPreDeclare(new String[0]);
+//
+//							conquerCasusBelli.onAdd();
+//							conquerCasusBelli.onDeclare(new String[0]);
+//
+//							war.addDefenderCasusBelli(conquerCasusBelli);
+//
+//							townyUniverse.getDataSource().saveWar(war);
+							townyUniverse.getDataSource().saveCasusBelli(independenceCasusBelli);
 							townyUniverse.getDataSource().saveNation(otherNation);
 
 						}
