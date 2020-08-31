@@ -159,9 +159,9 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 	
 	private static final List<String> nationCasusBelliTabCompletes = Arrays.asList(
 		"demand_town",
+		"free_town",
 		"conquer",
-		"humiliate",
-		"dismantle"
+		"humiliate"
 	);
 	
 	private static final Comparator<Nation> BY_NUM_RESIDENTS = (n1, n2) -> n2.getNumResidents() - n1.getNumResidents();
@@ -1851,6 +1851,22 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		
 		
 		if (!parentNation.atWarWith(joiningNation)) {
+			throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+		}
+		
+		boolean valid = false;
+		
+		War war = joiningNation.getWar(parentNation);
+		if (war.getAttacker().getName().equals(joiningNation.getName())) {
+			for (CasusBelli casusBelli : war.getAttackerCasusBellis()) {
+				if (casusBelli.getName().equals("demand_independence")) {
+					valid = true;
+					break;
+				}
+			}
+		}
+		
+		if (!valid) {
 			throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 		}
 
