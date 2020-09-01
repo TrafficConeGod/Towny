@@ -1158,6 +1158,7 @@ public class TownyPlayerListener implements Listener {
 								TownyMessaging.sendErrorMsg(loser, String.format(TownySettings.getLangString("msg_war_death_life_lost"), String.valueOf(lives)));
 							}
 						}
+						war.addKillToWarscore(victorNation, loserNation);
 						universe.getDataSource().saveWar(war);
 					}
 				}

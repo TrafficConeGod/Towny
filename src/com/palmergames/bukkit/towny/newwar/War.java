@@ -253,6 +253,22 @@ public class War {
 		nation.removeWar(this);
 	}
 	
+	public float getAttackerPopulation() {
+		int population = attacker.getNumResidents();
+		for (Nation ally : attackerAllies) {
+			population += ally.getNumResidents();
+		}
+		return (float)population;
+	}
+
+	public float getDefenderPopulation() {
+		int population = defender.getNumResidents();
+		for (Nation ally : defenderAllies) {
+			population += ally.getNumResidents();
+		}
+		return (float)population;
+	}
+	
 	// UNUSED
 //	public float getAttackerWarscore() {
 //		int population = defender.getNumResidents();
@@ -295,6 +311,9 @@ public class War {
 		if (attackerWarscore >= 1f) {
 			attackerWarscore = 1f;
 		}
+		if (attackerWarscore <= -1f) {
+			attackerWarscore = -1f;
+		}
 		this.attackerWarscore = attackerWarscore;
 	}
 
@@ -306,6 +325,27 @@ public class War {
 		if (defenderWarscore >= 1f) {
 			defenderWarscore = 1f;
 		}
+		if (defenderWarscore <= -1f) {
+			defenderWarscore = -1f;
+		}
 		this.defenderWarscore = defenderWarscore;
+	}
+	
+	public void addKillToWarscore(Nation victor, Nation loser) {
+		if (isAnAttacker(victor)) {
+			float victorWarscore = attackerWarscore;
+			float loserWarscore = defenderWarscore;
+			float loserPopulation = getDefenderPopulation();
+			float warscoreChange = TownySettings.getKillWarscoreChange() / loserPopulation;
+			setAttackerWarscore(victorWarscore + warscoreChange);
+			setDefenderWarscore(loserWarscore - warscoreChange);
+		} else if (isADefender(victor)) {
+			float victorWarscore = defenderWarscore;
+			float loserWarscore = attackerWarscore;
+			float loserPopulation = getAttackerPopulation();
+			float warscoreChange = TownySettings.getKillWarscoreChange() / loserPopulation;
+			setDefenderWarscore(victorWarscore + warscoreChange);
+			setAttackerWarscore(loserWarscore - warscoreChange);
+		}
 	}
 }

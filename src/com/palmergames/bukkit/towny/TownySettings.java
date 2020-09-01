@@ -2990,12 +2990,12 @@ public class TownySettings {
 		return getInt(ConfigNodes.NEWWAR_FREE_TOWN_DAYS);
 	}
 	
-	public static float getKillWarscoreGain() {
-		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_KILL_GAIN)) / 100f;
+	public static float getKillWarscoreChange() {
+		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_KILL_CHANGE)) / 100f;
 	}
 	
-	public static float getTownOccupyWarscoreGain() {
-		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_TOWN_OCCUPY_GAIN)) / 100f;
+	public static float getTownOccupyWarscoreChange() {
+		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_TOWN_OCCUPY_CHANGE)) / 100f;
 	}
 
 	public static float getOfflineDayWarscoreGain() {

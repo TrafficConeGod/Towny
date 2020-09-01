@@ -1877,14 +1877,14 @@ public enum ConfigNodes {
 		"",
 		"# NewWar Warscore"
 	),
-	NEWWAR_WARSCORE_KILL_GAIN(
-		"newwar.warscore.kill_gain",
+	NEWWAR_WARSCORE_KILL_CHANGE(
+		"newwar.warscore.kill_change",
 		"50",
-		"# The percentage of warscore you will gain if you kill a player in a war. This value is divided by the population of the nation so this specific warscore will only apply to nations that have 1 person in them.'"),
-	NEWWAR_WARSCORE_TOWN_OCCUPY_GAIN(
-		"newwar.warscore.town_occupy_gain",
+		"# The percentage of warscore that will change if you kill a player in a war. This value is divided by the population of the nation so this specific warscore will only apply to nations that have 1 person in them.'"),
+	NEWWAR_WARSCORE_TOWN_OCCUPY_CHANGE(
+		"newwar.warscore.town_occupy_change",
 		"50",
-		"# The percentage of warscore you will gain if occupy a town in a war. The sentence above applies to this as well.'"),
+		"# The percentage of warscore will change if you occupy a town in a war. The sentence above applies to this as well.'"),
 	NEWWAR_WARSCORE_OFFLINE_DAY_GAIN(
 		"newwar.warscore.offline_day_gain",
 		"1",
