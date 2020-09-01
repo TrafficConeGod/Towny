@@ -17,6 +17,7 @@ public class War {
 	private List<Nation> defenderAllies = new ArrayList<>();
 	private float attackerWarscore = 0;
 	private float defenderWarscore = 0;
+	private int daysLeft = 0;
 	private HashMap<Nation, Boolean> isAttackerMap = new HashMap<>();
 	private UUID uuid;
 	
@@ -25,6 +26,7 @@ public class War {
 		this.defender = defender;
 		this.attackerCasusBellis = attackerCasusBellis;
 		this.defenderCasusBellis = defenderCasusBellis;
+		daysLeft = TownySettings.getDaysInWar();
 	}
 	
 	public Nation getAttacker() {
@@ -348,4 +350,32 @@ public class War {
 			setAttackerWarscore(loserWarscore - warscoreChange);
 		}
 	}
+
+	public int getDaysLeft() {
+		return daysLeft;
+	}
+
+	public void setDaysLeft(int daysLeft) {
+		if (daysLeft <= 0) {
+			endWar();
+		}
+		this.daysLeft = daysLeft;
+	}
+	
+	public void endWar() {
+		if (attackerWarscore > defenderWarscore) {
+			try {
+				attacker.peaceWar(this);
+			} catch (TownyException e) {
+				e.printStackTrace();
+			}
+		} else if (defenderWarscore >= attackerWarscore) {
+			try {
+				defender.peaceWar(this);
+			} catch (TownyException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }

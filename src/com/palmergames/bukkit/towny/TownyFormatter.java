@@ -584,7 +584,7 @@ public class TownyFormatter {
 		out.add(String.format(TownySettings.getLangString("status_nation_casus_bellis"), String.valueOf(casusBellis.size()), casusBelliString));
 
 
-		// Justifying: Nation conquer
+		// Justifying: Nation conquer (1.3 days left)
 		if (nation.isJustifying()) {
 			Justification justification = nation.getJustification();
 			CasusBelli casusBelli = CasusBellis.casusBellis[justification.getIndex()];

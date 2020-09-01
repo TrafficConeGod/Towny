@@ -368,6 +368,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			List<Nation> defenderAllies = new ArrayList<>();
 			float attackerWarscore = 0;
 			float defenderWarscore = 0;
+			int daysLeft = 0;
 
 			while ((line = fin.readLine()) != null) {
 				if (!line.equals("")) {
@@ -425,6 +426,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 							attackerWarscore = Float.parseFloat(value);
 						} else if (property.equalsIgnoreCase("defenderWarscore")) {
 							defenderWarscore = Float.parseFloat(value);
+						} else if (property.equalsIgnoreCase("daysLeft")) {
+							daysLeft = Integer.parseInt(value);
 						}
 					}
 				}
@@ -439,6 +442,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				war.setDefenderAllies(defenderAllies);
 				war.setAttackerWarscore(attackerWarscore);
 				war.setDefenderWarscore(defenderWarscore);
+				war.setDaysLeft(daysLeft);
 				war.addWarToCombatants();
 				return true;
 			} else {
@@ -2005,6 +2009,9 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 		// defender warscore
 		list.add("defenderWarscore=" + war.getDefenderWarscore());
+
+		// days left
+		list.add("daysLeft=" + war.getDaysLeft());
 
 		/*
 		 *  Make sure we only save in async

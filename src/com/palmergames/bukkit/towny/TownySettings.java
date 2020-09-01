@@ -2941,6 +2941,10 @@ public class TownySettings {
 	public static int getLives() {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_LIVES);
 	}
+	
+	public static int getDaysInWar() {
+		return getInt(ConfigNodes.NEWWAR_CONFIG_DAYS);
+	}
 
 	public static boolean getHumiliateEnabled() {
 		return getBoolean(ConfigNodes.NEWWAR_HUMILIATE_ENABLED);

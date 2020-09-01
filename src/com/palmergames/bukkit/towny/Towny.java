@@ -253,6 +253,9 @@ public class Towny extends JavaPlugin {
 						}
 						
 						for (War war : universe.getDataSource().getAllWars()) {
+							int daysLeft = war.getDaysLeft();
+							daysLeft -= 1;
+							war.setDaysLeft(daysLeft);
 							if (!BukkitTools.isOnline(war.getAttacker().getKing().getName())) {
 								float victorWarscore = war.getDefenderWarscore();
 								float loserWarscore = war.getAttackerWarscore();
