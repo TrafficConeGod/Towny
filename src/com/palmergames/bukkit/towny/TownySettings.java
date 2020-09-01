@@ -2947,7 +2947,7 @@ public class TownySettings {
 	}
 
 	public static float getHumiliateInfamy() {
-		return (float) getDouble(ConfigNodes.NEWWAR_HUMILIATE_DAYS);
+		return (float) getDouble(ConfigNodes.NEWWAR_HUMILIATE_INFAMY);
 	}
 
 	public static int getHumiliateDays() {
