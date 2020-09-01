@@ -111,6 +111,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"war",
 		"surrender",
 		"addgoal",
+		"removegoal",
 		"call"
 	);
 
@@ -884,6 +885,18 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				}
 
 
+			} else if (split[0].equalsIgnoreCase("removegoal")) {
+				if (split.length == 1)
+					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_specify_nation_name"));
+				else if (split.length == 2) {
+					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_specify_wargoal_id"));
+				}
+				else if (split.length >= 3) {
+					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+					if (!resident.isKing())
+						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
+					nationRemoveWargoal(player, split[1], split[2]);
+				}
 			} else if(split[0].equalsIgnoreCase("spawn")){
 			    /*
 			        Parse standard nation spawn command.
@@ -2189,6 +2202,66 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				}
 			});
 			ConfirmationHandler.sendConfirmation(player, confirmation);
+
+		}
+
+	}
+	
+	public void nationRemoveWargoal(Player player, String enemyNationName, String idString) throws TownyException, CloneNotSupportedException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+		Nation nation;
+		Nation remainingNation;
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		Nation playerNation = resident.getTown().getNation();
+
+		try {
+			nation = universe.getDataSource().getNation(enemyNationName);
+			remainingNation = universe.getDataSource().getResident(player.getName()).getTown().getNation();
+		} catch (NotRegisteredException e) {
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+		}
+		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
+			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
+
+		int id = Integer.parseInt(idString);
+		
+		if (nation != null) {
+			if (!playerNation.atWarWith(nation)) {
+				throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
+			}
+			War war = playerNation.getWar(nation);
+			if (war.isAnAttacker(playerNation)) {
+				List<CasusBelli> casusBellis = war.getAttackerCasusBellis();
+				if (id >= casusBellis.size() || id < 0) {
+					throw new TownyException(TownySettings.getLangString("msg_err_invalid_wargoal_id"));
+				}
+				CasusBelli casusBelli = casusBellis.get(id);
+				String display = casusBelli.getAttacker().getName() + " " + casusBelli.getName() + casusBelli.getDisplaySuffix() + " -> " + casusBelli.getDefender().getName();
+
+				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_remove_wargoal_confirmation"), display));
+				Confirmation confirmation = new Confirmation(() -> {
+					war.removeAttackerCasusBelli(casusBelli);
+					universe.getDataSource().saveWar(war);
+					universe.getDataSource().saveCasusBelli(casusBelli);
+				});
+				ConfirmationHandler.sendConfirmation(player, confirmation);
+			} else if (war.isADefender(playerNation)) {
+				List<CasusBelli> casusBellis = war.getDefenderCasusBellis();
+				if (id >= casusBellis.size() || id < 0) {
+					throw new TownyException(TownySettings.getLangString("msg_err_invalid_wargoal_id"));
+				}
+				CasusBelli casusBelli = casusBellis.get(id);
+				String display = casusBelli.getAttacker().getName() + " " + casusBelli.getName() + casusBelli.getDisplaySuffix() + " -> " + casusBelli.getDefender().getName();
+
+				TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_remove_wargoal_confirmation"), display));
+				Confirmation confirmation = new Confirmation(() -> {
+					war.removeDefenderCasusBelli(casusBelli);
+					universe.getDataSource().saveWar(war);
+					universe.getDataSource().saveCasusBelli(casusBelli);
+				});
+				ConfirmationHandler.sendConfirmation(player, confirmation);
+			}
 
 		}
 
