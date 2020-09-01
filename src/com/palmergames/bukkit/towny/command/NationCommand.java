@@ -2243,7 +2243,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
 			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
 
-		int id = Integer.parseInt(idString) + 1;
+		int id = Integer.parseInt(idString) - 1;
 		
 		if (nation != null) {
 			if (!playerNation.atWarWith(nation)) {
