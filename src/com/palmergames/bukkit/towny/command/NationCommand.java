@@ -106,6 +106,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		"spawn",
 		"king",
 		"justify",
+		"canceljustify",
 		"declare",
 		"peace",
 		"war",
@@ -681,19 +682,23 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 //					if (!townyUniverse.getPermissionSource().testPermission(player, PermissionNodes.TOWNY_COMMAND_NATION_LEAVE.getNode()))
 //						throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
-				
+
 
 				if (split.length == 1)
 					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_specify_nation_name"));
 				else if (split.length == 2) {
 					TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_err_must_specify_casus_belli"));
-				}
-				else if (split.length == 3) {
+				} else if (split.length == 3) {
 					Resident resident = townyUniverse.getDataSource().getResident(player.getName());
 					if (!resident.isKing())
 						throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
 					nationJustify(player, split[1], split[2]);
 				}
+			} else if (split[0].equalsIgnoreCase("canceljustify")) {
+				Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+				if (!resident.isKing())
+					throw new TownyException(TownySettings.getLangString("msg_err_for_kings_only"));
+				nationCancelJustify(player);
 			} else if (split[0].equalsIgnoreCase("ijustify")) {
 				// DEBUG COMMAND
 				//
@@ -1972,6 +1977,20 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		}
 		
 	}
+
+
+	public void nationCancelJustify(Player player) throws TownyException {
+		com.palmergames.bukkit.towny.TownyUniverse universe = com.palmergames.bukkit.towny.TownyUniverse.getInstance();
+
+		Resident resident = universe.getDataSource().getResident(player.getName());
+		Nation nation = resident.getTown().getNation();
+
+		Confirmation confirmation = new Confirmation(() -> {
+			nation.setJustification(null);
+			universe.getDataSource().saveNation(nation);
+		});
+		ConfirmationHandler.sendConfirmation(player, confirmation);
+	}
 	
 	// FOR DEBUG /n ijustify COMMAND
 	public void nationInstantJustify(Player player, String enemyNationName, String casusBelliName) throws TownyException, CloneNotSupportedException {
@@ -2224,7 +2243,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		if (remainingNation.getName().equalsIgnoreCase(enemyNationName))
 			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), enemyNationName));
 
-		int id = Integer.parseInt(idString);
+		int id = Integer.parseInt(idString) + 1;
 		
 		if (nation != null) {
 			if (!playerNation.atWarWith(nation)) {
@@ -2243,7 +2262,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				Confirmation confirmation = new Confirmation(() -> {
 					war.removeAttackerCasusBelli(casusBelli);
 					universe.getDataSource().saveWar(war);
-					universe.getDataSource().saveCasusBelli(casusBelli);
+					universe.getDataSource().deleteCasusBelli(casusBelli);
 				});
 				ConfirmationHandler.sendConfirmation(player, confirmation);
 			} else if (war.isADefender(playerNation)) {
@@ -2258,7 +2277,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				Confirmation confirmation = new Confirmation(() -> {
 					war.removeDefenderCasusBelli(casusBelli);
 					universe.getDataSource().saveWar(war);
-					universe.getDataSource().saveCasusBelli(casusBelli);
+					universe.getDataSource().deleteCasusBelli(casusBelli);
 				});
 				ConfirmationHandler.sendConfirmation(player, confirmation);
 			}
