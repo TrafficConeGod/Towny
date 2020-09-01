@@ -32,6 +32,7 @@ import com.palmergames.bukkit.towny.listeners.TownyVehicleListener;
 import com.palmergames.bukkit.towny.listeners.TownyWeatherListener;
 import com.palmergames.bukkit.towny.listeners.TownyWorldListener;
 import com.palmergames.bukkit.towny.newwar.Justification;
+import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.*;
 import com.palmergames.bukkit.towny.permissions.BukkitPermSource;
 import com.palmergames.bukkit.towny.permissions.GroupManagerSource;
@@ -226,6 +227,7 @@ public class Towny extends JavaPlugin {
 				public void run() {
 					long time = measureWorld.getTime() % 24000;
 					if (lastTime <= 6000 && time >= 6000) {
+						// new day
 						for (Nation nation : universe.getDataSource().getNations()) {
 							float infamy = nation.getInfamy();
 							infamy -= TownySettings.getInfamyReduction();
@@ -248,6 +250,26 @@ public class Towny extends JavaPlugin {
 									}
 								}
 							}
+						}
+						
+						for (War war : universe.getDataSource().getAllWars()) {
+							if (!BukkitTools.isOnline(war.getAttacker().getKing().getName())) {
+								float victorWarscore = war.getDefenderWarscore();
+								float loserWarscore = war.getAttackerWarscore();
+								victorWarscore += TownySettings.getOfflineDayWarscoreChange();
+								loserWarscore -= TownySettings.getOfflineDayWarscoreChange();
+								war.setDefenderWarscore(victorWarscore);
+								war.setAttackerWarscore(loserWarscore);
+							}
+							if (!BukkitTools.isOnline(war.getDefender().getKing().getName())) {
+								float victorWarscore = war.getAttackerWarscore();
+								float loserWarscore = war.getDefenderWarscore();
+								victorWarscore += TownySettings.getOfflineDayWarscoreChange();
+								loserWarscore -= TownySettings.getOfflineDayWarscoreChange();
+								war.setAttackerWarscore(victorWarscore);
+								war.setDefenderWarscore(loserWarscore);
+							}
+							universe.getDataSource().saveWar(war);
 						}
 					}
 					lastTime = time;

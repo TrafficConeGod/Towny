@@ -1885,10 +1885,10 @@ public enum ConfigNodes {
 		"newwar.warscore.town_occupy_change",
 		"50",
 		"# The percentage of warscore will change if you occupy a town in a war. The sentence above applies to this as well.'"),
-	NEWWAR_WARSCORE_OFFLINE_DAY_GAIN(
-		"newwar.warscore.offline_day_gain",
+	NEWWAR_WARSCORE_OFFLINE_DAY_CHANGE(
+		"newwar.warscore.offline_day_change",
 		"1",
-		"# The percentage of warscore you will gain if the king of the enemy nation is offline. You will always get the full warscore no matter the population.'"),
+		"# The percentage of warscore that will change if the king of the enemy nation is offline. You will always get the full warscore no matter the population.'"),
 	NEWWAR_HUMILIATE(
 		"newwar.humiliate",
 		"",

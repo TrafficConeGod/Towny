@@ -321,6 +321,8 @@ public abstract class TownyDataSource {
 	abstract public List<Nation> getNations(String[] names);
 
 	abstract public List<Nation> getNations();
+	
+	abstract public List<War> getAllWars();
 
 	abstract public Nation getNation(String name) throws NotRegisteredException;
 

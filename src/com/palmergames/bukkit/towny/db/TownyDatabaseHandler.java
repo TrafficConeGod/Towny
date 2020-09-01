@@ -393,17 +393,6 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 	public List<PlotGroup> getAllPlotGroups() {
 		return new ArrayList<>(universe.getGroups());
 	}
-
-	public List<War> getAllWars() {
-		List<War> warList = new ArrayList<>();
-		for (Nation nation : universe.getDataSource().getNations()) {
-			for (War war : nation.getWars()) {
-				warList.add(war);
-			}
-		}
-			
-		return warList;
-	}
 	
 	public void newPlotGroup(PlotGroup group) {
 		universe.getGroups().add(group);
@@ -1155,6 +1144,18 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		}
 		
 		BukkitTools.getPluginManager().callEvent(new RenameResidentEvent(oldName, resident));
+	}
+	
+	public List<War> getAllWars() {
+		List<War> wars = new ArrayList<>();
+		for (Nation nation : getNations()) {
+			for (War war : nation.getWars()) {
+				if (wars.indexOf(war) == -1) {
+					wars.add(war);
+				}
+			}
+		}
+		return wars;
 	}
 	
 	/** 

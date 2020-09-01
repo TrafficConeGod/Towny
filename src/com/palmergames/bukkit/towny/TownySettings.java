@@ -2998,8 +2998,8 @@ public class TownySettings {
 		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_TOWN_OCCUPY_CHANGE)) / 100f;
 	}
 
-	public static float getOfflineDayWarscoreGain() {
-		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_OFFLINE_DAY_GAIN)) / 100f;
+	public static float getOfflineDayWarscoreChange() {
+		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_OFFLINE_DAY_CHANGE)) / 100f;
 	}
 
 	public static Map<String,String> getNationColorsMap() {
