@@ -292,6 +292,9 @@ public class War {
 	}
 
 	public void setAttackerWarscore(float attackerWarscore) {
+		if (attackerWarscore >= 1f) {
+			attackerWarscore = 1f;
+		}
 		this.attackerWarscore = attackerWarscore;
 	}
 
@@ -300,6 +303,9 @@ public class War {
 	}
 
 	public void setDefenderWarscore(float defenderWarscore) {
+		if (defenderWarscore >= 1f) {
+			defenderWarscore = 1f;
+		}
 		this.defenderWarscore = defenderWarscore;
 	}
 }

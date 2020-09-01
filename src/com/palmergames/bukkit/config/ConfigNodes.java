@@ -1868,6 +1868,27 @@ public enum ConfigNodes {
 		"newwar.config.lives",
 		"3",
 		"# The amount of lives a player has in a war'"),
+	NEWWAR_CONFIG_DAYS(
+		"newwar.config.days",
+		"216",
+		"# The amount of in game days a war lasts'"),
+	NEWWAR_WARSCORE(
+		"newwar.warscore",
+		"",
+		"# NewWar Warscore"
+	),
+	NEWWAR_WARSCORE_KILL_GAIN(
+		"newwar.warscore.kill_gain",
+		"50",
+		"# The percentage of warscore you will gain if you kill a player in a war. This value is divided by the population of the nation so this specific warscore will only apply to nations that have 1 person in them.'"),
+	NEWWAR_WARSCORE_TOWN_OCCUPY_GAIN(
+		"newwar.warscore.town_occupy_gain",
+		"50",
+		"# The percentage of warscore you will gain if occupy a town in a war. The sentence above applies to this as well.'"),
+	NEWWAR_WARSCORE_OFFLINE_DAY_GAIN(
+		"newwar.warscore.offline_day_gain",
+		"1",
+		"# The percentage of warscore you will gain if the king of the enemy nation is offline. You will always get the full warscore no matter the population.'"),
 	NEWWAR_HUMILIATE(
 		"newwar.humiliate",
 		"",
