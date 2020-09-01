@@ -366,6 +366,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			HashMap<UUID, Integer> defenderLives = new HashMap<>();
 			List<Nation> attackerAllies = new ArrayList<>();
 			List<Nation> defenderAllies = new ArrayList<>();
+			float attackerWarscore = 0;
+			float defenderWarscore = 0;
 
 			while ((line = fin.readLine()) != null) {
 				if (!line.equals("")) {
@@ -419,6 +421,10 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 								Nation ally = getNation(defenderAlly);
 								defenderAllies.add(ally);
 							}
+						} else if (property.equalsIgnoreCase("attackerWarscore")) {
+							attackerWarscore = Float.parseFloat(value);
+						} else if (property.equalsIgnoreCase("defenderWarscore")) {
+							defenderWarscore = Float.parseFloat(value);
 						}
 					}
 				}
@@ -431,6 +437,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				war.setDefenderLives(defenderLives);
 				war.setAttackerAllies(attackerAllies);
 				war.setDefenderAllies(defenderAllies);
+				war.setAttackerWarscore(attackerWarscore);
+				war.setDefenderWarscore(defenderWarscore);
 				war.addWarToCombatants();
 				return true;
 			} else {
@@ -1991,6 +1999,12 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 		// defenderAllies
 		list.add("defenderAllies=" + defenderAllies);
+		
+		// attacker warscore
+		list.add("attackerWarscore=" + war.getAttackerWarscore());
+
+		// defender warscore
+		list.add("defenderWarscore=" + war.getDefenderWarscore());
 
 		/*
 		 *  Make sure we only save in async

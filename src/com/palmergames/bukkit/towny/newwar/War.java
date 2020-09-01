@@ -15,6 +15,8 @@ public class War {
 	private HashMap<UUID, Integer> defenderLives = new HashMap<>();
 	private List<Nation> attackerAllies = new ArrayList<>();
 	private List<Nation> defenderAllies = new ArrayList<>();
+	private float attackerWarscore = 0;
+	private float defenderWarscore = 0;
 	private HashMap<Nation, Boolean> isAttackerMap = new HashMap<>();
 	private UUID uuid;
 	
@@ -270,6 +272,7 @@ public class War {
 //		return warscore;
 //	}
 //	
+	
 	public void addAttackerCasusBelli(CasusBelli casusBelli) {
 		attackerCasusBellis.add(casusBelli);
 	}
@@ -282,5 +285,21 @@ public class War {
 	}
 	public void removeDefenderCasusBelli(CasusBelli casusBelli) {
 		defenderCasusBellis.remove(casusBelli);
+	}
+
+	public float getAttackerWarscore() {
+		return attackerWarscore;
+	}
+
+	public void setAttackerWarscore(float attackerWarscore) {
+		this.attackerWarscore = attackerWarscore;
+	}
+
+	public float getDefenderWarscore() {
+		return defenderWarscore;
+	}
+
+	public void setDefenderWarscore(float defenderWarscore) {
+		this.defenderWarscore = defenderWarscore;
 	}
 }

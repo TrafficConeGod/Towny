@@ -830,8 +830,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						}
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), attackerCasusBellis.size(), attackerCasusBelliString));
-//					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getAttackerWarscore() * 100)) + "%");
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getCasualtyCount(war.getAttacker()))));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), war.getAttackerWarscore() * 100) + "%");
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), war.getCasualtyCount(war.getAttacker())));
 					
 					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_divider"));
 					
@@ -860,8 +860,8 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						}
 					}
 					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_goals"), defenderCasusBellis.size(), defenderCasusBelliString));
-//					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), String.valueOf(war.getDefenderWarscore() * 100)) + "%");
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), String.valueOf(war.getCasualtyCount(war.getDefender()))));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_score"), war.getDefenderWarscore() * 100) + "%");
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_casualties"), war.getCasualtyCount(war.getDefender())));
 					
 				}
 			} else if (split[0].equalsIgnoreCase("addgoal")) {
