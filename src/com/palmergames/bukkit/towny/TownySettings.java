@@ -2934,9 +2934,10 @@ public class TownySettings {
 		return (float) getDouble(ConfigNodes.NEWWAR_CONFIG_INFAMY_REDUCTION);
 	}
 
-	public static int getInactivityThreshold() {
-		return getInt(ConfigNodes.NEWWAR_CONFIG_INACTIVITY_THRESHOLD);
-	}
+	// UNUSED
+//	public static int getInactivityThreshold() {
+//		return getInt(ConfigNodes.NEWWAR_CONFIG_INACTIVITY_THRESHOLD);
+//	}
 
 	public static int getLives() {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_LIVES);
@@ -2944,6 +2945,10 @@ public class TownySettings {
 	
 	public static int getDaysInWar() {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_DAYS);
+	}
+
+	public static float getTownOccupationPercentagePerSecond() {
+		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_CAPITAL_TOWN_OCCUPY_CHANGE)) / 100f;
 	}
 
 	public static boolean getHumiliateEnabled() {

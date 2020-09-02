@@ -1872,6 +1872,10 @@ public enum ConfigNodes {
 		"newwar.config.days",
 		"216",
 		"# The amount of in game days a war lasts'"),
+	NEWWAR_CONFIG_TOWN_OCCUPATION_PERCENTAGE_PER_SECOND(
+		"newwar.config.town_occupation_percentage_per_second",
+		"0.1",
+		"# The amount per second town occupation percentage goes up by. Additive with more players'"),
 	NEWWAR_WARSCORE(
 		"newwar.warscore",
 		"",

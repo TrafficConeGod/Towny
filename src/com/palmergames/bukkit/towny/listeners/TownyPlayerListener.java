@@ -12,6 +12,7 @@ import com.palmergames.bukkit.towny.event.PlayerEnterTownEvent;
 import com.palmergames.bukkit.towny.event.PlayerLeaveTownEvent;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.newwar.Occupation;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -889,6 +890,31 @@ public class TownyPlayerListener implements Listener {
 
 		PlayerChangePlotEvent event = new PlayerChangePlotEvent(player, from, to, moveEvent);
 		Bukkit.getServer().getPluginManager().callEvent(event);
+
+		TownyUniverse townyUniverse = TownyUniverse.getInstance();
+		try {
+			Resident resident = townyUniverse.getDataSource().getResident(player.getName());
+			// entering code
+			if (to.hasTownBlock() && resident.hasNation()) {
+				Nation nationEntering = resident.getTown().getNation();
+				TownBlock townBlock = to.getTownBlock();
+				if (townBlock.isHomeBlock() && townBlock.hasTown()) {
+					Town town = townBlock.getTown();
+					if (town.hasNation()) {
+						Nation nationBeingEntered = town.getNation();
+						if (nationEntering.atWarWith(nationBeingEntered)) {
+							if (!town.isBeingOccupied()) {
+								Occupation occupation = new Occupation(town);
+								town.setOccupation(occupation);
+							}
+							town.getOccupation().addPlayerOccupying(player);
+						}
+					}
+				}
+			}
+		} catch (NotRegisteredException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*

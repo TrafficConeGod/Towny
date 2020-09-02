@@ -903,18 +903,35 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 		universe.getDataSource().saveNation(this);
 		universe.getDataSource().saveNation(loser);
 	}
+	
+	public void clearOccupations() {
+		for (Town town : towns) {
+			town.setOccupation(null);
+			town.setOccupiedBy(null);
+		}
+	}
 
 
 
 	public void peaceWar(War war) throws TownyException {
 		Nation loser = war.getAtWarWith(this);
+		// clear occupations
+		clearOccupations();
+		loser.clearOccupations();
+		for (Nation ally : war.getAttackerAllies()) {
+			ally.clearOccupations();
+		}
+		for (Nation ally : war.getDefenderAllies()) {
+			ally.clearOccupations();
+		}
 		List<CasusBelli> casusBellisList = war.getCasusBellisAgainst(loser);
 		List<CasusBelli> loserCasusBellis = war.getCasusBellisAgainst(this);
 		CasusBelli[] casusBellis = new CasusBelli[casusBellisList.size()];
 		casusBellisList.toArray(casusBellis);
 		for (CasusBelli casusBelli : casusBellis) {
 			try {
-				casusBelli.onPeaceAccepted(this, loser);
+				//casusBelli.onPeaceAccepted(this, loser); this might be problematic
+				casusBelli.onPeaceAccepted(casusBelli.getAttacker(), casusBelli.getDefender()); // use this instead for war allies to work properly iirc
 			} catch (AlreadyRegisteredException | EmptyNationException | NotRegisteredException e) {
 				e.printStackTrace();
 			}

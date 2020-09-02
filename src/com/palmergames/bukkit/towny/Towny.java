@@ -278,6 +278,15 @@ public class Towny extends JavaPlugin {
 					lastTime = time;
 				}
 			}, 0L, 200L);
+			
+			// second tick
+			scheduler.scheduleSyncRepeatingTask(this, () -> {
+				for (Town town : universe.getDataSource().getTowns()) {
+					if (town.isBeingOccupied()) {
+						town.getOccupation().secondTick();
+					}
+				}
+			}, 0L, 20L);
 		}
 	}
 

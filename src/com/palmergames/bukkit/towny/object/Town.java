@@ -17,6 +17,7 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.invites.Invite;
 import com.palmergames.bukkit.towny.invites.InviteHandler;
 import com.palmergames.bukkit.towny.invites.exceptions.TooManyInvitesException;
+import com.palmergames.bukkit.towny.newwar.Occupation;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
 import com.palmergames.bukkit.towny.permissions.TownyPerms;
 import com.palmergames.bukkit.util.BukkitTools;
@@ -75,6 +76,8 @@ public class Town extends TownyObject implements ResidentList, TownyInviter, Obj
 	private transient List<Invite> sentinvites = new ArrayList<>();
 	private boolean isConquered = false;
 	private int conqueredDays;
+	private Occupation occupation;
+	private Nation occupiedBy;
 	private EconomyAccount account;
 	private ConcurrentHashMap<WorldCoord, TownBlock> townBlocks = new ConcurrentHashMap<>();
 	private TownyPermission permissions = new TownyPermission();
@@ -1464,6 +1467,31 @@ public class Town extends TownyObject implements ResidentList, TownyInviter, Obj
 		// Max tax amount cannot go over amount defined in config.
 		this.maxPercentTaxAmount = Math.min(maxPercentTaxAmount, TownySettings.getMaxTownTaxPercentAmount());
 	}
+	
+	public Occupation getOccupation() {
+		return occupation;
+	}
+	
+	public void setOccupation(Occupation occupation) {
+		this.occupation = occupation;
+	}
+	
+	public boolean isBeingOccupied() {
+		return occupation != null;
+	}
+	
+	public Nation getOccupiedBy() {
+		return occupiedBy;
+	}
+	
+	public void setOccupiedBy(Nation occupiedBy) {
+		this.occupiedBy = occupiedBy;
+	}
+	
+	public boolean isOccupied() {
+		return occupiedBy != null;
+	}
+	
 	
 	/**
 	 * @deprecated As of 0.97.0.0+ please use {@link EconomyAccount#getWorld()} instead.
