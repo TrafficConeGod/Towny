@@ -2755,7 +2755,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 	}
 
-	public void nationKick(Player player, String[] names) {
+	public void nationKick(Player player, String[] names) throws TownyException {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
 
 		if (names.length < 1) {
@@ -2781,8 +2781,12 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		nationKick(player, nation, townyUniverse.getDataSource().getTowns(names));
 	}
 
-	public static void nationKick(CommandSender sender, Nation nation, List<Town> kicking) {
+	public static void nationKick(CommandSender sender, Nation nation, List<Town> kicking) throws TownyException {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
+		
+		if (nation.isAtWar()) {
+			throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+		}
 
 		ArrayList<Town> remove = new ArrayList<>();
 		for (Town town : kicking)
