@@ -3005,6 +3005,14 @@ public class TownySettings {
 	public static float getOfflineDayWarscoreChange() {
 		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_OFFLINE_DAY_CHANGE)) / 100f;
 	}
+	
+	public static float getKingKillWarscoreChange() {
+		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_KING_KILL_CHANGE)) / 100f;
+	}
+	
+	public static float getCapitalTownOccupyWarscoreChange() {
+		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_CAPITAL_TOWN_OCCUPY_CHANGE)) / 100f;
+	}
 
 	public static Map<String,String> getNationColorsMap() {
 		List<String> nationColorsList = getStrArr(ConfigNodes.GNATION_SETTINGS_ALLOWED_NATION_COLORS);

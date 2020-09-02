@@ -1884,11 +1884,19 @@ public enum ConfigNodes {
 	NEWWAR_WARSCORE_TOWN_OCCUPY_CHANGE(
 		"newwar.warscore.town_occupy_change",
 		"50",
-		"# The percentage of warscore will change if you occupy a town in a war. The sentence above applies to this as well.'"),
+		"# The percentage of warscore will change if you occupy a town in a war. The sentence above applies to this as well except it's divided by number of towns.'"),
 	NEWWAR_WARSCORE_OFFLINE_DAY_CHANGE(
 		"newwar.warscore.offline_day_change",
 		"1",
 		"# The percentage of warscore that will change if the king of the enemy nation is offline. You will always get the full warscore no matter the population.'"),
+	NEWWAR_WARSCORE_KING_KILL_CHANGE(
+		"newwar.warscore.king_kill_change",
+		"10",
+		"# The percentage of warscore that will change if the king of the enemy nation dies. You will always get the full warscore no matter the population.'"),
+	NEWWAR_WARSCORE_CAPITAL_TOWN_OCCUPY_CHANGE(
+		"newwar.warscore.capital_town_occupy_change",
+		"10",
+		"# The percentage of warscore that will change if the capital of the enemy nation gets occupied. You will always get the full warscore no matter the number of towns.'"),
 	NEWWAR_HUMILIATE(
 		"newwar.humiliate",
 		"",

@@ -3,6 +3,7 @@ package com.palmergames.bukkit.towny.newwar;
 import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
 
 import java.util.*;
 
@@ -333,12 +334,15 @@ public class War {
 		this.defenderWarscore = defenderWarscore;
 	}
 	
-	public void addKillToWarscore(Nation victor, Nation loser) {
+	public void addKillToWarscore(Nation victor, Resident loser) {
 		if (isAnAttacker(victor)) {
 			float victorWarscore = attackerWarscore;
 			float loserWarscore = defenderWarscore;
 			float loserPopulation = getDefenderPopulation();
 			float warscoreChange = TownySettings.getKillWarscoreChange() / loserPopulation;
+			if (defender.getKing().getName().equalsIgnoreCase(loser.getName())) {
+				warscoreChange += TownySettings.getKingKillWarscoreChange();
+			}
 			setAttackerWarscore(victorWarscore + warscoreChange);
 			setDefenderWarscore(loserWarscore - warscoreChange);
 		} else if (isADefender(victor)) {
@@ -346,6 +350,9 @@ public class War {
 			float loserWarscore = attackerWarscore;
 			float loserPopulation = getAttackerPopulation();
 			float warscoreChange = TownySettings.getKillWarscoreChange() / loserPopulation;
+			if (attacker.getKing().getName().equalsIgnoreCase(loser.getName())) {
+				warscoreChange += TownySettings.getKingKillWarscoreChange();
+			}
 			setDefenderWarscore(victorWarscore + warscoreChange);
 			setAttackerWarscore(loserWarscore - warscoreChange);
 		}
