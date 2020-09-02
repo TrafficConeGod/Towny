@@ -811,7 +811,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 					}
 					War war = playerNation.getWar(enemyNation);
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_days_left"), war.getDaysLeft() / 72));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_days_left"), (float)war.getDaysLeft() / 72f));
 
 					// attacker
 					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_attackers"));
