@@ -1203,6 +1203,11 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				line = keys.get("metadata");
 				if (line != null && !line.isEmpty())
 					town.setMetadata(line.trim());
+				
+				line = keys.get("occupiedBy");
+				if (line != null && !line.isEmpty()) {
+					town.setOccupiedBy(universe.getDataSource().getNation(line));
+				}
 
 			} catch (Exception e) {
 				TownyMessaging.sendErrorMsg("Loading Error: Exception while reading town file " + town.getName() + " at line: " + line + ", in towny\\data\\towns\\" + town.getName() + ".txt");
@@ -2331,6 +2336,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			}
 		}
 		list.add("metadata=" + md.toString());
+		
+		list.add("occupiedBy=" + (town.isOccupied() ? town.getOccupiedBy().getName() : ""));
 		
 		/*
 		 *  Make sure we only save in async
