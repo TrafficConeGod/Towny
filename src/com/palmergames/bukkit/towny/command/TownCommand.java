@@ -2205,6 +2205,12 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 						if (TownyAPI.getInstance().isWarTime())
 							throw new TownyException(TownySettings.getLangString("msg_war_cannot_do"));
 
+						if (town.hasNation()) {
+							if (town.getNation().isAtWar()) {
+								throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+							}
+						}
+
 						world = townyUniverse.getDataSource().getWorld(player.getWorld().getName());
 						if (world.getMinDistanceFromOtherTowns(coord, resident.getTown()) < TownySettings.getMinDistanceFromTownHomeblocks())
 							throw new TownyException(String.format(TownySettings.getLangString("msg_too_close2"), TownySettings.getLangString("homeblock")));
@@ -2755,6 +2761,11 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 			try {
 				Resident resident = townyUniverse.getDataSource().getResident(player.getName());
 				town = resident.getTown();
+				if (town.hasNation()) {
+					if (town.getNation().isAtWar()) {
+						throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+					}
+				}
 				Confirmation confirmation = new Confirmation(() -> {
 					if (town.hasNation() && town.isCapital()) {
 						try {
@@ -2811,7 +2822,7 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 
 		townKickResidents(player, resident, town, ResidentUtil.getValidatedResidents(player, names));
 
-		// Reset everyones cache permissions as this player leaving can affect
+		// Reset everyones cache permissiostatsns as this player leaving can affect
 		// multiple areas.
 		plugin.resetCache();
 	}
@@ -3521,6 +3532,12 @@ public class TownCommand extends BaseCommand implements CommandExecutor, TabComp
 				town = resident.getTown();
 				world = townyUniverse.getDataSource().getWorld(player.getWorld().getName());
 
+				if (town.hasNation()) {
+					if (town.getNation().isAtWar()) {
+						throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+					}
+				}
+				
 				if (FlagWar.isUnderAttack(town) && TownySettings.isFlaggedInteractionTown())
 					throw new TownyException(TownySettings.getLangString("msg_war_flag_deny_town_under_attack"));
 

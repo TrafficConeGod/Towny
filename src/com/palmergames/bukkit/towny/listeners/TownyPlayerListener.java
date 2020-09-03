@@ -902,17 +902,48 @@ public class TownyPlayerListener implements Listener {
 					Town town = townBlock.getTown();
 					if (town.hasNation()) {
 						Nation nationBeingEntered = town.getNation();
-						if (nationEntering.atWarWith(nationBeingEntered)) {
-							if (!town.isBeingOccupied()) {
-								Occupation occupation = new Occupation(town);
-								town.setOccupation(occupation);
+						if (town.isOccupied()) {
+							nationBeingEntered = town.getOccupiedBy();
+						}
+						if (nationEntering != nationBeingEntered && nationEntering.atWarWith(nationBeingEntered)) {
+							War war = nationEntering.getWar(nationBeingEntered);
+							if (!war.wasKilledInCombat(nationEntering, player.getUniqueId())) {
+								if (!town.isBeingOccupied()) {
+									Occupation occupation = new Occupation(town);
+									town.setOccupation(occupation);
+								}
+								town.getOccupation().addPlayerOccupying(player);
 							}
-							town.getOccupation().addPlayerOccupying(player);
+						} else if (town.isBeingOccupied() && nationEntering == nationBeingEntered) {
+							Nation nationOccupying = town.getOccupation().getNationOccupying();
+							if (nationEntering.atWarWith(nationOccupying)) {
+								War war = nationEntering.getWar(nationOccupying);
+								if (!war.wasKilledInCombat(nationEntering, player.getUniqueId())) {
+									town.getOccupation().addPlayerBlocking(player);
+								}
+							}
+						}
+					}
+				}
+			}
+			// exiting code
+			if (from.hasTownBlock() && resident.hasNation()) {
+				TownBlock townBlock = from.getTownBlock();
+				if (townBlock.isHomeBlock() && townBlock.hasTown()) {
+					Town town = townBlock.getTown();
+					if (town.hasNation() && town.isBeingOccupied()) {
+						if (town.getOccupation().getPlayersOccupying().contains(player)) {
+							town.getOccupation().removePlayerOccupying(player);
+						}
+						if (town.getOccupation().getPlayersBlocking().contains(player)) {
+							town.getOccupation().addPlayerBlocking(player);
 						}
 					}
 				}
 			}
 		} catch (NotRegisteredException e) {
+			e.printStackTrace();
+		} catch (TownyException e) {
 			e.printStackTrace();
 		}
 	}

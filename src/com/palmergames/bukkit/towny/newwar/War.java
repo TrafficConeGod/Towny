@@ -4,6 +4,7 @@ import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
 
 import java.util.*;
 
@@ -272,6 +273,22 @@ public class War {
 		return (float)population;
 	}
 	
+	public float getAttackerTowns() {
+		int towns = attacker.getNumTowns();
+		for (Nation ally : attackerAllies) {
+			towns += ally.getNumTowns();
+		}
+		return (float)towns;
+	}
+
+	public float getDefenderTowns() {
+		int towns = defender.getNumTowns();
+		for (Nation ally : defenderAllies) {
+			towns += ally.getNumTowns();
+		}
+		return (float)towns;
+	}
+	
 	// UNUSED
 //	public float getAttackerWarscore() {
 //		int population = defender.getNumResidents();
@@ -352,6 +369,30 @@ public class War {
 			float warscoreChange = TownySettings.getKillWarscoreChange() / loserPopulation;
 			if (attacker.getKing().getName().equalsIgnoreCase(loser.getName())) {
 				warscoreChange += TownySettings.getKingKillWarscoreChange();
+			}
+			setDefenderWarscore(victorWarscore + warscoreChange);
+			setAttackerWarscore(loserWarscore - warscoreChange);
+		}
+	}
+
+	public void addTownOccupyToWarscore(Nation victor, Town town) {
+		if (isAnAttacker(victor)) {
+			float victorWarscore = attackerWarscore;
+			float loserWarscore = defenderWarscore;
+			float loserTowns = getDefenderTowns();
+			float warscoreChange = TownySettings.getTownOccupyWarscoreChange() / loserTowns;
+			if (town.isCapital()) {
+				warscoreChange += TownySettings.getCapitalTownOccupyWarscoreChange();
+			}
+			setAttackerWarscore(victorWarscore + warscoreChange);
+			setDefenderWarscore(loserWarscore - warscoreChange);
+		} else if (isADefender(victor)) {
+			float victorWarscore = defenderWarscore;
+			float loserWarscore = attackerWarscore;
+			float loserTowns = getAttackerTowns();
+			float warscoreChange = TownySettings.getTownOccupyWarscoreChange() / loserTowns;
+			if (town.isCapital()) {
+				warscoreChange += TownySettings.getCapitalTownOccupyWarscoreChange();
 			}
 			setDefenderWarscore(victorWarscore + warscoreChange);
 			setAttackerWarscore(loserWarscore - warscoreChange);

@@ -216,6 +216,11 @@ public class Towny extends JavaPlugin {
 						}
 					}
 				}
+				for (Nation nation : universe.getDataSource().getNations()) {
+					if (nation.getNumTowns() <= 0) {
+						universe.getDataSource().removeNation(nation, false);
+					}
+				}
 			}, 0L, 1200L);
 			
 			

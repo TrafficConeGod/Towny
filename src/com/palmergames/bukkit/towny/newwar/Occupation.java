@@ -3,6 +3,7 @@ package com.palmergames.bukkit.towny.newwar;
 import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -15,6 +16,7 @@ public class Occupation {
 	private Town townOccupied;
 	private float progress = 0f;
 	private List<Player> playersOccupying = new ArrayList<>();
+	private List<Player> playersBlocking = new ArrayList<>();
 	private float townOccupationPercentagePerSecond = TownySettings.getTownOccupationPercentagePerSecond();
 	private TownyUniverse townyUniverse = TownyUniverse.getInstance();
 
@@ -43,6 +45,7 @@ public class Occupation {
 
 	public void setProgress(float progress) {
 		if (progress >= 1f) {
+			progress = 1f;
 			completeOccupation();
 		}
 		this.progress = progress;
@@ -52,12 +55,20 @@ public class Occupation {
 		if (townOccupied.hasNation()) {
 			try {
 				Nation nationOccupying = getNationOccupying();
-				if (nationOccupying.getName().equalsIgnoreCase(townOccupied.getName())) {
+				if (nationOccupying == townOccupied.getNation()) {
+					Nation loser = townOccupied.getOccupiedBy();
+					War war = nationOccupying.getWar(loser);
+					war.addTownOccupyToWarscore(nationOccupying, townOccupied);
 					townOccupied.setOccupiedBy(null);
 				} else {
+					Nation loser = townOccupied.getNation();
+					War war = nationOccupying.getWar(loser);
+					war.addTownOccupyToWarscore(nationOccupying, townOccupied);
 					townOccupied.setOccupiedBy(nationOccupying);
 				}
 			} catch (NotRegisteredException e) {
+				e.printStackTrace();
+			} catch (TownyException e) {
 				e.printStackTrace();
 			}
 		}
@@ -67,6 +78,7 @@ public class Occupation {
 	
 	public void quitOccupation() {
 		townOccupied.setOccupation(null);
+		townyUniverse.getDataSource().saveTown(townOccupied);
 	}
 
 	public Town getTownOccupied() {
@@ -78,7 +90,9 @@ public class Occupation {
 			quitOccupation();
 			return;
 		}
-		setProgress(progress + townOccupationPercentagePerSecond * playersOccupying.size());
+		if (playersBlocking.size() <= 0) {
+			setProgress(progress + townOccupationPercentagePerSecond * playersOccupying.size());
+		}
 		for (Player player : playersOccupying) {
 			player.sendMessage((progress * 100) + "% occupied");
 		}
@@ -97,5 +111,17 @@ public class Occupation {
 		if (playersOccupying.size() <= 0) {
 			quitOccupation();
 		}
+	}
+
+	public List<Player> getPlayersBlocking() {
+		return playersBlocking;
+	}
+	
+	public void addPlayerBlocking(Player player) {
+		playersBlocking.add(player);
+	}
+
+	public void removePlayerBlocking(Player player) {
+		playersBlocking.remove(player);
 	}
 }

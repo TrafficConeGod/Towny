@@ -428,6 +428,16 @@ public class TownyFormatter {
 		out.addAll(ChatTools.listArr(residents, String.format(TownySettings.getLangString("status_town_reslist"), town.getNumResidents() )));		
 
 		out.addAll(getExtraFields(town));
+		if (town.isBeingOccupied()) {
+			try {
+				out.add(String.format(TownySettings.getLangString("status_town_being_occupied"), town.getOccupation().getNationOccupying().getName()));
+			} catch (NotRegisteredException e) {
+				e.printStackTrace();
+			}
+		}
+		if (town.isOccupied()) {
+			out.add(String.format(TownySettings.getLangString("status_town_occupied"), town.getOccupiedBy().getName()));
+		}
 		
 		out = formatStatusScreens(out);
 		return out;

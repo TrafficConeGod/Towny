@@ -905,13 +905,13 @@ public class Nation extends TownyObject implements ResidentList, TownyInviter, B
 	}
 	
 	public void clearOccupations() {
+		TownyUniverse townyUniverse = TownyUniverse.getInstance();
 		for (Town town : towns) {
 			town.setOccupation(null);
 			town.setOccupiedBy(null);
+			townyUniverse.getDataSource().saveTown(town);
 		}
 	}
-
-
 
 	public void peaceWar(War war) throws TownyException {
 		Nation loser = war.getAtWarWith(this);
