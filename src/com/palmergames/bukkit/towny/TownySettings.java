@@ -2948,7 +2948,7 @@ public class TownySettings {
 	}
 
 	public static float getTownOccupationPercentagePerSecond() {
-		return ((float) getDouble(ConfigNodes.NEWWAR_WARSCORE_CAPITAL_TOWN_OCCUPY_CHANGE)) / 100f;
+		return ((float) getDouble(ConfigNodes.NEWWAR_CONFIG_TOWN_OCCUPATION_PERCENTAGE_PER_SECOND)) / 100f;
 	}
 
 	public static boolean getHumiliateEnabled() {

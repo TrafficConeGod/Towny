@@ -598,7 +598,7 @@ public class TownyFormatter {
 		if (nation.isJustifying()) {
 			Justification justification = nation.getJustification();
 			CasusBelli casusBelli = CasusBellis.casusBellis[justification.getIndex()];
-			out.add(String.format(TownySettings.getLangString("status_nation_justifying"), justification.getNation().getName(), casusBelli.getName(), justification.getDaysLeft() / 72));
+			out.add(String.format(TownySettings.getLangString("status_nation_justifying"), justification.getNation().getName(), casusBelli.getName(), justification.getDaysLeft()));
 		}
 		
 		out.addAll(getExtraFields(nation));
