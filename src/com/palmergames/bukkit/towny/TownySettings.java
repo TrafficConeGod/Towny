@@ -2951,6 +2951,10 @@ public class TownySettings {
 		return ((float) getDouble(ConfigNodes.NEWWAR_CONFIG_TOWN_OCCUPATION_PERCENTAGE_PER_SECOND)) / 100f;
 	}
 
+	public static int getRebelDays() {
+		return getInt(ConfigNodes.NEWWAR_CONFIG_TOWN_REBEL_DAYS);
+	}
+
 	public static boolean getHumiliateEnabled() {
 		return getBoolean(ConfigNodes.NEWWAR_HUMILIATE_ENABLED);
 	}

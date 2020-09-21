@@ -1876,6 +1876,11 @@ public enum ConfigNodes {
 		"newwar.config.town_occupation_percentage_per_second",
 		"0.1",
 		"# The amount per second town occupation percentage goes up by. Additive with more players'"),
+	NEWWAR_CONFIG_TOWN_REBEL_DAYS(
+		"newwar.config.town_rebel_days",
+		"1008",
+		"# The amount of in game days before a town can revolt."
+	),
 	NEWWAR_WARSCORE(
 		"newwar.warscore",
 		"",

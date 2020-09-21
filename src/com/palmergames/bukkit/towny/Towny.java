@@ -257,6 +257,16 @@ public class Towny extends JavaPlugin {
 							}
 						}
 						
+						for (Town town : universe.getDataSource().getTowns()) {
+							int rebelDays = town.getRebelDays();
+							rebelDays -= 1;
+							if (rebelDays <= 0) {
+								rebelDays = 0;
+							}
+							town.setRebelDays(rebelDays);
+							universe.getDataSource().saveTown(town);
+						}
+						
 						for (War war : universe.getDataSource().getAllWars()) {
 							int daysLeft = war.getDaysLeft();
 							daysLeft -= 1;

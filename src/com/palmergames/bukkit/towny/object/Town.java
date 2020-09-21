@@ -76,6 +76,7 @@ public class Town extends TownyObject implements ResidentList, TownyInviter, Obj
 	private transient List<Invite> sentinvites = new ArrayList<>();
 	private boolean isConquered = false;
 	private int conqueredDays;
+	private int rebelDays = 0;
 	private Occupation occupation;
 	private Nation occupiedBy;
 	private EconomyAccount account;
@@ -1333,11 +1334,11 @@ public class Town extends TownyObject implements ResidentList, TownyInviter, Obj
 	public boolean isConquered() {
 		return this.isConquered;
 	}
-	
+
 	public void setConqueredDays(int conqueredDays) {
 		this.conqueredDays = conqueredDays;
 	}
-	
+
 	public int getConqueredDays() {
 		return this.conqueredDays;
 	}
@@ -1490,6 +1491,14 @@ public class Town extends TownyObject implements ResidentList, TownyInviter, Obj
 	
 	public boolean isOccupied() {
 		return occupiedBy != null;
+	}
+	
+	public void setRebelDays(int rebelDays) {
+		this.rebelDays = rebelDays;
+	}
+
+	public int getRebelDays() {
+		return this.rebelDays;
 	}
 	
 	

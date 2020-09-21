@@ -672,7 +672,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 					throw new TownyException(TownySettings.getLangString("msg_err_command_disable"));
 
 				Resident resident = TownyUniverse.getInstance().getDataSource().getResident(player.getName());
-				if (!resident.isKing())
+				if (!resident.isKing() && resident.isMayor())
 					if (split.length == 1) {
 						nationLeave(player);
 					} else if (split.length >= 2) {
@@ -811,7 +811,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 						throw new TownyException(TownySettings.getLangString("msg_err_not_at_war_with"));
 					}
 					War war = playerNation.getWar(enemyNation);
-					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_days_left"), (float)war.getDaysLeft() / 72f));
+					TownyMessaging.sendMessage(player, String.format(TownySettings.getLangString("status_war_days_left"), war.getDaysLeft()));
 
 					// attacker
 					TownyMessaging.sendMessage(player, TownySettings.getLangString("status_war_attackers"));
@@ -1195,7 +1195,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			player.sendMessage(msgs);
 			return;
 		}
-		if (newSplit.length >= 1) { // /town invite [something]
+		if (newSplit.length >= 1) { // /nation invite [something]
 			if (newSplit[0].equalsIgnoreCase("help") || newSplit[0].equalsIgnoreCase("?")) {
 				for (String msg : invite) {
 					player.sendMessage(Colors.strip(msg));
@@ -1739,6 +1739,10 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 			if (System.currentTimeMillis()- FlagWar.lastFlagged(town) < TownySettings.timeToWaitAfterFlag()) {
 				throw new TownyException(TownySettings.getLangString("msg_war_flag_deny_recently_attacked"));
+			}
+			
+			if (town.getRebelDays() >= 0) {
+				throw new TownyException(String.format(TownySettings.getLangString("msg_cannot_rebel"), town.getRebelDays()));
 			}
 			
 			TownyMessaging.sendErrorMsg(player, TownySettings.getLangString("msg_should_declare_independence"));
@@ -2311,7 +2315,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			}
 		
 			War war = playerNation.getWar(enemyNation);
-			if (!war.isWarLeader(playerNation)) {
+			if (!war.isWarLeader(playerNation) || !war.isWarLeader(enemyNation)) {
 				throw new TownyException(TownySettings.getLangString("msg_err_not_war_leader"));
 			}
 
@@ -2323,26 +2327,48 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 
 			
 			// real code
-			Resident king = enemyNation.getKing();
-
-			if (!BukkitTools.isOnline(king.getName())) {
-				throw new TownyException(String.format(TownySettings.getLangString("msg_err_other_king_not_online"), enemyNation.getName(), king.getName()));
+			float warscore = 0;
+			
+			if (war.isAnAttacker(playerNation)) {
+				warscore = war.getAttackerWarscore();
+			} else if (war.isADefender(playerNation)) {
+				warscore = war.getDefenderWarscore();
 			}
-			// new code
-			Confirmation confirmation = new Confirmation(() -> {
-				TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_peace"), playerNation.getName()));
-				Confirmation enemyConfirmation = new Confirmation(() -> {
+			
+			if (warscore >= 1f) {
+				Confirmation confirmation = new Confirmation(() -> {
 					try {
 						playerNation.peaceWar(war);
 						TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
-						TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
+//						TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
 					} catch (TownyException e) {
 						TownyMessaging.sendErrorMsg(player, e.getMessage());
 					}
 				});
-				ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
-			});
-			ConfirmationHandler.sendConfirmation(player, confirmation);
+				ConfirmationHandler.sendConfirmation(player, confirmation);
+			} else {
+
+				Resident king = enemyNation.getKing();
+
+				if (!BukkitTools.isOnline(king.getName())) {
+					throw new TownyException(String.format(TownySettings.getLangString("msg_err_other_king_not_online"), enemyNation.getName(), king.getName()));
+				}
+				// new code
+				Confirmation confirmation = new Confirmation(() -> {
+					TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_offering_peace"), playerNation.getName()));
+					Confirmation enemyConfirmation = new Confirmation(() -> {
+						try {
+							playerNation.peaceWar(war);
+							TownyMessaging.sendErrorMsg(player, String.format(TownySettings.getLangString("msg_peaced_out"), enemyNation.getName()));
+							TownyMessaging.sendErrorMsg(BukkitTools.getPlayer(king.getName()), String.format(TownySettings.getLangString("msg_peaced_out"), playerNation.getName()));
+						} catch (TownyException e) {
+							TownyMessaging.sendErrorMsg(player, e.getMessage());
+						}
+					});
+					ConfirmationHandler.sendConfirmation(BukkitTools.getPlayerExact(king.getName()), enemyConfirmation);
+				});
+				ConfirmationHandler.sendConfirmation(player, confirmation);
+			}
 			
 //			if (enemyNation.wasKilledInWar(king.getUUID()) || (System.currentTimeMillis() - king.getLastOnline() >= (long)1*1000*60*60*24*TownySettings.getInactivityThreshold())) {
 //				// king is dead force peace
@@ -2432,7 +2458,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 			}
 
 			War war = playerNation.getWar(enemyNation);
-			if (!war.isWarLeader(playerNation)) {
+			if (!war.isWarLeader(playerNation) || !war.isWarLeader(enemyNation)) {
 				throw new TownyException(TownySettings.getLangString("msg_err_not_war_leader"));
 			}
 
@@ -2739,15 +2765,18 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 	 * @param towns - List of Town(s) being added to Nation.
 	 * @throws AlreadyRegisteredException - Shouldn't happen but could.
 	 */
-	public static void nationAdd(Nation nation, List<Town> towns) throws AlreadyRegisteredException {
+	public static void nationAdd(Nation nation, List<Town> towns) throws AlreadyRegisteredException, NotRegisteredException {
 		TownyUniverse townyUniverse = TownyUniverse.getInstance();
 
 		for (Town town : towns) {
+			if (town.hasNation() && !town.getNation().isAtWar() && town.getNation().getNumTowns() <= 1) {
+				townyUniverse.getDataSource().mergeNation(town.getNation(), nation);
+			}
 			if (!town.hasNation()) {
 				nation.addTown(town);
 				townyUniverse.getDataSource().saveTown(town);
-				TownyMessaging.sendNationMessagePrefixed(nation, String.format(TownySettings.getLangString("msg_join_nation"), town.getName()));
 			}
+			TownyMessaging.sendNationMessagePrefixed(nation, String.format(TownySettings.getLangString("msg_join_nation"), town.getName()));
 
 		}
 		plugin.resetCache();

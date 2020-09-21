@@ -1187,6 +1187,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 				}
 				succumbingNation.removeTown(town);
 				prevailingNation.addTown(town);
+				town.setRebelDays(TownySettings.getRebelDays());
 				saveTown(town);
 			}
 		} catch (EconomyException ignored) {

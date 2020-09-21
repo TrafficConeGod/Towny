@@ -80,6 +80,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -1173,11 +1174,11 @@ public class TownyPlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerDead(PlayerDeathEvent event) throws TownyException {
+		TownyUniverse universe = TownyUniverse.getInstance();
+		// ugly code why tf is this so fucking big
 		if (event.getEntity() instanceof Player && event.getEntity().getKiller() != null && event.getEntity().getKiller() instanceof Player) {
 			Player loser = event.getEntity();
 			Player victor = event.getEntity().getKiller();
-			
-			TownyUniverse universe = TownyUniverse.getInstance();
 
 			Resident victorResident = universe.getDataSource().getResident(victor.getName());
 			Resident loserResident = universe.getDataSource().getResident(loser.getName());
@@ -1217,6 +1218,22 @@ public class TownyPlayerListener implements Listener {
 						}
 						war.addKillToWarscore(victorNation, loserResident);
 						universe.getDataSource().saveWar(war);
+					}
+				}
+			}
+		}
+		if (event.getEntity() instanceof Player) {
+			Player player = event.getEntity();
+			for (Town town : universe.getDataSource().getTowns()) {
+				if (town.isBeingOccupied()) {
+					Occupation occupation = town.getOccupation();
+					List<Player> playersOccupying = occupation.getPlayersOccupying();
+					if (playersOccupying.contains(player)) {
+						occupation.removePlayerOccupying(player);
+					}
+					List<Player> playersBlocking = occupation.getPlayersBlocking();
+					if (playersBlocking.contains(player)) {
+						occupation.removePlayerBlocking(player);
 					}
 				}
 			}

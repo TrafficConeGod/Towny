@@ -53,6 +53,7 @@ public class DemandTown extends CasusBelli {
 			TownyUniverse townyUniverse = TownyUniverse.getInstance();
 			loser.removeTown(town);
 			victor.addTown(town);
+			town.setRebelDays(TownySettings.getRebelDays());
 			townyUniverse.getDataSource().saveTown(town);
 			townyUniverse.getDataSource().saveNation(victor);
 			townyUniverse.getDataSource().saveNation(loser);
