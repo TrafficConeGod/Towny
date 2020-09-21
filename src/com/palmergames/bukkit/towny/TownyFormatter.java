@@ -583,7 +583,7 @@ public class TownyFormatter {
 		String casusBelliString = "";
 		for (int i = 0; i < casusBellis.size(); i++) {
 			CasusBelli casusBelli = casusBellis.get(i);
-			String display = casusBelli.getDefender().getName() + " " + casusBelli.getName();
+			String display = casusBelli.getDefender().getName() + " " + casusBelli.getName() + " (" + casusBelli.getDaysLeft() + " in-game days left)";
 			
 			if (i == 0) {
 				casusBelliString += display;

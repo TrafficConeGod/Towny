@@ -31,6 +31,7 @@ import com.palmergames.bukkit.towny.listeners.TownyPlayerListener;
 import com.palmergames.bukkit.towny.listeners.TownyVehicleListener;
 import com.palmergames.bukkit.towny.listeners.TownyWeatherListener;
 import com.palmergames.bukkit.towny.listeners.TownyWorldListener;
+import com.palmergames.bukkit.towny.newwar.CasusBelli;
 import com.palmergames.bukkit.towny.newwar.Justification;
 import com.palmergames.bukkit.towny.newwar.War;
 import com.palmergames.bukkit.towny.object.*;
@@ -71,6 +72,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -254,6 +256,19 @@ public class Towny extends JavaPlugin {
 										}
 									}
 								}
+							}
+							CasusBelli[] casusBellis = new CasusBelli[nation.getCasusBellis().size()];
+							nation.getCasusBellis().toArray(casusBellis);
+							for (CasusBelli casusBelli : casusBellis) {
+								int daysLeft = casusBelli.getDaysLeft();
+								daysLeft -= 1;
+								if (daysLeft <= 0) {
+									nation.removeCasusBelli(casusBelli);
+									universe.getDataSource().deleteCasusBelli(casusBelli);
+									continue;
+								}
+								casusBelli.setDaysLeft(daysLeft);
+								universe.getDataSource().saveCasusBelli(casusBelli);
 							}
 						}
 						

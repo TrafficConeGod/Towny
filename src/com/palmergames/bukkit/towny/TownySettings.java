@@ -2955,6 +2955,10 @@ public class TownySettings {
 		return getInt(ConfigNodes.NEWWAR_CONFIG_TOWN_REBEL_DAYS);
 	}
 
+	public static int getCasusBelliDaysLeft() {
+		return getInt(ConfigNodes.NEWWAR_CONFIG_CASUS_BELLI_DAYS_LEFT);
+	}
+
 	public static boolean getHumiliateEnabled() {
 		return getBoolean(ConfigNodes.NEWWAR_HUMILIATE_ENABLED);
 	}

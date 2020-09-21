@@ -1,5 +1,6 @@
 package com.palmergames.bukkit.towny.newwar;
 
+import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.EmptyNationException;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -13,6 +14,7 @@ public abstract class CasusBelli implements Cloneable {
 	protected Nation attacker;
 	protected Nation defender;
 	private UUID uuid;
+	private int daysLeft = TownySettings.getCasusBelliDaysLeft();
 	public String getName() { return "default"; }
 	public int getIndex() { return -1; }
 	public float getInfamy() {
@@ -59,5 +61,13 @@ public abstract class CasusBelli implements Cloneable {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public int getDaysLeft() {
+		return daysLeft;
+	}
+
+	public void setDaysLeft(int daysLeft) {
+		this.daysLeft = daysLeft;
 	}
 }

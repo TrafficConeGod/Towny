@@ -486,6 +486,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 			int index = -1;
 			Nation attacker = null;
 			Nation defender = null;
+			int daysLeft = TownySettings.getCasusBelliDaysLeft();
 
 			List<String> lines = new ArrayList<>();
 			
@@ -503,6 +504,8 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 							attacker = getNation(value);
 						} else if (property.equalsIgnoreCase("defender")) {
 							defender = getNation(value);
+						} else if (property.equalsIgnoreCase("daysLeft")) {
+							daysLeft = Integer.valueOf(value);
 						}
 					}
 				}
@@ -514,6 +517,7 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 				casusBelli.setUuid(UUID.fromString(uuidString));
 				casusBelli.setAttacker(attacker);
 				casusBelli.setDefender(defender);
+				casusBelli.setDaysLeft(daysLeft);
 				for (String checkLine : lines) {
 					String[] tokens = checkLine.split("=");
 					if (tokens.length == 2) {
@@ -2057,6 +2061,9 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 
 		// defender
 		list.add("defender=" + casusBelli.getDefender().getName());
+		
+		// days left
+		list.add("daysLeft=" + casusBelli.getDaysLeft());
 		
 		list.add(casusBelli.getSaveData());
 

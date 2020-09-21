@@ -1881,6 +1881,11 @@ public enum ConfigNodes {
 		"1008",
 		"# The amount of in game days before a town can revolt."
 	),
+	NEWWAR_CONFIG_CASUS_BELLI_DAYS_LEFT(
+		"newwar.config.casus_belli_days_left",
+		"216",
+		"# The amount of in game days before you lose a casus belli on a nation."
+	),
 	NEWWAR_WARSCORE(
 		"newwar.warscore",
 		"",
