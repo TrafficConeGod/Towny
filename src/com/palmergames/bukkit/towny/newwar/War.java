@@ -61,32 +61,28 @@ public class War {
 	
 	public boolean isAnAttacker(Nation nation) {
 		if (!isAttackerMap.containsKey(nation)) {
-			if (attacker.getName() == nation.getName()) {
+			if (attacker.getName().equals(nation.getName())) {
 				isAttackerMap.put(attacker, true);
 			}
 			if (!isAttackerMap.containsKey(nation)) {
 				for (Nation ally : attackerAllies) {
-					if (ally.getName() == nation.getName()) {
+					if (ally.getName().equals(nation.getName())) {
 						isAttackerMap.put(ally, true);
 					}
 				}
 			}
 		}
-		if (isAttackerMap.containsKey(nation)) {
-			return isAttackerMap.get(nation);
-		} else {
-			return false;
-		}
+		return isAttackerMap.getOrDefault(nation, false);
 	}
 	
 	public boolean isADefender(Nation nation) {
 		if (!isAttackerMap.containsKey(nation)) {
-			if (defender.getName() == nation.getName()) {
+			if (defender.getName().equals(nation.getName())) {
 				isAttackerMap.put(defender, false);
 			}
 			if (!isAttackerMap.containsKey(nation)) {
 				for (Nation ally : defenderAllies) {
-					if (ally.getName() == nation.getName()) {
+					if (ally.getName().equals(nation.getName())) {
 						isAttackerMap.put(ally, false);
 					}
 				}
@@ -100,10 +96,10 @@ public class War {
 	}
 	
 	public boolean isWarLeader(Nation nation) {
-		if (attacker.getName() == nation.getName()) {
+		if (attacker.getName().equals(nation.getName())) {
 			return true;
 		}
-		if (defender.getName() == nation.getName()) {
+		if (defender.getName().equals(nation.getName())) {
 			return true;
 		}
 		return false;
@@ -222,10 +218,14 @@ public class War {
 	}
 	
 	public void addWarToCombatants() {
+		System.out.println("GOT HERE");
 		if (!attacker.getWars().contains(this)) {
+			System.out.println("HELLO" + attacker.getName());
 			attacker.addWar(this);
 		}
+		
 		if (!defender.getWars().contains(this)) {
+			System.out.println("HELLOAA" + defender.getName());
 			defender.addWar(this);
 		}
 		for (Nation nation : attackerAllies) {

@@ -980,6 +980,20 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		} finally {
 			lock.unlock();
 		}
+		
+		for (Nation check : universe.getDataSource().getNations()) {
+			for (CasusBelli casusBelli : check.getCasusBellis()) {
+				universe.getDataSource().saveCasusBelli(casusBelli);
+			}
+		}
+		for (War check : universe.getDataSource().getAllWars()) {
+			for (CasusBelli casusBelli : check.getAttackerCasusBellis()) {
+				universe.getDataSource().saveCasusBelli(casusBelli);
+			}
+			for (CasusBelli casusBelli : check.getDefenderCasusBellis()) {
+				universe.getDataSource().saveCasusBelli(casusBelli);
+			}
+		}
 
 		BukkitTools.getPluginManager().callEvent(new RenameNationEvent(oldName, nation));
 	}
@@ -1173,6 +1187,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		lock.lock();
 		List<Town> towns = new ArrayList<>(succumbingNation.getTowns());
 		Town lastTown = null;
+		
 		try {
 			succumbingNation.getAccount().payTo(succumbingNation.getAccount().getHoldingBalance(), prevailingNation, "Nation merge bank accounts.");
 			for (Town town : towns) {			
@@ -1194,6 +1209,7 @@ public abstract class TownyDatabaseHandler extends TownyDataSource {
 		} catch (EmptyNationException en) {
 			// This is the intended end-result of the merge.
 			prevailingNation.addTown(lastTown);
+			lastTown.setRebelDays(TownySettings.getRebelDays());
 			saveTown(lastTown);
 			String name = en.getNation().getName();
 			universe.getDataSource().removeNation(en.getNation(), false);

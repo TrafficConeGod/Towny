@@ -355,7 +355,6 @@ public final class TownyFlatFileSource extends TownyDatabaseHandler {
 	public boolean loadWar(String uuidString) {
 		FileMgmt.checkOrCreateFolder(dataFolderPath + File.separator + "wars");
 		String line = null;
-
 		try (BufferedReader fin = new BufferedReader(new InputStreamReader(new FileInputStream(dataFolderPath + File.separator + "wars" + File.separator + uuidString + "_.data"), StandardCharsets.UTF_8))) {
 
 			Nation attacker = null;

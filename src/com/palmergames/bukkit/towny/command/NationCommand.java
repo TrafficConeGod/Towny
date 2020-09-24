@@ -1689,8 +1689,13 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 		}
 		if (remainingNation.getName().equalsIgnoreCase(name))
 			throw new TownyException(String.format(TownySettings.getLangString("msg_err_invalid_name"), name));
-
+		
 		if (nation != null) {
+			
+			if (nation.isAtWar() || remainingNation.isAtWar()) {
+				throw new TownyException(TownySettings.getLangString("msg_err_at_war"));
+			}
+			
 			Resident king = nation.getKing();
 			if (!BukkitTools.isOnline(king.getName())) {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_err_king_of_that_nation_is_not_online"), name, king.getName()));
@@ -1741,7 +1746,7 @@ public class NationCommand extends BaseCommand implements CommandExecutor {
 				throw new TownyException(TownySettings.getLangString("msg_war_flag_deny_recently_attacked"));
 			}
 			
-			if (town.getRebelDays() >= 0) {
+			if (town.getRebelDays() > 0) {
 				throw new TownyException(String.format(TownySettings.getLangString("msg_cannot_rebel"), town.getRebelDays()));
 			}
 			
