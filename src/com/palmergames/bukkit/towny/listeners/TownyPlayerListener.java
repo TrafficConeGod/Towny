@@ -899,8 +899,6 @@ public class TownyPlayerListener implements Listener {
 			if (to.hasTownBlock() && resident.hasNation()) {
 				Nation nationEntering = resident.getTown().getNation();
 				TownBlock townBlock = to.getTownBlock();
-				if (townBlock.isHomeBlock() && townBlock.hasTown()) {
-					Town town = townBlock.getTown();
 					if (town.hasNation()) {
 						Nation nationBeingEntered = town.getNation();
 						if (town.isOccupied()) {
@@ -921,7 +919,6 @@ public class TownyPlayerListener implements Listener {
 								War war = nationEntering.getWar(nationOccupying);
 								if (!war.wasKilledInCombat(nationEntering, player.getUniqueId())) {
 									town.getOccupation().addPlayerBlocking(player);
-								}
 							}
 						}
 					}
